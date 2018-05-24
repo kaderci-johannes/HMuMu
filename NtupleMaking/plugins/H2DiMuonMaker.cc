@@ -20,9 +20,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 															_eleMediumToken(ps.getUntrackedParameter<edm::InputTag>("tagElectronCutBasedId_medium")),
 															_eleTightToken(ps.getUntrackedParameter<edm::InputTag>("tagElectronCutBasedId_tight")),
 															_convToken(ps.getUntrackedParameter<edm::InputTag>("tagConversions")),
-															_bsToken(ps.getUntrackedParameter<edm::InputTag>("tagBS")),
-															_genInfoToken(ps.getUntrackedParameter<edm::InputTag>("generator"))
-
+															_bsToken(ps.getUntrackedParameter<edm::InputTag>("tagBS"))
 {
 	//
 	//	init the Trees and create branches
@@ -56,9 +54,8 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 	consumes<edm::ValueMap<bool>>(_eleMediumToken);
 	consumes<edm::ValueMap<bool>>(_eleTightToken);
 	consumes<reco::BeamSpot>(_bsToken);
-	consumes<GenEventInfoProduct>(_genInfoToken);
-	_tokGenInfo = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
-	
+	_genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
+
 	mayConsume<reco::ConversionCollection>(_convToken);
 
 	_meta._checkTrigger = ps.getUntrackedParameter<bool>("checkTrigger");
