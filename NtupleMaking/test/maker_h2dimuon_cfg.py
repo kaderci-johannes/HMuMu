@@ -61,9 +61,9 @@ print(readFiles)
 #   Differentiate between DATA and MC
 #
 if not thisIsData:
-    process.load("Analysis.NtupleMaking.H2DiMuonMaker_MC")
+    process.load("HMuMu.NtupleMaking.H2DiMuonMaker_MC")
 else:
-    process.load("Analysis.NtupleMaking.H2DiMuonMaker_Data")
+    process.load("HMuMu.NtupleMaking.H2DiMuonMaker_Data")
     print("DATA")
 
 # # 
