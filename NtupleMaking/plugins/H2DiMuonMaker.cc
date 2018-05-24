@@ -133,7 +133,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 		//	MC Weights
 		//
 		edm::Handle<GenEventInfoProduct> hGenEvtInfo;
-		e.getByLabel(_genInfoToken, hGenEvtInfo);
+		e.getByToken(_genInfoToken, hGenEvtInfo);
 		_eaux._genWeight = (hGenEvtInfo->weight() > 0) ? 1 : -1;
 		_meta._sumEventWeights += _eaux._genWeight;
 
