@@ -135,7 +135,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 		//	MC Weights
 		//
 		edm::Handle<GenEventInfoProduct> hGenEvtInfo;
-		e.getByToken(_genInfoToken, hGenEvtInfo);
+		e.getByLabel(_genInfoToken, hGenEvtInfo);
 		_eaux._genWeight = (hGenEvtInfo->weight() > 0) ? 1 : -1;
 		_meta._sumEventWeights += _eaux._genWeight;
 
@@ -143,7 +143,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 		// LHE Event Product - to get the total - HT LOOK INTO THIS      Mo 5/2018
 		//
 		// edm::Handle<LHEEventProduct> hLHE;
-		// e.getByToken(m_tokLHE, hLHE);
+		// e.getByLabel(m_tokLHE, hLHE);
 		// for (unsigned i=0; i<(unsigned int)hLHE->hepeup().NUP; i++)
 		// {
 		//     unsigned int pdgId = abs(hLHE->hepeup().IDUP[i]);
@@ -170,7 +170,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 		//	MC Truth -- look into this
 		//
 		// edm::Handle<std::vector< PileupSummaryInfo > > hPUInfo;
-		// e.getByToken(_tokPU, hPUInfo);
+		// e.getByLabel(_tokPU, hPUInfo);
 		// std::vector<PileupSummaryInfo>::const_iterator pus;
 		// for (pus=hPUInfo->begin(); pus!=hPUInfo->end(); ++pus)
 		// {
@@ -183,7 +183,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 		//	Gen Jet
 		//
 		edm::Handle<reco::GenJetCollection> hGenJets;
-		e.getByToken(_genJetToken, hGenJets);
+		e.getByLabel(_genJetToken, hGenJets);
 		if (!hGenJets.isValid())
 		{
 			std::cout << "Gen Jet Product is not found" << std::endl;
@@ -216,8 +216,8 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 	//	HLT
 	//	- Skip the event if HLT has not fired
 	//
-	e.getByToken(_trigResToken, _hTriggerResults);
-	e.getByToken(_trigObjToken, _hTriggerObjects);
+	e.getByLabel(_trigResToken, _hTriggerResults);
+	e.getByLabel(_trigObjToken, _hTriggerObjects);
 	if (!_hTriggerResults.isValid())
 	{
 		std::cout << "Trigger Results Product is not found" << std::endl;
@@ -245,7 +245,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 	//	Vertices
 	//
 	edm::Handle<reco::VertexCollection> hVertices;
-	e.getByToken(_pvToken, hVertices);
+	e.getByLabel(_pvToken, hVertices);
 	if (!hVertices.isValid())
 		std::cout << "VertexCollection Product is not found" << std::endl;
 	else
@@ -277,13 +277,13 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 	//	Beam Spot
 	//
 	edm::Handle<reco::BeamSpot> hBS;
-	e.getByToken(_bsToken, hBS);
+	e.getByLabel(_bsToken, hBS);
 
 	//
 	//	MET
 	//
 	edm::Handle<std::vector<pat::MET>> hMET;
-	e.getByToken(_metToken, hMET);
+	e.getByLabel(_metToken, hMET);
 	if (!hMET.isValid())
 	{
 		std::cout << "MET Product is not found" << std::endl;
@@ -301,7 +301,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 	//	Jet
 	//
 	edm::Handle<std::vector<pat::Jet>> hJets;
-	e.getByToken(_jetToken, hJets);
+	e.getByLabel(_jetToken, hJets);
 	if (!hJets.isValid())
 	{
 		std::cout << "Jet Product is not found" << std::endl;
@@ -405,16 +405,16 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 	if (_useElectrons)
 	{
 		edm::Handle<edm::ValueMap<bool>> hId_veto, hId_loose, hId_medium, hId_tight;
-		e.getByToken(_eleVetoToken, hId_veto);
-		e.getByToken(_eleLooseToken, hId_loose);
-		e.getByToken(_eleMediumToken, hId_medium);
-		e.getByToken(_eleTightToken, hId_tight);
+		e.getByLabel(_eleVetoToken, hId_veto);
+		e.getByLabel(_eleLooseToken, hId_loose);
+		e.getByLabel(_eleMediumToken, hId_medium);
+		e.getByLabel(_eleTightToken, hId_tight);
 
 		edm::Handle<edm::View<pat::Electron>> hElectrons;
-		e.getByToken(_eleToken, hElectrons);
+		e.getByLabel(_eleToken, hElectrons);
 
 		edm::Handle<reco::ConversionCollection> hConversions;
-		e.getByToken(_convToken, hConversions);
+		e.getByLabel(_convToken, hConversions);
 
 		for (size_t i = 0; i < hElectrons->size(); ++i)
 		{
@@ -462,7 +462,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 	if (_useTaus)
 	{
 		edm::Handle<pat::TauCollection> hTaus;
-		e.getByToken(_tauToken, hTaus);
+		e.getByLabel(_tauToken, hTaus);
 		for (pat::TauCollection::const_iterator it = hTaus->begin();
 			 it != hTaus->end(); ++it)
 		{
@@ -489,7 +489,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 	//	Muons
 	//
 	edm::Handle<pat::MuonCollection> hMuons;
-	e.getByToken(_muonToken, hMuons);
+	e.getByLabel(_muonToken, hMuons);
 	pat::MuonCollection muonsSelected;
 
 	//
