@@ -116,4 +116,9 @@
 #include "DataFormats/PatCandidates/interface/Photon.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 
+// E / Gamma
+#include "DataFormats/EgammaCandidates/interface/Conversion.h"
+#include "DataFormats/EgammaCandidates/interface/ConversionFwd.h"
+#include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
+
 #endif
