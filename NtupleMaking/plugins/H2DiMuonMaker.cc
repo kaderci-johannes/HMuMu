@@ -7,7 +7,7 @@
 #include "HMuMu/NtupleMaking/plugins/H2DiMuonMaker.h"
 
 H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUntrackedParameter<edm::InputTag>("tagMuons")),
-															_eleToken(ps.getUntrackedParameter<edm::InputTag>("tagElectons")),
+															_eleToken(ps.getUntrackedParameter<edm::InputTag>("tagElectrons")),
 															_tauToken(ps.getUntrackedParameter<edm::InputTag>("tagTaus")),
 															_pvToken(ps.getUntrackedParameter<edm::InputTag>("tagPV")),
 															_trigResToken(ps.getUntrackedParameter<edm::InputTag>("tagTriggerResults")),
