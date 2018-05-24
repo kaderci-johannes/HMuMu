@@ -8,8 +8,8 @@
 	<class name="edm::Wrapper<std::vector<analysis::core::Event> >"/>
 			
 	<class name="analysis::core::EventAuxiliary"/>
--	<class name="std::vector<analysis::core::EventAuxiliary>"/>
--	<class name="edm::Wrapper<std::vector<analysis::core::EventAuxiliary> >"/>
+	<class name="std::vector<analysis::core::EventAuxiliary>"/>
+	<class name="edm::Wrapper<std::vector<analysis::core::EventAuxiliary> >"/>
 	
 	<class name="analysis::core::GenParticle"/>
 	<class name="std::vector<analysis::core::GenParticle>"/>
