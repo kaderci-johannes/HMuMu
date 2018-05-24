@@ -5,7 +5,7 @@
  */
 
 
-#include "HMuMu/NtupleMaking/plugins/H2DiMuuonMaker.h"
+#include "HMuMu/NtupleMaking/plugins/H2DiMuonMaker.h"
 
 H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const& ps):
 	    _muonToken(ps.getParameter<edm::InputTag>("tagMuons")),
