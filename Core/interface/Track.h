@@ -9,37 +9,37 @@
 
 namespace analysis
 {
-	namespace core
+namespace core
+{
+class Track : public Object
+{
+  public:
+	Track() : Object() { this->reset(); }
+
+	virtual void reset()
 	{
-		class Track : public Object
-		{
-			public:
-				Track() : Object() {this->reset();}
+		_charge = 0;
+		_pt = 0;
+		_pterr = 0;
+		_eta = 0;
+		_phi = 0;
+	}
+	virtual ~Track() {}
 
-				virtual void reset()
-				{
-					_charge = 0;
-					_pt = 0;
-					_pterr = 0;
-					_eta = 0;
-					_phi = 0;
-				}
-				virtual ~Track() {}
-
-				int _charge;
-				float _pt;
-				float _pterr;
-				float _eta;
-				float _phi;
+	int _charge;
+	float _pt;
+	float _pterr;
+	float _eta;
+	float _phi;
 
 #ifdef STANDALONE
-				ClassDef(Track, 1)
+	ClassDef(Track, 1)
 #endif
-		};
+};
 
-		typedef std::vector<analysis::core::Track> Tracks;
-	}
-}
+typedef std::vector<analysis::core::Track> Tracks;
+} // namespace core
+} // namespace analysis
 
 //
 //	IMPORTANT!!! ROOT uses __LINE__ to generate the unique id......

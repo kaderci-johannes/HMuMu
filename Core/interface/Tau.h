@@ -9,31 +9,31 @@
 
 namespace analysis
 {
-    namespace core
+namespace core
+{
+class Tau : public Track
+{
+  public:
+    Tau() : Track() { this->reset(); }
+    virtual ~Tau() {}
+    virtual void reset()
     {
-        class Tau : public Track
-        {
-            public:
-                Tau() : Track() {this->reset();}
-                virtual ~Tau() {}
-                virtual void reset()
-                {
-                    Track::reset();
-                    _ids.clear();
-                    _isPF = false;
-                }
+        Track::reset();
+        _ids.clear();
+        _isPF = false;
+    }
 
-                std::vector<float> _ids;
-                bool _isPF;
+    std::vector<float> _ids;
+    bool _isPF;
 
 #ifdef STANDALONE
-                ClassDef(Tau, 1)
+    ClassDef(Tau, 1)
 #endif
-        };
+};
 
-        typedef std::vector<analysis::core::Tau> Taus;
-    }
-}
+typedef std::vector<analysis::core::Tau> Taus;
+} // namespace core
+} // namespace analysis
 
 #ifdef STANDALONE
 ClassImpUnique(analysis::core::Tau, Tau)

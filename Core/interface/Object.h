@@ -24,24 +24,24 @@ using namespace std;
 
 namespace analysis
 {
-	namespace core
-	{
-		class Object
-		{
-			public:
-				Object(){this->reset();}
-				virtual ~Object() {}
+namespace core
+{
+class Object
+{
+  public:
+	Object() { this->reset(); }
+	virtual ~Object() {}
 
-				virtual void reset() {}
+	virtual void reset() {}
 
 #ifdef STANDALONE
-				ClassDef(Object, 1)
+	ClassDef(Object, 1)
 #endif
-		};
+};
 
-		typedef std::vector<analysis::core::Object> Objects;
-	}
-}
+typedef std::vector<analysis::core::Object> Objects;
+} // namespace core
+} // namespace analysis
 
 //
 //	Unique!
@@ -51,5 +51,3 @@ ClassImpUnique(analysis::core::Object, Object)
 #endif
 
 #endif
-
-

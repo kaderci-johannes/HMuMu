@@ -9,41 +9,43 @@
 
 namespace analysis
 {
-	namespace core
+namespace core
+{
+class GenJet : public Object
+{
+  public:
+	GenJet() : Object()
 	{
-		class GenJet : public Object
-		{
-			public:
-				GenJet() : Object()
-				{this->reset();}
-				virtual ~GenJet() {}
-				virtual void reset()
-				{
-					_px = 0;
-					_py = 0;
-					_pz = 0;
-					_pt = 0;
-					_eta = 0;
-					_phi = 0;
-					_mass = 0;
-				}
+		this->reset();
+	}
+	virtual ~GenJet() {}
+	virtual void reset()
+	{
+		_px = 0;
+		_py = 0;
+		_pz = 0;
+		_pt = 0;
+		_eta = 0;
+		_phi = 0;
+		_mass = 0;
+	}
 
-				float _px;
-				float _py;
-				float _pz;
-				float _pt;
-				float _eta;
-				float _phi;
-				float _mass;
+	float _px;
+	float _py;
+	float _pz;
+	float _pt;
+	float _eta;
+	float _phi;
+	float _mass;
 
 #ifdef STANDALONE
-				ClassDef(GenJet, 1)
+	ClassDef(GenJet, 1)
 #endif
-		};
+};
 
-		typedef std::vector<analysis::core::GenJet> GenJets;
-	}
-}
+typedef std::vector<analysis::core::GenJet> GenJets;
+} // namespace core
+} // namespace analysis
 
 #ifdef STANDALONE
 ClassImpUnique(analysis::core::GenJet, GenJet)
