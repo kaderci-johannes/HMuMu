@@ -20,13 +20,13 @@ import Samples as Samples
 import Dataset as DS
 #import NtupleProcessing.python.Dataset as DS
 
-config_filename = "maker_h2dimuon_wElesTaus_cfg_crabtemplate.py"
+config_filename = "maker_h2dimuon_cfg_crabtemplate.py"
 mcEOSFolder = "/mc"
 
 #   get the json file to be used if needed
 jsonfiles = Samples.jsonfiles
 #jsontag = "2017_Synch"
-jsontag = "run297113"
+jsontag = "2017_Synch"
 jsonfile = jsonfiles[jsontag]
 
 #   select the datasets to be submitted for grid processing

@@ -27,16 +27,16 @@ data_datasets = S.datadatasets
 jsonfiles = S.jsonfiles
 print(data_datasets)
 
-jsontag = "run297113"
+jsontag = "2017_Synch"
 jsonfile = jsonfiles[jsontag]
 dataset = None
 dataset = data_datasets["/SingleMuon/Run2017B-17Nov2017-v1/MINIAOD"]
 print(dataset)
 
 if dataset == None:
-    print "-" * 40
-    print "dataset is None"
-    print "-" * 40
+    print("-" * 40)
+    print("dataset is None")
+    print("-" * 40)
     sys.exit(1)
 
 ntuple = DS.Ntuple(
@@ -66,20 +66,20 @@ else:
 # #
 # #   Debug/Loggin
 # #
-print ""
-print ""
-print 'Loading Global Tag: ' + globalTag
+print("")
+print("")
+print('Loading Global Tag: ' + globalTag)
 process.GlobalTag.globaltag = globalTag
-print ""
-print ""
+print("")
+print("")
 if thisIsData:
-    print 'Running over data sample'
+    print('Running over data sample')
 else:
-    print 'Running over MC sample'
+    print('Running over MC sample')
 
-print "Sample Name:    " + ntuple.name
-print ""
-print ""
+print("Sample Name:    " + ntuple.name)
+print("")
+print("")
 # #
 # #   Pool Source with proper LSs
 # #
