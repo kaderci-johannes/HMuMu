@@ -53,6 +53,9 @@ ntuple = DS.Ntuple(
 thisIsData = ntuple.isData
 globalTag = ntuple.globaltag
 
+readFiles = cms.untracked.vstring()
+readFiles.extend(open(("sample_file_lists/%s/" % ("data" if ntuple.isData else "mc"))+ntuple.test_file).read().splitlines())
+
 print(readFiles)
 #
 #   Differentiate between DATA and MC
@@ -63,7 +66,7 @@ else:
     process.load("Analysis.NtupleMaking.H2DiMuonMaker_Data")
     print("DATA")
 
-# #
+# # 
 # #   Debug/Loggin
 # #
 print("")
