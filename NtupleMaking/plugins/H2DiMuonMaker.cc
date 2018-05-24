@@ -57,7 +57,8 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 	consumes<edm::ValueMap<bool>>(_eleTightToken);
 	consumes<reco::BeamSpot>(_bsToken);
 	consumes<GenEventInfoProduct>(_genInfoToken);
-
+	_tokGenInfo = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
+	
 	mayConsume<reco::ConversionCollection>(_convToken);
 
 	_meta._checkTrigger = ps.getUntrackedParameter<bool>("checkTrigger");
