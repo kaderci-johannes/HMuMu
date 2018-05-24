@@ -408,7 +408,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 		e.getByLabel(_eleMediumToken, hId_medium);
 		e.getByLabel(_eleTightToken, hId_tight);
 
-		edm::Handle<edm::View<pat::Electron>> hElectrons;
+		edm::Handle<pat::ElectronCollection> hElectrons;
 		e.getByLabel(_eleToken, hElectrons);
 
 		edm::Handle<reco::ConversionCollection> hConversions;
