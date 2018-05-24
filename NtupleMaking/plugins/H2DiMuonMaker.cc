@@ -6,22 +6,22 @@
 
 #include "HMuMu/NtupleMaking/plugins/H2DiMuonMaker.h"
 
-H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getParameter<edm::InputTag>("tagMuons")),
-															_eleToken(ps.getParameter<edm::InputTag>("tagElectons")),
-															_tauToken(ps.getParameter<edm::InputTag>("tagTaus")),
-															_pvToken(ps.getParameter<edm::InputTag>("tagPV")),
-															_trigResToken(ps.getParameter<edm::InputTag>("tagTriggerResults")),
-															_trigObjToken(ps.getParameter<edm::InputTag>("tagTriggerObjects")),
-															_metToken(ps.getParameter<edm::InputTag>("tagMET")),
-															_jetToken(ps.getParameter<edm::InputTag>("tagJets")),
-															_genJetToken(ps.getParameter<edm::InputTag>("tagGenJets")),
-															_eleVetoToken(ps.getParameter<edm::InputTag>("tagElectronCutBasedId_veto")),
-															_eleLooseToken(ps.getParameter<edm::InputTag>("tagElectronCutBasedId_loose")),
-															_eleMediumToken(ps.getParameter<edm::InputTag>("tagElectronCutBasedId_medium")),
-															_eleTightToken(ps.getParameter<edm::InputTag>("tagElectronCutBasedId_tight")),
-															_convToken(ps.getParameter<edm::InputTag>("tagConversions")),
-															_bsToken(ps.getParameter<edm::InputTag>("tagBS")),
-															_genInfoToken(ps.getParameter<edm::InputTag>("generator"))
+H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUntrackedParameter<edm::InputTag>("tagMuons")),
+															_eleToken(ps.getUntrackedParameter<edm::InputTag>("tagElectons")),
+															_tauToken(ps.getUntrackedParameter<edm::InputTag>("tagTaus")),
+															_pvToken(ps.getUntrackedParameter<edm::InputTag>("tagPV")),
+															_trigResToken(ps.getUntrackedParameter<edm::InputTag>("tagTriggerResults")),
+															_trigObjToken(ps.getUntrackedParameter<edm::InputTag>("tagTriggerObjects")),
+															_metToken(ps.getUntrackedParameter<edm::InputTag>("tagMET")),
+															_jetToken(ps.getUntrackedParameter<edm::InputTag>("tagJets")),
+															_genJetToken(ps.getUntrackedParameter<edm::InputTag>("tagGenJets")),
+															_eleVetoToken(ps.getUntrackedParameter<edm::InputTag>("tagElectronCutBasedId_veto")),
+															_eleLooseToken(ps.getUntrackedParameter<edm::InputTag>("tagElectronCutBasedId_loose")),
+															_eleMediumToken(ps.getUntrackedParameter<edm::InputTag>("tagElectronCutBasedId_medium")),
+															_eleTightToken(ps.getUntrackedParameter<edm::InputTag>("tagElectronCutBasedId_tight")),
+															_convToken(ps.getUntrackedParameter<edm::InputTag>("tagConversions")),
+															_bsToken(ps.getUntrackedParameter<edm::InputTag>("tagBS")),
+															_genInfoToken(ps.getUntrackedParameter<edm::InputTag>("generator"))
 
 {
 	//
