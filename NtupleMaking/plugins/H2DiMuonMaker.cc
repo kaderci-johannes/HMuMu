@@ -41,7 +41,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 	// _tEvents->Branch("Auxiliary", &m_aux);
 
 	consumes<pat::MuonCollection>(_muonToken);
-	consumes<pat::ElectronCollection>(_eleToken);
+	consumes<edm::View<pat::Electron>>(_eleToken);
 	consumes<pat::TauCollection>(_tauToken);
 	consumes<reco::VertexCollection>(_pvToken);
 	consumes<edm::TriggerResults>(_trigResToken);
@@ -408,7 +408,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 		e.getByLabel(_eleMediumToken, hId_medium);
 		e.getByLabel(_eleTightToken, hId_tight);
 
-		edm::Handle<pat::ElectronCollection> hElectrons;
+		edm::Handle<edm::View<pat::Electron>> hElectrons;
 		e.getByLabel(_eleToken, hElectrons);
 
 		edm::Handle<reco::ConversionCollection> hConversions;
