@@ -52,21 +52,21 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 		analysis::core::GenJets		_genjets;
 
 		//	Input Tags/Tokens
-		edm::InputTag _tagMuons;
-		edm::InputTag _tagElectrons;
-		edm::InputTag _tagTaus;
-		edm::InputTag _tagPV;
-		edm::InputTag _tagTriggerResults;
-		edm::InputTag _tagTriggerObjects;
-		edm::InputTag _tagMET;
-		edm::InputTag _tagPFJets;
-		edm::InputTag _tagGenJets;
-        edm::InputTag _tagElectronCutBasedId_veto;
-        edm::InputTag _tagElectronCutBasedId_loose;
-        edm::InputTag _tagElectronCutBasedId_medium;
-        edm::InputTag _tagElectronCutBasedId_tight;
-        edm::InputTag _tagConversions;
-		edm::InputTag _tagBS;
+		edm::InputTag _muonToken;
+		edm::InputTag _eleToken;
+		edm::InputTag _tauToken;
+		edm::InputTag _pvToken;
+		edm::InputTag _trigResToken;
+		edm::InputTag _trigObjToken;
+		edm::InputTag _metToken;
+		edm::InputTag _jetToken;
+		edm::InputTag _genJetToken;
+        edm::InputTag _eleVetoToken;
+        edm::InputTag _eleLooseToken;
+        edm::InputTag _eleMediumToken;
+        edm::InputTag _eleTightToken;
+        edm::InputTag _convToken;
+		edm::InputTag _bsToken;
 		edm::Handle<edm::TriggerResults> _hTriggerResults;
 		edm::Handle<pat::TriggerObjectStandAloneCollection> _hTriggerObjects;
         // edm::ESHandle<JetCorrectorParametersCollection> m_hJetCParametersAK5, 
