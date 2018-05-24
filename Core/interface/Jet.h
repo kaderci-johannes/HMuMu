@@ -2,7 +2,7 @@
 #define Analysis_Core_Jet_h
 
 #ifndef STANDALONE
-#include "Analysis/Core/interface/GenJet.h"
+#include "HMuMu/Core/interface/GenJet.h"
 #else
 #include "GenJet.h"
 #endif

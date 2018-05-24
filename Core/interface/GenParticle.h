@@ -2,7 +2,7 @@
 #define Analysis_Core_GenParticle_h
 
 #ifndef STANDALONE
-#include "Analysis/Core/interface/Object.h"
+#include "HMuMu/Core/interface/Object.h"
 #else
 #include "Object.h"
 #endif

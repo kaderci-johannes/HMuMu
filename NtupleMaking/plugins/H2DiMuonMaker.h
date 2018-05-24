@@ -1,21 +1,21 @@
 #ifndef NTUPLEMAKER
 #define NTUPLEMAKER
 
-#include "Analysis/NtupleMaking/interface/CommonHeaders.h"
+#include "HMuMu/NtupleMaking/interface/CommonHeaders.h"
 
 //	MY Classes
-#include "Analysis/Core/interface/GenJet.h"
-#include "Analysis/Core/interface/Constants.h"
-#include "Analysis/Core/interface/MET.h"
-#include "Analysis/Core/interface/Track.h"
-#include "Analysis/Core/interface/Event.h"
-#include "Analysis/Core/interface/MetaHiggs.h"
-#include "Analysis/Core/interface/GenParticle.h"
-#include "Analysis/Core/interface/Jet.h"
-#include "Analysis/Core/interface/Muon.h"
-#include "Analysis/Core/interface/Vertex.h"
-#include "Analysis/Core/interface/Electron.h"
-#include "Analysis/Core/interface/Tau.h"
+#include "HMuMu/Core/interface/GenJet.h"
+#include "HMuMu/Core/interface/Constants.h"
+#include "HMuMu/Core/interface/MET.h"
+#include "HMuMu/Core/interface/Track.h"
+#include "HMuMu/Core/interface/Event.h"
+#include "HMuMu/Core/interface/MetaHiggs.h"
+#include "HMuMu/Core/interface/GenParticle.h"
+#include "HMuMu/Core/interface/Jet.h"
+#include "HMuMu/Core/interface/Muon.h"
+#include "HMuMu/Core/interface/Vertex.h"
+#include "HMuMu/Core/interface/Electron.h"
+#include "HMuMu/Core/interface/Tau.h"
 
 class H2DiMuonMaker : public edm::EDAnalyzer
 {
