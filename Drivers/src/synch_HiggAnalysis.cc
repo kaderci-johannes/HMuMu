@@ -485,9 +485,9 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	// Assign globals
-	__inputfilename = vm["input"].as<vector<string>>();
+	__inputfilename = vm["input"].as<std::string>();
 	__isMC = vm["isMC"].as<bool>();
-	__outputfilename = vm["output"].as<vector<string>>();
+	__outputfilename = vm["output"].as<std::string>();
 	printCuts();
 
 	//	start processing
