@@ -472,7 +472,7 @@ int main(int argc, char **argv)
 	/*
 	 *	Pare Options
 	 */
-	po::options_description desc("Allowed Program Options");
+	po::options_description desc;
 	desc.add_options()("help", "produce help messages")("input", po::value<std::string>(), "a file specifying all the ROOT files to process")("isMC", po::value<bool>(), "type of data: DATA vs MC")("output", po::value<std::string>(), "output file name");
 
 	po::variables_map vm;
