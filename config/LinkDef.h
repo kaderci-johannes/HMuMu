@@ -16,30 +16,11 @@
 #pragma link C++ class analysis::core::Vertex+;
 #pragma link C++ class analysis::core::Event+;
 #pragma link C++ class analysis::core::EventAuxiliary+;
-#pragma link C++ class analysis::core::QIE8Frame+;
-#pragma link C++ class analysis::core::QIE10Frame+;
 #pragma link C++ class analysis::dimuon::MetaHiggs+;
 #pragma link C++ class analysis::processing::Streamer+;
 #pragma link C++ class analysis::dimuon::Auxiliary+;
 
 #pragma link C++ class std::bitset<256>+;
-
-#pragma link C++ class analysis::core::R4JObject+;
-#pragma link C++ class analysis::core::R4JBase+;
-#pragma link C++ class analysis::core::AAA+;
-#pragma link C++ class analysis::core::CCC+;
-#pragma link C++ class analysis::core::DDD+;
-#pragma link C++ class analysis::core::BBB+;
-#pragma link C++ class analysis::core::R4JSomeObject+;
-#pragma link C++ class analysis::core::SimpleComposite+;
-#pragma link C++ class analysis::core::NestedComposite+;
-#pragma link C++ class analysis::core::AnotherNestedComposite+;
-
-#pragma link C++ class std::vector<analysis::core::AnotherNestedComposite>+;
-#pragma link C++ class std::vector<analysis::core::AAA>+;
-#pragma link C++ class std::map<int, analysis::core::AAA>+;
-#pragma link C++ class std::vector<analysis::core::BBB>+;
-
 #pragma link C++ class std::map<int, bool>+;
 
 #pragma link C++ class std::vector<analysis::core::Object>+;
@@ -51,9 +32,6 @@
 #pragma link C++ class std::vector<analysis::core::Jet>+;
 #pragma link C++ class std::vector<analysis::core::GenParticle>+;
 #pragma link C++ class std::vector<analysis::core::Vertex>+;
-#pragma link C++ class std::vector<analysis::core::QIE8Frame>+;
-#pragma link C++ class std::vector<analysis::core::QIE10Frame>+;
-
 
 #pragma link C++ class std::vector<std::vector<int> >+;
 #pragma link C++ class std::vector<std::vector<std::vector<int> > >+;
@@ -99,14 +77,6 @@
 #pragma link C++ class std::multimap<int, std::multimap<int, int> >+;
 #pragma link C++ class std::multimap<int, std::multimap<int, float> >+;
 #pragma link C++ class std::multimap<int, std::multimap<int, double> >+;
-
-/*#pragma link C++ class std::array<int, 10>+;
-#pragma link C++ class std::array<float, 10>+;
-#pragma link C++ class std::array<double, 10>+;
-#pragma link C++ class std::array<std::array<int, 10>, 10>+;
-#pragma link C++ class std::array<std::array<float, 10>, 10>+;
-#pragma link C++ class std::array<std::array<double, 10>, 10>+;
-*/
 
 #pragma link C++ struct std::pair<int, int>+;
 #pragma link C++ class std::string+;
