@@ -18,7 +18,7 @@
 // #include "LumiReweightingStandAlone.h"
 // #include "HistogramSets.h"
 
-#include "boost/program_options.hpp"
+// #include "boost/program_options.hpp"
 #include <signal.h>
 #include <fstream>
 
@@ -99,7 +99,7 @@ std::vector<int> vVBFTight, vggFTight, vVBFLoose, v01JetsTight, v01JetsLoose,
 
 std::string const NTUPLEMAKER_NAME = "ntuplemaker_H2DiMuonMaker";
 
-namespace po = boost::program_options;
+// namespace po = boost::program_options;
 using namespace analysis::core;
 // using namespace analysis::dimuon;
 using namespace analysis::processing;
@@ -472,25 +472,32 @@ int main(int argc, char **argv)
 	/*
 	 *	Pare Options
 	 */
-	po::options_description desc;
-	desc.add_options()("help", "produce help messages")("input", po::value<std::string>(), "a file specifying all the ROOT files to process")("isMC", po::value<bool>(), "type of data: DATA vs MC")("output", po::value<std::string>(), "output file name");
+	// po::options_description desc;
+	// desc.add_options()("help", "produce help messages")
+	// ("input", po::value<std::string>(), "a file specifying all the ROOT files to process")
+	// ("isMC", po::value<bool>(), "type of data: DATA vs MC")
+	// ("output", po::value<std::string>(), "output file name");
 
-	po::variables_map vm;
-	po::store(po::parse_command_line(argc, argv, desc), vm);
-	po::notify(vm);
+	// po::variables_map vm;
+	// po::store(po::parse_command_line(argc, argv, desc), vm);
+	// po::notify(vm);
 
-	if (vm.count("help") || argc < 2)
-	{
-		std::cout << desc << std::endl;
-		return 1;
-	}
+	// if (vm.count("help") || argc < 2)
+	// {
+	// std::cout << desc << std::endl;
+	// return 1;
+	// }
 	// Assign globals
-	__inputfilename = vm["input"].as<std::string>();
-	__isMC = vm["isMC"].as<bool>();
-	__outputfilename = vm["output"].as<std::string>();
+	if (argc > 2)
+	{
+		__inputfilename = argv[1];
+		__outputfilename = argv[2];
+	}
+	else
+	{
+		exit();
+	}
 	printCuts();
-
-	//	start processing
 	process();
 	return 0;
 }

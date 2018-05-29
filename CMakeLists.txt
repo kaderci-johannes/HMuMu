@@ -14,7 +14,7 @@ message (BUILD DIRECTORY = ${PROJECT_BINARY_DIR})
 #
 #	Compiler flags and some definitions
 #
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
 # set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
 # set(CMAKE_CXX_FLAGS "-lboost_program_options")
 add_definitions(-DSTANDALONE=1)
@@ -40,10 +40,10 @@ option (STANDALONE
 #
 #	Find BOOST
 #
-find_package(Boost COMPONENTS program_options system REQUIRED )
-include_directories("${Boost_INCLUDE_DIRS}")
-set (EXTRA_LIBS ${EXTRA_LIBS} ${Boost_LIBRARIES})
-add_definitions(${})
+# find_package(Boost COMPONENTS program_options system REQUIRED )
+# include_directories("${Boost_INCLUDE_DIRS}")
+# set (EXTRA_LIBS ${EXTRA_LIBS} ${Boost_LIBRARIES})
+# add_definitions(${})
 
 #	
 #	find and add ROOT
