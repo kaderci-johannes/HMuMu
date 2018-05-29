@@ -495,7 +495,7 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		exit();
+		exit(EXIT_FAILURE);
 	}
 	printCuts();
 	process();
