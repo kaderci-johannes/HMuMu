@@ -107,7 +107,7 @@ for s in samples:
         if 'psetName' in line: 
             line = line.replace('cfgname', cfgname)
         if s.isData and 'FileBased' in line: 
-            line = line.replace('FileBased', 'LumiBased')
+            line = line.replace('FileBased', 'Automatic')
         if s.isData and 'config.Data.lumiMask' in line: 
             line = line.replace('#', '')
             line = line.replace('JSONFILE', "json/"+s.json)
