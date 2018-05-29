@@ -14,7 +14,7 @@ message (BUILD DIRECTORY = ${PROJECT_BINARY_DIR})
 #
 #	Compiler flags and some definitions
 #
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 # set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
 # set(CMAKE_CXX_FLAGS "-lboost_program_options")
 add_definitions(-DSTANDALONE=1)
