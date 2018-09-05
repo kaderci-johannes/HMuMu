@@ -48,11 +48,13 @@ class EventAuxiliary : public Object
 		_nPU = 0;
 		_genWeight = 0;
 		_hasHLTFired.clear();
+		_metFilters.clear();
 	}
 
 	int _nPU;
 	int _genWeight;
 	std::vector<bool> _hasHLTFired;
+	std::map<string, int> _metFilters;
 
 #ifdef STANDALONE
 	ClassDef(EventAuxiliary, 1)
@@ -66,7 +68,7 @@ typedef std::vector<analysis::core::Event> Events;
 
 #ifdef STANDALONE
 ClassImpUnique(analysis::core::Event, Event)
-	ClassImpUnique(analysis::core::EventAuxiliary, EventAuxiliary)
+ClassImpUnique(analysis::core::EventAuxiliary, EventAuxiliary)
 #endif
 
 #endif
