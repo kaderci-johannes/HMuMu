@@ -35,6 +35,7 @@ class Jet : public Object
 		_hfhf = 0;
 		_hfef = 0;
 		_cm = 0;
+		_nm = 0;
 		_chm = 0;
 		_nhm = 0;
 		_cem = 0;
@@ -46,7 +47,7 @@ class Jet : public Object
 		_jecu = 0;
 		_btag.clear();
 		_puid = 0;
-
+		_fullid = 0;
 		_uncAK5 = 0;
 		_uncAK4 = 0;
 		_pt_upAK5 = 0;
@@ -81,6 +82,7 @@ class Jet : public Object
 	float _hfhf;
 	float _hfef;
 	float _cm;
+	float _nm;
 	float _chm;
 	float _nhm;
 	float _cem;
@@ -92,6 +94,7 @@ class Jet : public Object
 	float _jecu;
 	std::vector<float> _btag;
 	float _puid;
+	int _fullid;
 
 	double _uncAK5;
 	double _uncAK4;
