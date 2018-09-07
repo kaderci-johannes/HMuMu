@@ -33,7 +33,7 @@ mcdatasets = {
 jsonfiles = {
     #   latest
     "2017_Synch" : DS.JsonFile(
-        filename = "Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt",
+        filename = "Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.txt",
         intlumi =  41368
         ),
     "run297113" : DS.JsonFile(
