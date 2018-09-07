@@ -51,6 +51,7 @@ class MetaHiggs : public analysis::core::Object
 		_triggerNames.clear();
 		_btagNames.clear();
 		_tauIDNames.clear();
+		_metFilterNames.clear();
 		_nMuons = 0;
 		_checkTrigger = 0;
 
@@ -82,6 +83,7 @@ class MetaHiggs : public analysis::core::Object
 	std::vector<std::string> _triggerNames;
 	std::vector<std::string> _btagNames;
 	std::vector<std::string> _tauIDNames;
+	std::vector<std::string> _metFilterNames;
 	uint32_t _nMuons;
 	bool _checkTrigger;
 
