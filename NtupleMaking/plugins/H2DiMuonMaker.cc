@@ -20,7 +20,8 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 															_eleMediumToken(ps.getUntrackedParameter<edm::InputTag>("tagElectronCutBasedId_medium")),
 															_eleTightToken(ps.getUntrackedParameter<edm::InputTag>("tagElectronCutBasedId_tight")),
 															_convToken(ps.getUntrackedParameter<edm::InputTag>("tagConversions")),
-															_bsToken(ps.getUntrackedParameter<edm::InputTag>("tagBS"))
+							    _bsToken(ps.getUntrackedParameter<edm::InputTag>("tagBS")),
+							    _metFilterToken(ps.getUntrackedParameter<edm::InputTag>("tagMetFilterResults"))
 {
 	//
 	//	init the Trees and create branches
@@ -54,6 +55,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 	consumes<edm::ValueMap<bool>>(_eleMediumToken);
 	consumes<edm::ValueMap<bool>>(_eleTightToken);
 	consumes<reco::BeamSpot>(_bsToken);
+	consumes<edm::TriggerResults>(_metFilterToken);
 	_genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
 
 	mayConsume<reco::ConversionCollection>(_convToken);
@@ -70,9 +72,10 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 	_meta._maxeta = ps.getUntrackedParameter<double>("maxeta");
 	_meta._btagNames = ps.getUntrackedParameter<std::vector<std::string>>("btagNames");
 	_meta._tauIDNames = ps.getUntrackedParameter<std::vector<std::string>>("tauIDNames");
+	_meta._metFilterNames = ps.getUntrackedParameter<std::vector<std::string>>("metFilterNames");
 	_useElectrons = ps.getUntrackedParameter<bool>("useElectrons");
 	_useTaus = ps.getUntrackedParameter<bool>("useTaus");
-
+	
 	//  additional branching based on flags
 	if (_useElectrons)
 	{
@@ -230,6 +233,29 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 		if (!passHLT(e))
 			return;
 
+	// MetFilterResults
+	e.getByLabel(_metFilterToken, _hMetFilterResults);
+	if (!_hMetFilterResults.isValid())
+	  {
+	    std::cout << " met Filter Results Product not found" << std::endl;
+	  }
+	else
+	  {
+	    edm::TriggerNames const& metNames = e.triggerNames(*_hMetFilterResults);
+
+	    for (unsigned int i = 0, n = _hMetFilterResults->size(); i < n; ++i)
+	      {
+		std::string filterName = metNames.triggerName(i);
+		for (std::vector<std::string>::const_iterator dit=_meta._metFilterNames.begin(); dit!=_meta._metFilterNames.end(); ++dit)
+		  if(*dit == filterName)
+		    {
+		      _eaux._metFilterBits[filterName] = _hMetFilterResults->accept(i);
+		      _eaux._passedMetFilters = _eaux._passedMetFilters && _hMetFilterResults->accept(i);
+		    }
+	      }
+	  }
+
+
 	//
 	//	Event Info
 	//
@@ -331,6 +357,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 			myjet._hfef = jet.HFEMEnergyFraction();
 
 			myjet._cm = jet.chargedMultiplicity();
+			myjet._nm = jet.neutralMultiplicity();
 			myjet._chm = jet.chargedHadronMultiplicity();
 			myjet._nhm = jet.neutralHadronMultiplicity();
 			myjet._cem = jet.electronMultiplicity();
@@ -342,6 +369,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 			myjet._jecu = -1.;
 			myjet._jecf = jet.jecFactor("Uncorrected");
 			myjet._puid = jet.userFloat("pileupJetId:fullDiscriminant");
+			myjet._fullid = jet.userInt("pileupJetId:fullId");
 
 			//  b-tagging information
 			float btagDisc = 0.0;
@@ -654,8 +682,8 @@ bool H2DiMuonMaker::passHLT(edm::Event const &e)
 	for (uint32_t i = 0; i < _hTriggerResults->size(); i++)
 	{
 		std::string triggerName = triggerNames.triggerName(i);
-		string tstripped = boost::regex_replace(triggerName, re, "",
-												boost::match_default | boost::format_sed);
+		std::string tstripped = boost::regex_replace(triggerName, re, "",
+		boost::match_default | boost::format_sed);
 		for (std::vector<std::string>::const_iterator dit =
 				 _meta._triggerNames.begin();
 			 dit != _meta._triggerNames.end(); ++dit)

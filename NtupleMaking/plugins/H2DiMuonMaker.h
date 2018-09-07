@@ -68,14 +68,12 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 	edm::InputTag _eleTightToken;
 	edm::InputTag _convToken;
 	edm::InputTag _bsToken;
+	edm::InputTag _metFilterToken;
 
-	edm::EDGetTokenT<GenEventInfoProduct> _genInfoToken;
+	edm::EDGetTokenT<GenEventInfoProduct> _genInfoToken;	
 	edm::Handle<edm::TriggerResults> _hTriggerResults;
 	edm::Handle<pat::TriggerObjectStandAloneCollection> _hTriggerObjects;
-	// edm::ESHandle<JetCorrectorParametersCollection> m_hJetCParametersAK5,
-	// m_hJetCParametersAK4;
-	// JetCorrectionUncertainty *m_jecuAK5;
-	// JetCorrectionUncertainty *m_jecuAK4;
+	edm::Handle<edm::TriggerResults> _hMetFilterResults;
 	bool _useElectrons;
 	bool _useTaus;
 };
