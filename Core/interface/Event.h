@@ -48,13 +48,15 @@ class EventAuxiliary : public Object
 		_nPU = 0;
 		_genWeight = 0;
 		_hasHLTFired.clear();
-		_metFilters.clear();
+		_metFilterBits.clear();
+		_passedMetFilters = true;
 	}
 
 	int _nPU;
 	int _genWeight;
+	bool _passedMetFilters;
 	std::vector<bool> _hasHLTFired;
-	std::map<string, int> _metFilters;
+	std::map<string, int> _metFilterBits;
 
 #ifdef STANDALONE
 	ClassDef(EventAuxiliary, 1)
