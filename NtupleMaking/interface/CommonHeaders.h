@@ -107,6 +107,7 @@
 // PU Info
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
+#include "DataFormats/JetReco/interface/PileupJetIdentifier.h"
 
 // PAT objects
 #include "DataFormats/PatCandidates/interface/Muon.h"
