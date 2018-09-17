@@ -28,6 +28,7 @@ class GenJet : public Object
 		_eta = 0;
 		_phi = 0;
 		_mass = 0;
+		_charge = 0;
 	}
 
 	float _px;
@@ -37,7 +38,8 @@ class GenJet : public Object
 	float _eta;
 	float _phi;
 	float _mass;
-
+	float _charge;
+	
 #ifdef STANDALONE
 	ClassDef(GenJet, 1)
 #endif
