@@ -127,7 +127,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 	//
 	//	For MC
 	//
-	if (!_meta.isMC)
+	if (!_meta._isMC)
 		_meta._sumEventWeights += 1;
 	else
 	{
@@ -150,7 +150,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 		}
 		else
 		{
-			for (unsigned i = 0; i < hLHE->hepeup().NUP; i++)
+			for (int i = 0; i < hLHE->hepeup().NUP; i++)
 			{
 				int pdgId = abs(hLHE->hepeup().IDUP[i]);
 				int status = hLHE->hepeup().ISTUP[i];
