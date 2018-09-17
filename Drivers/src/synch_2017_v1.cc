@@ -272,7 +272,10 @@ void process()
 	//	out ...
 	// TFile *outroot = new TFile(__outputfilename.c_str(), "recreate");
 
-	// Streamer streamer(__inputfilename, "Events");
+	TH1D *hEventWeights = new TH1D("eventWeights", "eventWeights", 1, 0, 1);
+	long long int numEventsWeighted = sampleinfo(__inputfilename);
+	hEventWeights->Fill(0.5, numEventsWeighted);
+
 	Streamer streamer(__inputfilename, NTUPLEMAKER_NAME + "/Events");
 	streamer.chainup();
 
