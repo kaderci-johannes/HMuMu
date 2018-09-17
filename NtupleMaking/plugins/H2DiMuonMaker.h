@@ -48,7 +48,7 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 	analysis::core::Vertices _vertices;
 	analysis::core::Event _event;
 	analysis::core::EventAuxiliary _eaux;
-	// analysis::dimuon::Auxiliary m_aux;
+	analysis::dimuon::Auxiliary m_aux;
 	analysis::core::MET _met;
 	analysis::core::GenJets _genjets;
 
@@ -69,7 +69,8 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 	edm::InputTag _convToken;
 	edm::InputTag _bsToken;
 	edm::InputTag _metFilterToken;
-
+	edm::InputTag _lheToken;
+	
 	edm::EDGetTokenT<GenEventInfoProduct> _genInfoToken;	
 	edm::Handle<edm::TriggerResults> _hTriggerResults;
 	edm::Handle<pat::TriggerObjectStandAloneCollection> _hTriggerObjects;

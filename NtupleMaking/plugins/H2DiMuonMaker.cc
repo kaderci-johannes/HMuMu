@@ -20,8 +20,9 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 															_eleMediumToken(ps.getUntrackedParameter<edm::InputTag>("tagElectronCutBasedId_medium")),
 															_eleTightToken(ps.getUntrackedParameter<edm::InputTag>("tagElectronCutBasedId_tight")),
 															_convToken(ps.getUntrackedParameter<edm::InputTag>("tagConversions")),
-							    _bsToken(ps.getUntrackedParameter<edm::InputTag>("tagBS")),
-							    _metFilterToken(ps.getUntrackedParameter<edm::InputTag>("tagMetFilterResults"))
+															_bsToken(ps.getUntrackedParameter<edm::InputTag>("tagBS")),
+															_metFilterToken(ps.getUntrackedParameter<edm::InputTag>("tagMetFilterResults")),
+															_lheToken(ps.getUntrackedParameter<edm::InputTag>("tagLHE"))
 {
 	//
 	//	init the Trees and create branches
@@ -39,7 +40,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 	_tEvents->Branch("EventAuxiliary", (EventAuxiliary *)&_eaux);
 	_tEvents->Branch("MET", (MET *)&_met);
 	_tMeta->Branch("Meta", (MetaHiggs *)&_meta);
-	// _tEvents->Branch("Auxiliary", &m_aux);
+	_tEvents->Branch("Auxiliary", &m_aux);
 
 	consumes<pat::MuonCollection>(_muonToken);
 	consumes<edm::View<pat::Electron>>(_eleToken);
@@ -56,7 +57,10 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 	consumes<edm::ValueMap<bool>>(_eleTightToken);
 	consumes<reco::BeamSpot>(_bsToken);
 	consumes<edm::TriggerResults>(_metFilterToken);
+	consumes<LHEEventProduct>(_lheToken);
+
 	_genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
+	_lheToken = consumes<LHEEventProduct>(edm::InputTag("externalLHEProducer"));
 
 	mayConsume<reco::ConversionCollection>(_convToken);
 
@@ -75,7 +79,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 	_meta._metFilterNames = ps.getUntrackedParameter<std::vector<std::string>>("metFilterNames");
 	_useElectrons = ps.getUntrackedParameter<bool>("useElectrons");
 	_useTaus = ps.getUntrackedParameter<bool>("useTaus");
-	
+
 	//  additional branching based on flags
 	if (_useElectrons)
 	{
@@ -120,17 +124,14 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 	_electrons.clear();
 	_taus.clear();
 	_genjets.clear();
-
-	// m_aux.reset();
-
-	//
-	// get the Jet Enetry Corrections
-	//
+	m_aux.reset();
 
 	//
 	//	For MC
 	//
-	if (_meta._isMC)
+	if (!_meta.isMC)
+		_meta._sumEventWeights += 1;
+	else
 	{
 		//
 		//	MC Weights
@@ -141,34 +142,40 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 		_meta._sumEventWeights += _eaux._genWeight;
 
 		//
-		// LHE Event Product - to get the total - HT LOOK INTO THIS      Mo 5/2018
+		// LHE Event Product - to get the total - HT 
 		//
-		// edm::Handle<LHEEventProduct> hLHE;
-		// e.getByLabel(m_tokLHE, hLHE);
-		// for (unsigned i=0; i<(unsigned int)hLHE->hepeup().NUP; i++)
-		// {
-		//     unsigned int pdgId = abs(hLHE->hepeup().IDUP[i]);
-		//     int status = hLHE->hepeup().ISTUP[i];
-		//     int mother1_idx = hLHE->hepeup().MOTHUP[i].first;
-		//     int mother2_idx = hLHE->hepeup().MOTHUP[i].second;
-		//     int mom1id = mother1_idx==0 ? 0 : abs(hLHE->hepeup().IDUP[mother1_idx-1]);
-		//     int mom2id = mother2_idx==0 ? 0 : abs(hLHE->hepeup().IDUP[mother2_idx-1]);
-		//     double px = (hLHE->hepeup().PUP[i])[0];
-		//     double py = (hLHE->hepeup().PUP[i])[1];
-		//     double pt = sqrt(px*px + py*py);
+		edm::Handle<LHEEventProduct> hLHE;
+		e.getByToken(_lheToken, hLHE);
+		if (!hLHE.isValid())
+		{
+			std::cout << " LHE Event Product is not found" << std::endl;
+		}
+		else
+		{
+			for (unsigned i = 0; i < hLHE->hepeup().NUP; i++)
+			{
+				int pdgId = abs(hLHE->hepeup().IDUP[i]);
+				int status = hLHE->hepeup().ISTUP[i];
+				int mother1_idx = hLHE->hepeup().MOTHUP[i].first;
+				int mother2_idx = hLHE->hepeup().MOTHUP[i].second;
+				int mom1id = mother1_idx == 0 ? 0 : abs(hLHE->hepeup().IDUP[mother1_idx - 1]);
+				int mom2id = mother2_idx == 0 ? 0 : abs(hLHE->hepeup().IDUP[mother2_idx - 1]);
+				double px = (hLHE->hepeup().PUP[i])[0];
+				double py = (hLHE->hepeup().PUP[i])[1];
+				double pt = sqrt(px * px + py * py);
 
-		//     // select properly
-		//     if (status==1 && (pdgId<6 || pdgId==21) && mom1id!=6 && mom2id!=6 &&
-		//         mom1id!=24 && mom2id!=24 && mom1id!=23 && mom2id!=23 && mom1id!=25 &&
-		//         mom2id!=25)
-		//     {
-		//         m_aux.m_numHT++;
-		//         m_aux.m_ptSum += pt;
-		//     }
-		// }
-
+				// select properly
+				if (status == 1 && (pdgId < 6 || pdgId == 21) && mom1id != 6 && mom2id != 6 &&
+					abs(mom1id - 24) > 1 && abs(mom2id - 24) > 1)
+				{
+					m_aux.m_numHT++;
+					m_aux.m_ptSum += pt;
+				}
+			}
+		}
 		//
-		//	MC Truth -- look into this
+		//	PILEUP
+		//	look into this - Mo 9/17/18
 		//
 		// edm::Handle<std::vector< PileupSummaryInfo > > hPUInfo;
 		// e.getByLabel(_tokPU, hPUInfo);
@@ -197,8 +204,6 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 			int n = 0;
 			for (uint32_t i = 0; i < sortedGenJets.size(); i++)
 			{
-				if (n == 10)
-					break;
 				analysis::core::GenJet genjet;
 				genjet._px = sortedGenJets[i].px();
 				genjet._py = sortedGenJets[i].py();
@@ -207,6 +212,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 				genjet._eta = sortedGenJets[i].eta();
 				genjet._phi = sortedGenJets[i].phi();
 				genjet._mass = sortedGenJets[i].mass();
+				genjet._charge = sortedGenJets[i].charge();
 				_genjets.push_back(genjet);
 				n++;
 			}
@@ -236,25 +242,24 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 	// MetFilterResults
 	e.getByLabel(_metFilterToken, _hMetFilterResults);
 	if (!_hMetFilterResults.isValid())
-	  {
-	    std::cout << " met Filter Results Product not found" << std::endl;
-	  }
+	{
+		std::cout << " met Filter Results Product not found" << std::endl;
+	}
 	else
-	  {
-	    edm::TriggerNames const& metNames = e.triggerNames(*_hMetFilterResults);
+	{
+		edm::TriggerNames const &metNames = e.triggerNames(*_hMetFilterResults);
 
-	    for (unsigned int i = 0, n = _hMetFilterResults->size(); i < n; ++i)
-	      {
-		std::string filterName = metNames.triggerName(i);
-		for (std::vector<std::string>::const_iterator dit=_meta._metFilterNames.begin(); dit!=_meta._metFilterNames.end(); ++dit)
-		  if(*dit == filterName)
-		    {
-		      _eaux._metFilterBits[filterName] = _hMetFilterResults->accept(i);
-		      _eaux._passedMetFilters = _eaux._passedMetFilters && _hMetFilterResults->accept(i);
-		    }
-	      }
-	  }
-
+		for (unsigned int i = 0, n = _hMetFilterResults->size(); i < n; ++i)
+		{
+			std::string filterName = metNames.triggerName(i);
+			for (std::vector<std::string>::const_iterator dit = _meta._metFilterNames.begin(); dit != _meta._metFilterNames.end(); ++dit)
+				if (*dit == filterName)
+				{
+					_eaux._metFilterBits[filterName] = _hMetFilterResults->accept(i);
+					_eaux._passedMetFilters = _eaux._passedMetFilters && _hMetFilterResults->accept(i);
+				}
+		}
+	}
 
 	//
 	//	Event Info
@@ -683,7 +688,7 @@ bool H2DiMuonMaker::passHLT(edm::Event const &e)
 	{
 		std::string triggerName = triggerNames.triggerName(i);
 		std::string tstripped = boost::regex_replace(triggerName, re, "",
-		boost::match_default | boost::format_sed);
+													 boost::match_default | boost::format_sed);
 		for (std::vector<std::string>::const_iterator dit =
 				 _meta._triggerNames.begin();
 			 dit != _meta._triggerNames.end(); ++dit)
