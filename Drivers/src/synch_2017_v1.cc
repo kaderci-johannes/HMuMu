@@ -166,7 +166,7 @@ bool passTightJetID(Jet const &j)
 }
 
 bool passLoosePUID(Jet const &j)
-{	
+{
 	return (j._fullid & (1 << 2));
 }
 void categorize(ofstream &out, Jets *jets, Muon const &mu1, Muon const &mu2,
@@ -234,17 +234,39 @@ void categorize(ofstream &out, Jets *jets, Muon const &mu1, Muon const &mu2,
 		subeta = p4sub.Eta();
 		subphi = p4sub.Phi();
 		mjj = dijet.M();
-			
 	}
 	out << leadpt << " * " << leadeta << " * " << leadphi << " * ";
-		out << subpt << " * " << subeta << " * " << subphi << " * ";
-		out << mjj << " * ";
+	out << subpt << " * " << subeta << " * " << subphi << " * ";
+	out << mjj << " * ";
 	if (_btagJets > 0)
 		__nContainBJets++;
 	out << _btagJets << " * " << std::endl;
 	return;
 }
 
+float sampleinfo(std::string const &inputFiles)
+{
+	Streamer samples(inputFiles, NTUPLEMAKER_NAME + "/Meta");
+	samples.chainup();
+
+	using namespace analysis::dimuon;
+	MetaHiggs *meta = NULL;
+
+	samples._chain->SetBranchAddress("Meta", &meta);
+	long long int numEvents = 0;
+	long long int numEventsWeighted = 0;
+	for (int i = 0; i < samples._chain->GetEntries(); i++)
+	{
+		samples._chain->GetEntry(i);
+		numEvents += meta->_nEventsProcessed;
+		numEventsWeighted += meta->_sumEventWeights;
+	}
+	std::cout
+		<< "# events processed total = " << numEvents << std::endl
+		<< "# events weighted total = " << numEventsWeighted << std::endl;
+
+	return numEventsWeighted;
+}
 void process()
 {
 	//	out ...
