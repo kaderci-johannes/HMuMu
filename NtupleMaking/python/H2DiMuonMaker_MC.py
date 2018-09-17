@@ -20,7 +20,6 @@ ntuplemaker_H2DiMuonMaker = cms.EDAnalyzer(
     tagJets=cms.untracked.InputTag("updatedPatJetsUpdatedJEC"),
     tagGenJets=cms.untracked.InputTag("slimmedGenJets"),
     tagConversions=cms.untracked.InputTag("reducedEgamma:reducedConversions"),
-    tagLHE=cms.untracked.InputTag("externalLHEProducer"),
 
     # electron cut based id
     tagElectronCutBasedId_veto=cms.untracked.InputTag(

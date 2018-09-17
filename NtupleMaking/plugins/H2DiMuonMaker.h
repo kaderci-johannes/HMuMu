@@ -69,8 +69,8 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 	edm::InputTag _convToken;
 	edm::InputTag _bsToken;
 	edm::InputTag _metFilterToken;
-	edm::InputTag _lheToken;
 	
+	edm::EDGetTokenT<LHEEventProduct> _lheToken;
 	edm::EDGetTokenT<GenEventInfoProduct> _genInfoToken;	
 	edm::Handle<edm::TriggerResults> _hTriggerResults;
 	edm::Handle<pat::TriggerObjectStandAloneCollection> _hTriggerObjects;

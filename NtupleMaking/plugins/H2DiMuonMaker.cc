@@ -21,8 +21,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 															_eleTightToken(ps.getUntrackedParameter<edm::InputTag>("tagElectronCutBasedId_tight")),
 															_convToken(ps.getUntrackedParameter<edm::InputTag>("tagConversions")),
 															_bsToken(ps.getUntrackedParameter<edm::InputTag>("tagBS")),
-															_metFilterToken(ps.getUntrackedParameter<edm::InputTag>("tagMetFilterResults")),
-															_lheToken(ps.getUntrackedParameter<edm::InputTag>("tagLHE"))
+															_metFilterToken(ps.getUntrackedParameter<edm::InputTag>("tagMetFilterResults"))
 {
 	//
 	//	init the Trees and create branches
@@ -57,7 +56,6 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 	consumes<edm::ValueMap<bool>>(_eleTightToken);
 	consumes<reco::BeamSpot>(_bsToken);
 	consumes<edm::TriggerResults>(_metFilterToken);
-	consumes<LHEEventProduct>(_lheToken);
 
 	_genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
 	_lheToken = consumes<LHEEventProduct>(edm::InputTag("externalLHEProducer"));
