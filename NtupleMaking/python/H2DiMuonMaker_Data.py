@@ -1,7 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 pt = 27
 
-#   to switch between modules
 name = "H2DiMuonMaker"
 
 ntuplemaker_H2DiMuonMaker = cms.EDAnalyzer(
@@ -16,12 +15,12 @@ ntuplemaker_H2DiMuonMaker = cms.EDAnalyzer(
     # tagPackedGenParticles=cms.untracked.InputTag("packedGenParticles"),
     tagTriggerResults=cms.untracked.InputTag("TriggerResults", "", "HLT"),
     tagTriggerObjects=cms.untracked.InputTag("slimmedPatTrigger"),
-    tagMetFilterResults=cms.untracked.InputTag("TriggerResults","","RECO"),
+    tagMetFilterResults=cms.untracked.InputTag("TriggerResults", "", "RECO"),
     tagMET=cms.untracked.InputTag("slimmedMETs"),
     tagJets=cms.untracked.InputTag("updatedPatJetsUpdatedJEC"),
-#    tagJets=cms.untracked.InputTag("slimmedJets"),
     tagGenJets=cms.untracked.InputTag("slimmedGenJets"),
     tagConversions=cms.untracked.InputTag("reducedEgamma:reducedConversions"),
+    tagLHE=cms.untracked.InputTag("externalLHEProducer"),
 
     # electron cut based id
     tagElectronCutBasedId_veto=cms.untracked.InputTag(
@@ -38,15 +37,20 @@ ntuplemaker_H2DiMuonMaker = cms.EDAnalyzer(
     #
     checkTrigger=cms.untracked.bool(True),
     isMC=cms.untracked.bool(False),
-    triggerNames=cms.untracked.vstring("HLT_IsoMu%d" % pt, "HLT_IsoTkMu%d" % pt),
-    metFilterNames=cms.untracked.vstring(["Flag_goodVertices","Flag_globalSuperTightHalo2016Filter","Flag_HBHENoiseFilter","Flag_HBHENoiseIsoFilter","Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_BadPFMuonFilter","Flag_BadChargedCandidateFilter","Flag_eeBadScFilter","Flag_ecalBadCalibFilter"]),
+    triggerNames=cms.untracked.vstring(
+        "HLT_IsoMu%d" % pt, "HLT_IsoTkMu%d" % pt),
+    metFilterNames=cms.untracked.vstring(["Flag_goodVertices", "Flag_globalSuperTightHalo2016Filter", "Flag_HBHENoiseFilter", "Flag_HBHENoiseIsoFilter",
+                                          "Flag_EcalDeadCellTriggerPrimitiveFilter", "Flag_BadPFMuonFilter", "Flag_BadChargedCandidateFilter"]),
+    #   "Flag_eeBadScFilter"]), NOT SUGGESTED
+
     nMuons=cms.untracked.int32(2),
     isGlobalMuon=cms.untracked.bool(True),
     isStandAloneMuon=cms.untracked.bool(False),
     isTrackerMuon=cms.untracked.bool(True),
     minPt=cms.untracked.double(20),
     maxeta=cms.untracked.double(2.4),
-    btagNames=cms.untracked.vstring(["pfDeepCSVJetTags:probb", "pfDeepCSVJetTags:probbb"]),
+    btagNames=cms.untracked.vstring(
+        ["pfDeepCSVJetTags:probb", "pfDeepCSVJetTags:probbb"]),
     tauIDNames=cms.untracked.vstring([""]),
 
     #
