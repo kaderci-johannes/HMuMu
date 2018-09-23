@@ -17,6 +17,7 @@
 #include "TLorentzVector.h"
 #include <signal.h>
 #include <fstream>
+#include <iomanip>
 
 std::string __inputfilename;
 std::string __outputfilename;
@@ -173,9 +174,9 @@ void categorize(ofstream &out, Jets *jets, Muon const &mu1, Muon const &mu2,
 				MET const &met, Event const &event)
 {
 
-	out << " * " << event._run << " * " << event._lumi << " * " << event._event << " * ";
-	out << mu1._pt << " * " << mu1._eta << " * " << mu1._phi << " * ";
-	out << mu2._pt << " * " << mu2._eta << " * " << mu2._phi << " * ";
+	out << event._run << "\t" << event._lumi << "\t" << event._event << "\t";
+	out << mu1._pt << "\t" << mu1._eta << "\t" << mu1._phi << "\t";
+	out << mu2._pt << "\t" << mu2._eta << "\t" << mu2._phi << "\t";
 
 	TLorentzVector p4m1, p4m2;
 	p4m1.SetPtEtaPhiM(mu1._pt, mu1._eta,
@@ -184,7 +185,7 @@ void categorize(ofstream &out, Jets *jets, Muon const &mu1, Muon const &mu2,
 					  mu2._phi, PDG_MASS_Mu);
 	TLorentzVector p4dimuon = p4m1 + p4m2;
 
-	out << p4dimuon.M() << " * ";
+	out << p4dimuon.M() << "\t";
 
 	// jets selection
 	std::vector<TLorentzVector> p4jets;
@@ -206,7 +207,7 @@ void categorize(ofstream &out, Jets *jets, Muon const &mu1, Muon const &mu2,
 		}
 	}
 
-	out << p4jets.size() << " * ";
+	out << p4jets.size() << "\t";
 
 	float leadpt = 0;
 	float leadeta = 0;
@@ -235,12 +236,12 @@ void categorize(ofstream &out, Jets *jets, Muon const &mu1, Muon const &mu2,
 		subphi = p4sub.Phi();
 		mjj = dijet.M();
 	}
-	out << leadpt << " * " << leadeta << " * " << leadphi << " * ";
-	out << subpt << " * " << subeta << " * " << subphi << " * ";
-	out << mjj << " * ";
+	out << leadpt << "\t" << leadeta << "\t" << leadphi << "\t";
+	out << subpt << "\t" << subeta << "\t" << subphi << "\t";
+	out << mjj << "\t";
 	if (_btagJets > 0)
 		__nContainBJets++;
-	out << _btagJets << " * " << std::endl;
+	out << _btagJets << "\n";
 	return;
 }
 
@@ -298,7 +299,7 @@ void process()
 
 	ofstream eventData;
 	eventData.open("synch_data_eventDump.txt");
-	eventData << "* run * lumi * event * m1pt * m1eta * m1phi * m2pt * m2eta * m2phi * mass * njets * j1pt * j1eta * j1phi * j2pt * j2eta * j2phi * mjj * nbjets *" << std::endl;
+	eventData << "run\tlumi\tevent\tm1pt\tm1eta\tm1phi\tm2pt\tm2eta\tm2phi\tmass\tnjets\tj1pt\tj1eta\tj1phi\tj2pt\tj2eta\tj2phi\tmjj\tnbjets\n";
 
 	//	Main Loop
 	uint32_t numEntries = streamer._chain->GetEntries();
