@@ -16,6 +16,7 @@
 #include "HMuMu/Core/interface/Vertex.h"
 #include "HMuMu/Core/interface/Electron.h"
 #include "HMuMu/Core/interface/Tau.h"
+#include "HMuMu/NtupleMaking/Roccor/RoccoR.cc"
 
 class H2DiMuonMaker : public edm::EDAnalyzer
 {
@@ -31,8 +32,8 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 	bool passHLT(edm::Event const &);
 	bool isHLTMatched(uint32_t, edm::Event const &,
 					  pat::Muon const &);
-	bool passKinCuts(pat::Muon const &,
-					 edm::Handle<reco::BeamSpot> const &);
+	bool passKinCuts(pat::Muon const &);
+	// float muonRochCorr()
 
   private:
 	//	ROOT
@@ -42,6 +43,7 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 	//	Analysis Objects
 	analysis::dimuon::MetaHiggs _meta;
 	analysis::core::Muons _muons;
+	// analysis::core::Muons _correctedMuons;
 	analysis::core::Electrons _electrons;
 	analysis::core::Taus _taus;
 	analysis::core::Jets _pfjets;
@@ -69,9 +71,11 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 	edm::InputTag _convToken;
 	edm::InputTag _bsToken;
 	edm::InputTag _metFilterToken;
-	
+	edm::InputTag _prunedGenParticlesToken;
+	edm::InputTag _packedGenParticlesToken;
+
 	edm::EDGetTokenT<LHEEventProduct> _lheToken;
-	edm::EDGetTokenT<GenEventInfoProduct> _genInfoToken;	
+	edm::EDGetTokenT<GenEventInfoProduct> _genInfoToken;
 	edm::Handle<edm::TriggerResults> _hTriggerResults;
 	edm::Handle<pat::TriggerObjectStandAloneCollection> _hTriggerObjects;
 	edm::Handle<edm::TriggerResults> _hMetFilterResults;
