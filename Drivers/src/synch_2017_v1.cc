@@ -74,10 +74,10 @@ bool passMuon(Muon const &m)
 {
 	double muonIsolation = (m._sumChargedHadronPtR04 + std::max(0.,
 																m._sumNeutralHadronEtR04 + m._sumPhotonEtR04 - 0.5 * m._sumPUPtR04)) /
-						   m._pt;
+						   m._corrPT;
 
 	if (m._isGlobal && m._isTracker &&
-		m._pt > _muonPt && TMath::Abs(m._eta) < _muonEta &&
+		m._corrPT > _muonPt && TMath::Abs(m._eta) < _muonEta &&
 		m._isMedium && muonIsolation < _muonIso)
 		return true;
 	return false;
@@ -86,7 +86,7 @@ bool passMuon(Muon const &m)
 bool passMuonHLT(Muon const &m)
 {
 	if ((m._isHLTMatched[1] || m._isHLTMatched[0]) &&
-		m._pt > _muonMatchedPt && TMath::Abs(m._eta) < _muonMatchedEta)
+		m._corrPT > _muonMatchedPt && TMath::Abs(m._eta) < _muonMatchedEta)
 		return true;
 
 	return false;
@@ -175,13 +175,13 @@ void categorize(ofstream &out, Jets *jets, Muon const &mu1, Muon const &mu2,
 {
 
 	out << event._run << "\t" << event._lumi << "\t" << event._event << "\t";
-	out << mu1._pt << "\t" << mu1._eta << "\t" << mu1._phi << "\t";
-	out << mu2._pt << "\t" << mu2._eta << "\t" << mu2._phi << "\t";
+	out << mu1._corrPT << "\t" << mu1._eta << "\t" << mu1._phi << "\t";
+	out << mu2._corrPT << "\t" << mu2._eta << "\t" << mu2._phi << "\t";
 
 	TLorentzVector p4m1, p4m2;
-	p4m1.SetPtEtaPhiM(mu1._pt, mu1._eta,
+	p4m1.SetPtEtaPhiM(mu1._corrPT, mu1._eta,
 					  mu1._phi, PDG_MASS_Mu);
-	p4m2.SetPtEtaPhiM(mu2._pt, mu2._eta,
+	p4m2.SetPtEtaPhiM(mu2._corrPT, mu2._eta,
 					  mu2._phi, PDG_MASS_Mu);
 	TLorentzVector p4dimuon = p4m1 + p4m2;
 
@@ -215,30 +215,46 @@ void categorize(ofstream &out, Jets *jets, Muon const &mu1, Muon const &mu2,
 	float subpt = 0;
 	float subeta = 0;
 	float subphi = 0;
-	float mjj = 0;
-	TLorentzVector p4lead, p4sub, dijet;
-	if (p4jets.size() > 0)
+	float maxMjj = 0;
+
+	if (p4jets.size() == 1)
 	{
+		TLorentzVector p4lead;
 		__nContainJets++;
 		p4lead = p4jets[0];
 		leadpt = p4lead.Pt();
 		leadeta = p4lead.Eta();
 		leadphi = p4lead.Phi();
 	}
-	if (p4jets.size() > 1)
+	else if (p4jets.size() >= 2)
 	{
-		p4sub = p4jets[1];
-		dijet = p4lead + p4sub;
-		if (dijet.M() > 100)
+	  __nContainJets++;
+		for (int i = 0; i < p4jets.size(); ++i)
+		{
+		  for (int j = i + 1; j < p4jets.size(); ++j)
+			{
+				TLorentzVector p4lead = p4jets[i];
+				TLorentzVector p4sub = p4jets[j];
+				TLorentzVector dijet = p4lead + p4sub;
+				float mjj = dijet.M();
+				if (mjj > maxMjj)
+				{
+					maxMjj = mjj;
+					leadpt = p4lead.Pt();
+					leadeta = p4lead.Eta();
+					leadphi = p4lead.Phi();
+					subpt = p4sub.Pt();
+					subeta = p4sub.Eta();
+					subphi = p4sub.Phi();
+				}
+			}
+		}
+		if (maxMjj > 100)
 			__nPassMjj++;
-		subpt = p4sub.Pt();
-		subeta = p4sub.Eta();
-		subphi = p4sub.Phi();
-		mjj = dijet.M();
 	}
 	out << leadpt << "\t" << leadeta << "\t" << leadphi << "\t";
 	out << subpt << "\t" << subeta << "\t" << subphi << "\t";
-	out << mjj << "\t";
+	out << maxMjj << "\t";
 	if (_btagJets > 0)
 		__nContainBJets++;
 	out << _btagJets << "\n";
@@ -298,7 +314,7 @@ void process()
 	streamer._chain->SetBranchAddress("MET", &met);
 
 	ofstream eventData;
-	eventData.open("synch_data_eventDump.txt");
+	eventData.open("synch_mc_eventDump.txt");
 	eventData << "run\tlumi\tevent\tm1pt\tm1eta\tm1phi\tm2pt\tm2eta\tm2phi\tmass\tnjets\tj1pt\tj1eta\tj1phi\tj2pt\tj2eta\tj2phi\tmjj\tnbjets\n";
 
 	//	Main Loop
@@ -335,8 +351,8 @@ void process()
 		for (const std::pair<Muon, Muon> &twoMuons : muonPairs)
 		{
 			TLorentzVector p4m1, p4m2;
-			p4m1.SetPtEtaPhiM(twoMuons.first._pt, twoMuons.first._eta, twoMuons.first._phi, PDG_MASS_Mu);
-			p4m2.SetPtEtaPhiM(twoMuons.second._pt, twoMuons.second._eta, twoMuons.second._phi, PDG_MASS_Mu);
+			p4m1.SetPtEtaPhiM(twoMuons.first._corrPT, twoMuons.first._eta, twoMuons.first._phi, PDG_MASS_Mu);
+			p4m2.SetPtEtaPhiM(twoMuons.second._corrPT, twoMuons.second._eta, twoMuons.second._phi, PDG_MASS_Mu);
 			TLorentzVector p4dimuon = p4m1 + p4m2;
 
 			if (p4dimuon.Pt() > highestPtSum)
