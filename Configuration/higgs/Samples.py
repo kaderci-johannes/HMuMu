@@ -12,18 +12,59 @@ sys.path.append(os.environ["ANALYSISHOME"])
 #   
 #
 
-#   Datasets from Data, Currently 2017 ReReco
+#   Datasets from Collisions
+data_2016 = {
+}
 
-datadatasets = {
-    "/SingleMuon/Run2017B-17Nov2017-v1/MINIAOD" : DS.Dataset(
-        name = "/SingleMuon/Run2017B-17Nov2017-v1/MINIAOD",
+data_2017 = {
+    "/SingleMuon/Run2017B-13Mar2018-v1/MINIAOD" : DS.Dataset(
+        name = "/SingleMuon/Run2017B-13Mar2018-v1/MINIAOD",
         isData = True,
         year = 2017,
-        globaltag = "94X_dataRun2_v6"),
+        globaltag = "94X_dataRun2_v10"),
+    "/SingleMuon/Run2017C-13Mar2018-v1/MINIAOD" : DS.Dataset(
+        name = "/SingleMuon/Run2017C-13Mar2018-v1/MINIAOD",
+        isData = True,
+        year = 2017,
+        globaltag = "94X_dataRun2_v10"),
+    "/SingleMuon/Run2017D-13Mar2018-v1/MINIAOD" : DS.Dataset(
+        name = "/SingleMuon/Run2017D-13Mar2018-v1/MINIAOD",
+        isData = True,
+        year = 2017,
+        globaltag = "94X_dataRun2_v10"),
+    "/SingleMuon/Run2017E-13Mar2018-v1/MINIAOD" : DS.Dataset(
+        name = "/SingleMuon/Run2017E-13Mar2018-v1/MINIAOD",
+        isData = True,
+        year = 2017,
+        globaltag = "94X_dataRun2_v10"),
+    "/SingleMuon/Run2017F-13Mar2018-v1/MINIAOD" : DS.Dataset(
+        name = "/SingleMuon/Run2017F-13Mar2018-v1/MINIAOD",
+        isData = True,
+        year = 2017,
+        globaltag = "94X_dataRun2_v10"),
+
+}
+
+data_2018 = {
 }
 
 #   Datasets from Monte Carlo
-mcdatasets = {
+mc_signal_2016 = {
+}
+
+mc_background_2016 = {
+}
+
+mc_signal_2017 = {
+}
+
+mc_background_2017 = {
+}
+
+mc_signal_2017 = {
+}
+
+mc_background_2017 = {
 }
 
 #
@@ -32,13 +73,9 @@ mcdatasets = {
 #
 jsonfiles = {
     #   latest
-    "2017_Synch" : DS.JsonFile(
+    "EOY2017ReReco" : DS.JsonFile(
         filename = "Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.txt",
         intlumi =  41368
-        ),
-    "run297113" : DS.JsonFile(
-        filename = "json297113.txt",
-        intlumi = 1
         )
 }
 
