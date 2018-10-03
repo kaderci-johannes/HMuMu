@@ -122,6 +122,8 @@ class Muon : public Track
 	float _sumNeutralHadronEtR04;
 	float _sumPhotonEtR04;
 	float _sumPUPtR04;
+	float _SF;
+	float _corrPT;
 
 #ifdef STANDALONE
 	ClassDef(Muon, 1)

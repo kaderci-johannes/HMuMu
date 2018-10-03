@@ -21,7 +21,9 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 															_eleTightToken(ps.getUntrackedParameter<edm::InputTag>("tagElectronCutBasedId_tight")),
 															_convToken(ps.getUntrackedParameter<edm::InputTag>("tagConversions")),
 															_bsToken(ps.getUntrackedParameter<edm::InputTag>("tagBS")),
-															_metFilterToken(ps.getUntrackedParameter<edm::InputTag>("tagMetFilterResults"))
+															_metFilterToken(ps.getUntrackedParameter<edm::InputTag>("tagMetFilterResults")),
+															_prunedGenParticlesToken(ps.getUntrackedParameter<edm::InputTag>("tagPrunedGenParticles")),
+															_packedGenParticlesToken(ps.getUntrackedParameter<edm::InputTag>("tagPackedGenParticles"))
 {
 	//
 	//	init the Trees and create branches
@@ -33,6 +35,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 	using namespace analysis::core;
 	using namespace analysis::dimuon;
 	_tEvents->Branch("Muons", (Muons *)&_muons);
+	// _tEvents->Branch("CorrectedMuons",(Muons *)&_correctedMuons);
 	_tEvents->Branch("Jets", (Jets *)&_pfjets);
 	_tEvents->Branch("Vertices", (Vertices *)&_vertices);
 	_tEvents->Branch("Event", (Event *)&_event);
@@ -56,6 +59,8 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 	consumes<edm::ValueMap<bool>>(_eleTightToken);
 	consumes<reco::BeamSpot>(_bsToken);
 	consumes<edm::TriggerResults>(_metFilterToken);
+	consumes<reco::GenParticleCollection>(_prunedGenParticlesToken);
+	consumes<pat::PackedGenParticleCollection>(_packedGenParticlesToken);
 
 	_genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
 	_lheToken = consumes<LHEEventProduct>(edm::InputTag("externalLHEProducer"));
@@ -119,6 +124,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 	_pfjets.clear();
 	_genjets.clear();
 	_muons.clear();
+	// _correctedMuons.clear();
 	_electrons.clear();
 	_taus.clear();
 	_genjets.clear();
@@ -140,7 +146,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 		_meta._sumEventWeights += _eaux._genWeight;
 
 		//
-		// LHE Event Product - to get the total - HT 
+		// LHE Event Product - to get the total - HT
 		//
 		edm::Handle<LHEEventProduct> hLHE;
 		e.getByToken(_lheToken, hLHE);
@@ -521,6 +527,14 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 	e.getByLabel(_muonToken, hMuons);
 	pat::MuonCollection muonsSelected;
 
+	// gen particles for muon rochester corrections
+
+	edm::Handle<reco::GenParticleCollection> hGenParticles;
+	if (_meta._isMC)
+		e.getByLabel(_prunedGenParticlesToken, hGenParticles);
+	// initilize the rochester correction thing
+	RoccoR rc;
+	rc.init(edm::FileInPath("HMuMu/NtupleMaking/Roccor/RoccoR2017.txt").fullPath());
 	//
 	//	Muon Pre-Selection
 	//
@@ -536,7 +550,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 			continue;
 
 		//	kinematic
-		if (!passKinCuts(*it, hBS))
+		if (!passKinCuts(*it))
 			continue;
 
 		muonsSelected.push_back(*it);
@@ -549,10 +563,12 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 	//
 	//	Muon Pre-Selection 2 based on #muons @1
 	//
-	if (muonsSelected.size() == 0 || muonsSelected.size() == 1) // 0 muons
-		return;
+	// if (muonsSelected.size() == 0 || muonsSelected.size() == 1) // 0 muons
+	// return;
 	else // 2 or more muons
 	{
+		// make sure Muons are sorted..
+		sort(muonsSelected.begin(), muonsSelected.end(), [](pat::Muon it, pat::Muon jt) -> bool { return it.pt() > jt.pt(); });
 		for (pat::MuonCollection::const_iterator it = muonsSelected.begin();
 			 it != muonsSelected.end(); ++it)
 		{
@@ -662,6 +678,38 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 				_muon1._isHLTMatched.push_back(match);
 			}
 
+			// Apply Rochester Correction Here?
+
+			double muSF = 1.0;
+			double genPT = -1.0;
+			// double minDR = 1.0;
+
+			if (_meta._isMC && hGenParticles.isValid())
+			{
+				for (auto genPar_it = hGenParticles->begin(); genPar_it != hGenParticles->end(); ++genPar_it)
+				{
+					if (fabs(genPar_it->pdgId()) != 13)
+						continue;
+					if (!genPar_it->fromHardProcessFinalState())
+						continue;
+					if (genPar_it->charge() != _muon1._charge)
+						continue;
+					double dR = deltaR(genPar_it->eta(), genPar_it->phi(), _muon1._eta, _muon1._phi);
+					if (dR > 0.005)
+						continue;
+					genPT = genPar_it->pt();
+				}
+			}
+
+			float f_rand = gRandom->Rndm();
+			if (!_meta._isMC)
+				muSF = rc.kScaleDT(_muon1._charge, _muon1._pt, _muon1._eta, _muon1._phi, 0, 0);
+			else if (_meta._isMC && genPT > 0.0)
+				muSF = rc.kSpreadMC(_muon1._charge, _muon1._pt, _muon1._eta, _muon1._phi, genPT, 0, 0);
+			else if (_meta._isMC && genPT <= 0.0)
+				muSF = rc.kSmearMC(_muon1._charge, _muon1._pt, _muon1._eta, _muon1._phi, _muon1._nTLs, f_rand, 0, 0);
+			_muon1._SF = muSF;
+			_muon1._corrPT = muSF * _muon1._pt;
 			_muons.push_back(_muon1);
 		}
 	}
@@ -742,8 +790,7 @@ bool H2DiMuonMaker::isHLTMatched(uint32_t itrigger, edm::Event const &e,
 //	true - passes Kinematic Cuts
 //	false - doesn't pass
 //
-bool H2DiMuonMaker::passKinCuts(pat::Muon const &muon,
-								edm::Handle<reco::BeamSpot> const &hBS)
+bool H2DiMuonMaker::passKinCuts(pat::Muon const &muon)
 {
 	reco::Track track;
 	if (muon.isGlobalMuon())

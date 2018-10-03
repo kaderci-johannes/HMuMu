@@ -55,10 +55,9 @@ json = "json/" + jsonfile.filename
 #   a few settings
 #
 #thisIsData = ntuple.isData
-thisIsData = True
+thisIsData = False
 #globalTag = ntuple.globaltag
-#globalTag = '94X_dataRun2_v10'
-globalTag = '94X_dataRun2_ReReco_EOY17_v6'
+globalTag = '94X_mc2017_realistic_v15'
 #readFiles = cms.untracked.vstring()
 #readFiles.extend(open(("sample_file_lists/%s/" % ("data" if ntuple.isData else "mc"))+ntuple.test_file).read().splitlines())
 
@@ -100,8 +99,9 @@ updateJetCollection(
     labelName='UpdatedJEC',
     # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual corrections (always set to 1)
     jetCorrections=('AK4PFchs', cms.vstring(
-        ['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')
+        ['L1FastJet', 'L2Relative', 'L3Absolute']), 'None')
 )
+
 
 # EE noise mitigation fix SEE https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_9_for_2
 
@@ -109,7 +109,7 @@ from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMet
 
 runMetCorAndUncFromMiniAOD(
     process,
-    isData=thisIsData,  # false for MC
+    isData= thisIsData,  # false for MC
     reclusterJets = True,
     CHS = True,
     fixEE2017=True,
@@ -117,6 +117,7 @@ runMetCorAndUncFromMiniAOD(
                      'MinEtaThreshold': 2.65, 'MaxEtaThreshold': 3.139},
     postfix="ModifiedMET"
 )
+
 
 # electron energy scale correction fix SEE https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaMiniAODV2
 from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
@@ -132,7 +133,7 @@ process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(-1))
 
 process.source = cms.Source("PoolSource", fileNames=cms.untracked.vstring(
     # 'file:DE1721FC-10D9-E711-B475-0025907B4F04.root'))
-    'file:/eos/cms/store/user/amarini/Sync/0E555487-7241-E811-9209-002481CFC92C.root'))
+    'file:/eos/cms/store/user//amarini/Sync/5AC9148F-9842-E811-892B-3417EBE535DA.root'))
 
 # readFiles)
 process.options = cms.untracked.PSet(wantSummary=cms.untracked.bool(False))
@@ -156,15 +157,13 @@ for idmod in my_id_modules:
     setupAllVIDIdsInModule(process, idmod, setupVIDElectronSelection)
 
 process.TFileService = cms.Service(
-    "TFileService", fileName=cms.string("ntuple_Data.root"))
+    "TFileService", fileName=cms.string("ntuple_MC.root"))
 process.jecSequence = cms.Sequence(
     process.patJetCorrFactorsUpdatedJEC * process.updatedPatJetsUpdatedJEC)
-process.p = cms.Path(process.egammaPostRecoSeq * process.egmGsfElectronIDSequence *
-                     process.jecSequence * process.fullPatMetSequenceModifiedMET * 
-                     process.ntuplemaker_H2DiMuonMaker)
+process.p = cms.Path(process.fullPatMetSequenceModifiedMET * process.egammaPostRecoSeq *
+                     process.egmGsfElectronIDSequence * process.jecSequence * process.ntuplemaker_H2DiMuonMaker)
 
 # this outputs the original file with all info!
 # process.out = cms.OutputModule(
 #    "PoolOutputModule", fileName=cms.untracked.string("test.root"))
 #process.finalize = cms.EndPath(process.out)
-#

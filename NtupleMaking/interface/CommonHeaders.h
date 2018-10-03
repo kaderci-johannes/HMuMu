@@ -18,7 +18,7 @@
 #include "TH2F.h"
 #include "TBranch.h"
 #include "TROOT.h"
-
+#include "TRandom.h"
 // CMSSW includes
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"

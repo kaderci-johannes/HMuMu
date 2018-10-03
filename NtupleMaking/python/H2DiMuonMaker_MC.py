@@ -11,12 +11,12 @@ ntuplemaker_H2DiMuonMaker = cms.EDAnalyzer(
     tagTaus=cms.untracked.InputTag("slimmedTaus"),
     tagPV=cms.untracked.InputTag("offlineSlimmedPrimaryVertices"),
     tagBS=cms.untracked.InputTag("offlineBeamSpot"),
-    # tagPrunedGenParticles=cms.untracked.InputTag("prunedGenParticles"),
-    # tagPackedGenParticles=cms.untracked.InputTag("packedGenParticles"),
+    tagPrunedGenParticles=cms.untracked.InputTag("prunedGenParticles"),
+    tagPackedGenParticles=cms.untracked.InputTag("packedGenParticles"),
     tagTriggerResults=cms.untracked.InputTag("TriggerResults", "", "HLT"),
     tagTriggerObjects=cms.untracked.InputTag("slimmedPatTrigger"),
     tagMetFilterResults=cms.untracked.InputTag("TriggerResults", "", "RECO"),
-    tagMET=cms.untracked.InputTag("slimmedMETs"),
+    tagMET=cms.untracked.InputTag("slimmedMETsModifiedMET"),
     tagJets=cms.untracked.InputTag("updatedPatJetsUpdatedJEC"),
     tagGenJets=cms.untracked.InputTag("slimmedGenJets"),
     tagConversions=cms.untracked.InputTag("reducedEgamma:reducedConversions"),
@@ -43,7 +43,7 @@ ntuplemaker_H2DiMuonMaker = cms.EDAnalyzer(
                                           "Flag_HBHENoiseFilter", "Flag_HBHENoiseIsoFilter",
                                           "Flag_EcalDeadCellTriggerPrimitiveFilter", "Flag_BadPFMuonFilter", "Flag_BadChargedCandidateFilter"]),
     #   , "Flag_eeBadScFilter"]), NOT SUGGESTED
-    
+
     nMuons=cms.untracked.int32(2),
     isGlobalMuon=cms.untracked.bool(True),
     isStandAloneMuon=cms.untracked.bool(False),
