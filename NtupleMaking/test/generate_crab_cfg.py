@@ -26,12 +26,12 @@ mcEOSFolder = "/mc"
 #   get the json file to be used if needed
 jsonfiles = Samples.jsonfiles
 #jsontag = "2017_Synch"
-jsontag = "2017_Synch"
+jsontag = "EOY2017ReReco"
 jsonfile = jsonfiles[jsontag]
 
 #   select the datasets to be submitted for grid processing
 datasets = []
-sets_to_consider = Samples.datadatasets
+sets_to_consider = Samples.data_2017
 #sets_to_consider = Samples.mcdatasets
 for k in sets_to_consider:
     #if "Run2016H-03Feb2017" in sets_to_consider[k].name:
@@ -67,7 +67,7 @@ for s in samples:
     print "-"*80
     print s
     
-    hlttype = "HLT"
+    # hlttype = "HLT"
     #   create a config filename
     cfgname = 'dimu_'
     cfgname += s.label.replace(".", "_")
@@ -80,10 +80,10 @@ for s in samples:
     for line in file:
         if 's.isData' in line: 
             line = line.replace('s.isData', str(s.isData))
-        if 's.globaltag' in line: 
-            line = line.replace('s.globaltag', '\"' + s.globaltag + '\"')
-        if 'HLTTYPE' in line:
-            line = line.replace('HLTTYPE', hlttype)
+        # if 's.globaltag' in line: 
+            # line = line.replace('s.globaltag', '\"' + s.globaltag + '\"')
+        # if 'HLTTYPE' in line:
+            # line = line.replace('HLTTYPE', hlttype)
         outfile.write(line)
     
     # close the generated cmssw config file
@@ -120,11 +120,11 @@ for s in samples:
             line = line.replace('s.name', s.name)
         if 'ROOTPATH' in line:
             line = line.replace("ROOTPATH", s.rootpath)
-        if "JOBUNITS" in line:
-            if s.isData:
-                line = line.replace("JOBUNITS", "200")
-            else:
-                line = line.replace("JOBUNITS", "10")
+        # if "JOBUNITS" in line:
+        #     if s.isData:
+        #         line = line.replace("JOBUNITS", "200")
+        #     else:
+        #         line = line.replace("JOBUNITS", "10")
         outfile.write(line)
     
     outfile.close()
