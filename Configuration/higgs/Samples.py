@@ -17,28 +17,28 @@ data_2016 = {
 }
 
 data_2017 = {
-    "/SingleMuon/Run2017B-13Mar2018-v1/MINIAOD" : DS.Dataset(
-        name = "/SingleMuon/Run2017B-13Mar2018-v1/MINIAOD",
+    "/SingleMuon/Run2017B-31Mar2018-v1/MINIAOD" : DS.Dataset(
+        name = "/SingleMuon/Run2017B-31Mar2018-v1/MINIAOD",
         isData = True,
         year = 2017,
         globaltag = "94X_dataRun2_v10"),
-    "/SingleMuon/Run2017C-13Mar2018-v1/MINIAOD" : DS.Dataset(
-        name = "/SingleMuon/Run2017C-13Mar2018-v1/MINIAOD",
+    "/SingleMuon/Run2017C-31Mar2018-v1/MINIAOD" : DS.Dataset(
+        name = "/SingleMuon/Run2017C-31Mar2018-v1/MINIAOD",
         isData = True,
         year = 2017,
         globaltag = "94X_dataRun2_v10"),
-    "/SingleMuon/Run2017D-13Mar2018-v1/MINIAOD" : DS.Dataset(
-        name = "/SingleMuon/Run2017D-13Mar2018-v1/MINIAOD",
+    "/SingleMuon/Run2017D-31Mar2018-v1/MINIAOD" : DS.Dataset(
+        name = "/SingleMuon/Run2017D-31Mar2018-v1/MINIAOD",
         isData = True,
         year = 2017,
         globaltag = "94X_dataRun2_v10"),
-    "/SingleMuon/Run2017E-13Mar2018-v1/MINIAOD" : DS.Dataset(
-        name = "/SingleMuon/Run2017E-13Mar2018-v1/MINIAOD",
+    "/SingleMuon/Run2017E-31Mar2018-v1/MINIAOD" : DS.Dataset(
+        name = "/SingleMuon/Run2017E-31Mar2018-v1/MINIAOD",
         isData = True,
         year = 2017,
         globaltag = "94X_dataRun2_v10"),
-    "/SingleMuon/Run2017F-13Mar2018-v1/MINIAOD" : DS.Dataset(
-        name = "/SingleMuon/Run2017F-13Mar2018-v1/MINIAOD",
+    "/SingleMuon/Run2017F-31Mar2018-v1/MINIAOD" : DS.Dataset(
+        name = "/SingleMuon/Run2017F-31Mar2018-v1/MINIAOD",
         isData = True,
         year = 2017,
         globaltag = "94X_dataRun2_v10"),

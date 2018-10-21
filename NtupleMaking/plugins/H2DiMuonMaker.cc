@@ -23,14 +23,15 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 															_bsToken(ps.getUntrackedParameter<edm::InputTag>("tagBS")),
 															_metFilterToken(ps.getUntrackedParameter<edm::InputTag>("tagMetFilterResults")),
 															_prunedGenParticlesToken(ps.getUntrackedParameter<edm::InputTag>("tagPrunedGenParticles")),
-															_packedGenParticlesToken(ps.getUntrackedParameter<edm::InputTag>("tagPackedGenParticles"))
+							    _packedGenParticlesToken(ps.getUntrackedParameter<edm::InputTag>("tagPackedGenParticles")),
+							    roch_file(ps.getParameter<edm::FileInPath>("rochesterFile"))
 {
 	//
 	//	init the Trees and create branches
 	//
 	edm::Service<TFileService> fs;
 	_tEvents = fs->make<TTree>("Events", "Events");
-	_tMeta = fs->make<TTree>("Meta", "Meta");
+	//	_tMeta = fs->make<TTree>("Meta", "Meta");
 
 	using namespace analysis::core;
 	using namespace analysis::dimuon;
@@ -41,7 +42,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 	_tEvents->Branch("Event", (Event *)&_event);
 	_tEvents->Branch("EventAuxiliary", (EventAuxiliary *)&_eaux);
 	_tEvents->Branch("MET", (MET *)&_met);
-	_tMeta->Branch("Meta", (MetaHiggs *)&_meta);
+	_tEvents->Branch("Meta", (MetaHiggs *)&_meta);
 	_tEvents->Branch("Auxiliary", &m_aux);
 
 	consumes<pat::MuonCollection>(_muonToken);
@@ -105,7 +106,7 @@ void H2DiMuonMaker::beginJob()
 
 void H2DiMuonMaker::endJob()
 {
-	_tMeta->Fill();
+  //	_tMeta->Fill();
 }
 
 void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
@@ -533,9 +534,14 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 	if (_meta._isMC)
 		e.getByLabel(_prunedGenParticlesToken, hGenParticles);
 	// initilize the rochester correction thing
+	//	edm::FileInPath fp = "HMuMu/NtupleMaking/Roccor/RoccoR2017.txt";
+	//		std::cout << roch_file.location() << std::endl;
+	//	std::cout << roch_file.fullPath() << std::endl;
+		//	return;
 	RoccoR rc;
-	rc.init(edm::FileInPath("HMuMu/NtupleMaking/Roccor/RoccoR2017.txt").fullPath());
-	//
+	//	rc.init(edm::FileInPath("/afs/cern.ch/work/m/malhusse/private/h2mu/CMSSW_9_4_9_cand2/src/HMuMu/NtupleMaking/Roccor/RoccoR2017.txt").fullPath());
+       	rc.init(roch_file.fullPath().c_str());
+		//
 	//	Muon Pre-Selection
 	//
 	for (pat::MuonCollection::const_iterator it = hMuons->begin();

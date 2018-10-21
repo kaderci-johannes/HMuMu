@@ -38,7 +38,7 @@ class H2DiMuonMaker : public edm::EDAnalyzer
   private:
 	//	ROOT
 	TTree *_tEvents;
-	TTree *_tMeta;
+	//	TTree *_tMeta;
 
 	//	Analysis Objects
 	analysis::dimuon::MetaHiggs _meta;
@@ -73,6 +73,7 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 	edm::InputTag _metFilterToken;
 	edm::InputTag _prunedGenParticlesToken;
 	edm::InputTag _packedGenParticlesToken;
+	edm::FileInPath roch_file;
 
 	edm::EDGetTokenT<LHEEventProduct> _lheToken;
 	edm::EDGetTokenT<GenEventInfoProduct> _genInfoToken;

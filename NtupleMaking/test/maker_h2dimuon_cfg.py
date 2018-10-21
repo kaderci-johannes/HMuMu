@@ -31,7 +31,7 @@ import Samples as S
 jsonfiles = S.jsonfiles
 # print(data_datasets)
 
-jsontag = "2017_Synch"
+jsontag = "EOY2017ReReco"
 jsonfile = jsonfiles[jsontag]
 #dataset = None
 #dataset = data_datasets["/SingleMuon/Run2017B-17Nov2017-v1/MINIAOD"]
@@ -128,7 +128,7 @@ setupEgammaPostRecoSeq(process,
 # #
 # #   Pool Source with proper LSs
 # #
-process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(-1))
+process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(1000))
 
 process.source = cms.Source("PoolSource", fileNames=cms.untracked.vstring(
     # 'file:DE1721FC-10D9-E711-B475-0025907B4F04.root'))
