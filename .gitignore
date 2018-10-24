@@ -23,4 +23,5 @@
 *.swk
 *.swl
 crab_projects/
-
+*crab_auto*.py
+*dimu*for_crab.py
