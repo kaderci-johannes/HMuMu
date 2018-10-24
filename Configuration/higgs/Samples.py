@@ -21,27 +21,27 @@ data_2017 = {
         name = "/SingleMuon/Run2017B-31Mar2018-v1/MINIAOD",
         isData = True,
         year = 2017,
-        globaltag = "94X_dataRun2_v10"),
+        globaltag = "94X_dataRun2_ReReco_EOY17_v6"),
     "/SingleMuon/Run2017C-31Mar2018-v1/MINIAOD" : DS.Dataset(
         name = "/SingleMuon/Run2017C-31Mar2018-v1/MINIAOD",
         isData = True,
         year = 2017,
-        globaltag = "94X_dataRun2_v10"),
+        globaltag = "94X_dataRun2_ReReco_EOY17_v6"),
     "/SingleMuon/Run2017D-31Mar2018-v1/MINIAOD" : DS.Dataset(
         name = "/SingleMuon/Run2017D-31Mar2018-v1/MINIAOD",
         isData = True,
         year = 2017,
-        globaltag = "94X_dataRun2_v10"),
+        globaltag = "94X_dataRun2_ReReco_EOY17_v6"),
     "/SingleMuon/Run2017E-31Mar2018-v1/MINIAOD" : DS.Dataset(
         name = "/SingleMuon/Run2017E-31Mar2018-v1/MINIAOD",
         isData = True,
         year = 2017,
-        globaltag = "94X_dataRun2_v10"),
+        globaltag = "94X_dataRun2_ReReco_EOY17_v6"),
     "/SingleMuon/Run2017F-31Mar2018-v1/MINIAOD" : DS.Dataset(
         name = "/SingleMuon/Run2017F-31Mar2018-v1/MINIAOD",
         isData = True,
         year = 2017,
-        globaltag = "94X_dataRun2_v10"),
+        globaltag = "94X_dataRun2_ReReco_EOY17_v6"),
 
 }
 
