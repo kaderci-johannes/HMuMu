@@ -40,8 +40,10 @@ for k in sets_to_consider:
 #   create the Ntuple objects for all of the datasets
 samples = []
 for d in datasets:
-#    cmssw = d.initial_cmssw
-    cmssw = "94X"
+    if d.isData:
+        cmssw = "94X"
+    else:
+        cmssw = d.initial_cmssw        
     storage = "EOS"
     rootpath = "/store/user/malhusse/higgs_ntuples/2017"
     if d.isData:
