@@ -16,7 +16,7 @@ config.JobType.maxMemoryMB = 2500
 
 config.Data.inputDataset = 's.name'
 config.Data.inputDBS = 'global'
-config.Data.splitting = 'FileBased'
+config.Data.splitting = 'Automatic'
 #config.Data.lumiMask = 'JSONFILE'
 # config.Data.unitsPerJob = JOBUNITS 
 config.Data.outLFNDirBase = 'ROOTPATH'

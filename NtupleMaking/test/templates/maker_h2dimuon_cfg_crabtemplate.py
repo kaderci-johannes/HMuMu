@@ -12,12 +12,11 @@ process.load('Configuration.EventContent.EventContent_cff')
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 
 thisIsData = s.isData
-# globalTag = s.globaltag
-globalTag = '94X_dataRun2_ReReco_EOY17_v6'
+globalTag = s.globaltag
+# globalTag = '94X_dataRun2_ReReco_EOY17_v6'
 
 if not thisIsData:
     process.load("HMuMu.NtupleMaking.H2DiMuonMaker_MC")
-    process.ntuplemaker_H2DiMuonMaker.tagTriggerResults = cms.untracked.InputTag("TriggerResults", "", "HLTTYPE")
 else:
     process.load("HMuMu.NtupleMaking.H2DiMuonMaker_Data")
 
@@ -29,13 +28,17 @@ else:
 
 from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
 
+if thisIsData:
+    corrections = cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual'])
+else:
+    corrections = cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute'])
+
 updateJetCollection(
     process,
     jetSource=cms.InputTag('slimmedJets'),
     labelName='UpdatedJEC',
     # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual corrections (always set to 1)
-    jetCorrections=('AK4PFchs', cms.vstring(
-        ['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')
+    jetCorrections=('AK4PFchs', corrections, 'None')
 )
 
 # EE noise mitigation fix SEE https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_9_for_2
