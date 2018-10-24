@@ -7,7 +7,7 @@ class Dataset(object):
         label - shorthand name for this DataSet
         isData - if this is a data or MC
         """
-        if len(args)>0: 
+        if len(args)>0:
             Dataset.startup(self, args[0])
             return
 
@@ -18,14 +18,6 @@ class Dataset(object):
             self.label = self.name[1:].replace("/", "__")
         else:
             self.label = kwargs["label"]
-        if "uflabel" not in kwargs.keys():
-            self.uflabel = ""
-        else:
-            self.uflabel = kwargs["uflabel"]
-        if "ufPlotLabel" not in kwargs.keys():
-            self.ufPlotLabel = ""
-        else:
-            self.ufPlotLabel = kwargs["ufPlotLabel"]
         if "plotLabel" not in kwargs.keys():
             self.plotLabel = ""
         else:
@@ -45,8 +37,6 @@ class Dataset(object):
         self.year = other.year
         self.test_file = other.test_file
         self.globaltag = other.globaltag
-        self.uflabel = other.uflabel
-        self.ufPlotLabel = other.ufPlotLabel
         self.plotLabel = other.plotLabel
 
     def __repr__(self):
@@ -67,7 +57,7 @@ class Dataset(object):
 
 class MCDataset(Dataset):
     def __init__(self, *args, **kwargs):
-        if len(args)>0: 
+        if len(args)>0:
             MCDataset.startup(self, args[0])
             return
 
@@ -128,7 +118,7 @@ class Ntuple(MCDataset):
     rootpath<storagebased>/MC.cmssw/label/timestamp/counter/files.root
     """
     def __init__(self, *args, **kwargs):
-        if len(args)>0: 
+        if len(args)>0:
             Ntuple.startup(self, args[0], **kwargs)
             return
 
@@ -164,7 +154,7 @@ class Ntuple(MCDataset):
             "-"*80 +\
             "\n"
         return s
-    
+
     def __repr__(self):
         return self.__str__()
 
@@ -186,7 +176,7 @@ class DataResult(Ntuple):
     Data Result of Data Ntuple Processing
     """
     def __init__(self, *args, **kwargs):
-        if len(args)>0: 
+        if len(args)>0:
             DataResult.startup(self, args[0], **kwargs)
             return
         Ntuple.__init__(self, **kwargs)
@@ -233,7 +223,7 @@ class MCResult(DataResult):
     MC Result of MC Ntuple Processing
     """
     def __init__(self, *args, **kwargs):
-        if len(args)>0: 
+        if len(args)>0:
             MCResult.startup(self, args[0], **kwargs)
             return
         DataResult.__init__(self, **kwargs)
