@@ -112,8 +112,28 @@ mc_signal_2017 = {
 ),
 
 }
-
 mc_background_2017 = {
+        "/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM" : DS.MCDataset(
+        name = "/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM",
+        isData = False,
+        year = 2017,
+        isSignal = False,
+        initial_cmssw = "94X",
+        globaltag = "94X_mc2017_realistic_v15",
+        cross_section = 5765.0
+)
+,
+
+    "/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM" : DS.MCDataset(
+        name = "/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM",
+        isData = False,
+        year = 2017,
+        isSignal = False,
+        initial_cmssw = "94X",
+        globaltag = "94X_mc2017_realistic_v15",
+        cross_section = 5765.0
+)
+,
     "/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM" : DS.MCDataset(
         name = "/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM",
         isData = False,
@@ -321,25 +341,40 @@ def buildTimeStamp(ntuple):
         args = fullpattern
     else:
         args = "%s" % fullpattern
-    x = eos_system(cmd, args).split("\n")[0]
+    x = eos_system(cmd, args).split("\n")[:-1]
+    return x
+
+def multipleDirectories(ntuple, timestamp):
+    fullpattern = os.path.join(ntuple.rootpath,
+                            ntuple.label.split("__")[0],
+                            buildDatasetTagName(ntuple),timestamp)
+    cmd = "eosls"
+    args = "%s" % fullpattern
+    x = eos_system(cmd,args).split("\n")[:-1]
     return x
 
 def discoverFileList(ntuple):
-    fullpath= os.path.join(ntuple.rootpath,
-        ntuple.label.split("__")[0],
-        buildDatasetTagName(ntuple), buildTimeStamp(ntuple), "0000")
-    fullpattern = os.path.join(fullpath, "*.root")
-    cmd = "ls" if ntuple.storage=="local" else "eosls"
-    args = "-d %s" % fullpattern if ntuple.storage=="local" else "%s" % fullpattern
-    x = eos_system(cmd, args).split("\n")[:-1]
-    if ntuple.storage=="EOS":
-        xxx = []
-        for f in x:
-            fullpathname = os.path.join("root://cmsxrootd.fnal.gov//")
-            fullpathname = fullpathname+os.path.join(fullpath, f)
-            xxx.append(fullpathname)
-        return xxx
-    return x
+    if "ext" in ntuple.name:
+        return []
+    files = []
+    for timestamp in buildTimeStamp(ntuple):
+        for directory in multipleDirectories(ntuple,timestamp):
+            fullpath= os.path.join(ntuple.rootpath,
+                                   ntuple.label.split("__")[0],
+                                   buildDatasetTagName(ntuple), 
+                                   timestamp, 
+                                   directory)
+            fullpattern = os.path.join(fullpath, "*.root")
+            cmd = "eosls"
+            args = fullpattern
+            x = eos_system(cmd, args).split("\n")[:-1]
+            if ntuple.storage=="EOS":
+                for f in x:
+                    fullpathname = os.path.join("root://cmsxrootd.fnal.gov//")
+                    fullpathname = fullpathname+os.path.join(fullpath, f)
+                    files.append(fullpathname)
+    return files
+
 
 def buildFileListName(ntuple):
     if ntuple.isData:
