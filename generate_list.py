@@ -16,18 +16,18 @@ rootpath = "/store/user/malhusse/higgs_ntuples/2017"
 data_ntuples = []
 aux = "Mu27"
 filelistdir = "/afs/cern.ch/work/m/malhusse/private/h2mu/filelists"
+filelistdir = "/uscms/home/malhusse/nobackup/build/AnalysisCode/filelists2"
 
-#for d in data_datasets:
-d = "/SingleMuon/Run2017C-31Mar2018-v1/MINIAOD"
-ntuple = DS.Ntuple(data_datasets[d],
-                   json = jsonfile.filename,
-                   cmssw = cmssw,
-                   storage = "EOS",
-                   rootpath = os.path.join(rootpath, "data"),
-                   timestamp = None,
-                   aux = aux
-                   )
-data_ntuples.append(ntuple)
+for d in data_datasets:
+    ntuple = DS.Ntuple(data_datasets[d],
+                       json = jsonfile.filename,
+                       cmssw = cmssw,
+                       storage = "EOS",
+                       rootpath = os.path.join(rootpath, "data"),
+                       timestamp = None,
+                       aux = aux
+                       )
+    data_ntuples.append(ntuple)
 print data_ntuples
 
 for ntuple in data_ntuples:
