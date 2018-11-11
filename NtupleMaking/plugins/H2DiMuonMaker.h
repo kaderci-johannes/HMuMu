@@ -38,7 +38,7 @@ class H2DiMuonMaker : public edm::EDAnalyzer
   private:
 	//	ROOT
 	TTree *_tEvents;
-	//	TTree *_tMeta;
+	TTree *_tMeta;
 
 	//	Analysis Objects
 	analysis::dimuon::MetaHiggs _meta;

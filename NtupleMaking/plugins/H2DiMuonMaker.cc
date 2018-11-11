@@ -31,7 +31,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 	//
 	edm::Service<TFileService> fs;
 	_tEvents = fs->make<TTree>("Events", "Events");
-	//	_tMeta = fs->make<TTree>("Meta", "Meta");
+	_tMeta = fs->make<TTree>("Meta", "Meta");
 
 	using namespace analysis::core;
 	using namespace analysis::dimuon;
@@ -42,7 +42,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 	_tEvents->Branch("Event", (Event *)&_event);
 	_tEvents->Branch("EventAuxiliary", (EventAuxiliary *)&_eaux);
 	_tEvents->Branch("MET", (MET *)&_met);
-	_tEvents->Branch("Meta", (MetaHiggs *)&_meta);
+	_tMeta->Branch("Meta", (MetaHiggs *)&_meta);
 	_tEvents->Branch("Auxiliary", &m_aux);
 
 	consumes<pat::MuonCollection>(_muonToken);
@@ -106,7 +106,7 @@ void H2DiMuonMaker::beginJob()
 
 void H2DiMuonMaker::endJob()
 {
-  //	_tMeta->Fill();
+  _tMeta->Fill();
 }
 
 void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
