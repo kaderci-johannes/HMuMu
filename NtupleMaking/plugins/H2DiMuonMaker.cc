@@ -14,6 +14,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 															_trigObjToken(ps.getUntrackedParameter<edm::InputTag>("tagTriggerObjects")),
 															_metToken(ps.getUntrackedParameter<edm::InputTag>("tagMET")),
 															_jetToken(ps.getUntrackedParameter<edm::InputTag>("tagJets")),
+															_rhoToken(ps.getUntrackedParameter<edm::InputTag>("tagRho")),
 															_genJetToken(ps.getUntrackedParameter<edm::InputTag>("tagGenJets")),
 															_eleVetoToken(ps.getUntrackedParameter<edm::InputTag>("tagElectronCutBasedId_veto")),
 															_eleLooseToken(ps.getUntrackedParameter<edm::InputTag>("tagElectronCutBasedId_loose")),
@@ -24,7 +25,8 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 															_metFilterToken(ps.getUntrackedParameter<edm::InputTag>("tagMetFilterResults")),
 															_prunedGenParticlesToken(ps.getUntrackedParameter<edm::InputTag>("tagPrunedGenParticles")),
 							    _packedGenParticlesToken(ps.getUntrackedParameter<edm::InputTag>("tagPackedGenParticles")),
-							    roch_file(ps.getParameter<edm::FileInPath>("rochesterFile"))
+							    roch_file(ps.getParameter<edm::FileInPath>("rochesterFile")),
+								btag_file(ps.getParameter<edm::FileInPath>("btagFile"))
 {
 	//
 	//	init the Trees and create branches
@@ -53,6 +55,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 	consumes<pat::TriggerObjectStandAloneCollection>(_trigObjToken);
 	consumes<pat::METCollection>(_metToken);
 	consumes<pat::JetCollection>(_jetToken);
+	consumes<double>(_rhoToken);
 	consumes<reco::GenJetCollection>(_genJetToken);
 	consumes<edm::ValueMap<bool>>(_eleVetoToken);
 	consumes<edm::ValueMap<bool>>(_eleLooseToken);
@@ -65,6 +68,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 
 	_genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
 	_lheToken = consumes<LHEEventProduct>(edm::InputTag("externalLHEProducer"));
+	_puToken = consumes<std::vector<PileupSummaryInfo>>(edm::InputTag("slimmedAddPileupInfo"));
 
 	mayConsume<reco::ConversionCollection>(_convToken);
 
@@ -125,11 +129,68 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 	_pfjets.clear();
 	_genjets.clear();
 	_muons.clear();
-	// _correctedMuons.clear();
 	_electrons.clear();
 	_taus.clear();
 	_genjets.clear();
 	m_aux.reset();
+
+	// Get Jet Energy Corrections Uncertainties
+	esetup.get<JetCorrectionsRecord>().get("AK4PF", m_hJetCParametersAK4);
+	JetCorrectorParameters const& jetParametersAK4 = (*m_hJetCParametersAK4)["Uncertainty"];
+	m_jecuAK4 = new JetCorrectionUncertainty(jetParametersAK4);
+	
+
+	// JER SF and Unc
+	JME::JetResolution resolution = JME::JetResolution::get(esetup, "AK4PFchs_pt");
+	JME::JetResolutionScaleFactor resolution_sf = JME::JetResolutionScaleFactor::get(esetup, "AK4PFchs");
+
+	// btag sf
+	
+	BTagCalibration calib("DeepCSV", btag_file.fullPath().c_str());
+    BTagCalibrationReader btreader(BTagEntry::OP_MEDIUM, "central", {"up", "down"});
+    btreader.load(calib, BTagEntry::FLAV_B , "comb"); 
+
+	//
+	//	HLT
+	//	- Skip the event if HLT has not fired
+	//
+	e.getByLabel(_trigResToken, _hTriggerResults);
+	e.getByLabel(_trigObjToken, _hTriggerObjects);
+	if (!_hTriggerResults.isValid())
+	{
+		std::cout << "Trigger Results Product is not found" << std::endl;
+		return;
+	}
+	if (!_hTriggerObjects.isValid())
+	{
+		std::cout << "Trigger Objects Product is not found" << std::endl;
+		return;
+	}
+	if (_meta._checkTrigger)
+		if (!passHLT(e))
+			return;
+
+	// MetFilterResults
+	e.getByLabel(_metFilterToken, _hMetFilterResults);
+	if (!_hMetFilterResults.isValid())
+	{
+		std::cout << " met Filter Results Product not found" << std::endl;
+	}
+	else
+	{
+		edm::TriggerNames const &metNames = e.triggerNames(*_hMetFilterResults);
+
+		for (unsigned int i = 0, n = _hMetFilterResults->size(); i < n; ++i)
+		{
+			std::string filterName = metNames.triggerName(i);
+			for (std::vector<std::string>::const_iterator dit = _meta._metFilterNames.begin(); dit != _meta._metFilterNames.end(); ++dit)
+				if (*dit == filterName)
+				{
+					_eaux._metFilterBits[filterName] = _hMetFilterResults->accept(i);
+					_eaux._passedMetFilters = _eaux._passedMetFilters && _hMetFilterResults->accept(i);
+				}
+		}
+	}
 
 	//
 	//	For MC
@@ -180,17 +241,16 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 		}
 		//
 		//	PILEUP
-		//	look into this - Mo 9/17/18
 		//
-		// edm::Handle<std::vector< PileupSummaryInfo > > hPUInfo;
-		// e.getByLabel(_tokPU, hPUInfo);
-		// std::vector<PileupSummaryInfo>::const_iterator pus;
-		// for (pus=hPUInfo->begin(); pus!=hPUInfo->end(); ++pus)
-		// {
-		// 	int bx = pus->getBunchCrossing();
-		// 	if (bx==0)
-		// 		_eaux._nPU = pus->getTrueNumInteractions();
-		// }
+		edm::Handle<std::vector< PileupSummaryInfo > > hPUInfo;
+		e.getByToken(_puToken, hPUInfo);
+		std::vector<PileupSummaryInfo>::const_iterator pus;
+		for (pus=hPUInfo->begin(); pus!=hPUInfo->end(); ++pus)
+		{
+			int bx = pus->getBunchCrossing();
+			if (bx==0)
+				_eaux._nPU = pus->getTrueNumInteractions();
+		}
 
 		//
 		//	Gen Jet
@@ -223,49 +283,6 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 			}
 		}
 	}
-
-	//
-	//	HLT
-	//	- Skip the event if HLT has not fired
-	//
-	e.getByLabel(_trigResToken, _hTriggerResults);
-	e.getByLabel(_trigObjToken, _hTriggerObjects);
-	if (!_hTriggerResults.isValid())
-	{
-		std::cout << "Trigger Results Product is not found" << std::endl;
-		return;
-	}
-	if (!_hTriggerObjects.isValid())
-	{
-		std::cout << "Trigger Objects Product is not found" << std::endl;
-		return;
-	}
-	if (_meta._checkTrigger)
-		if (!passHLT(e))
-			return;
-
-	// MetFilterResults
-	e.getByLabel(_metFilterToken, _hMetFilterResults);
-	if (!_hMetFilterResults.isValid())
-	{
-		std::cout << " met Filter Results Product not found" << std::endl;
-	}
-	else
-	{
-		edm::TriggerNames const &metNames = e.triggerNames(*_hMetFilterResults);
-
-		for (unsigned int i = 0, n = _hMetFilterResults->size(); i < n; ++i)
-		{
-			std::string filterName = metNames.triggerName(i);
-			for (std::vector<std::string>::const_iterator dit = _meta._metFilterNames.begin(); dit != _meta._metFilterNames.end(); ++dit)
-				if (*dit == filterName)
-				{
-					_eaux._metFilterBits[filterName] = _hMetFilterResults->accept(i);
-					_eaux._passedMetFilters = _eaux._passedMetFilters && _hMetFilterResults->accept(i);
-				}
-		}
-	}
-
 	//
 	//	Event Info
 	//
@@ -284,6 +301,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 		std::cout << "VertexCollection Product is not found" << std::endl;
 	else
 	{
+		_eaux._nvtx = hVertices->size();
 		for (reco::VertexCollection::const_iterator it = hVertices->begin();
 			 it != hVertices->end(); ++it)
 		{
@@ -342,6 +360,10 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 	}
 	else
 	{
+		edm::Handle<double> hRho;
+		e.getByLabel(_rhoToken, hRho);
+		double _rho = *hRho;
+		
 		for (uint32_t i = 0; i < hJets->size(); i++)
 		{
 			if (i == 10)
@@ -389,27 +411,32 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 				btagDisc += jet.bDiscriminator(*btt);
 			}
 			myjet._btag.push_back(btagDisc);
+			
+			myjet._btag_sf = btreader.eval_auto_bounds("central", BTagEntry::FLAV_B, jet.eta(), jet.pt());
+			myjet._btag_sf_up = btreader.eval_auto_bounds("up", BTagEntry::FLAV_B, jet.eta(), jet.pt());
+			myjet._btag_sf_down =btreader.eval_auto_bounds("down", BTagEntry::FLAV_B, jet.eta(), jet.pt());
 
-			// energy correction uncertainty -- look into this Mo 5/2018
-			// m_jecuAK5->setJetEta(jet.eta());
-			// m_jecuAK4->setJetEta(jet.eta());
-			// m_jecuAK5->setJetPt(jet.pt());
-			// m_jecuAK4->setJetPt(jet.pt());
+			// energy correction uncertainty 
+			m_jecuAK4->setJetEta(jet.eta());
+			m_jecuAK4->setJetPt(jet.pt());
 
-			// double uncAK5 = m_jecuAK5->getUncertainty(true);
-			// double uncAK4 = m_jecuAK4->getUncertainty(true);
+			double uncAK4 = m_jecuAK4->getUncertainty(true);
+			double pt_upAK4 = jet.pt()*(1 + uncAK4);
+			double pt_downAK4 = jet.pt()*(1 - uncAK4);
 
-			// double pt_upAK5 = jet.pt()*(1 + uncAK5);
-			// double pt_downAK5 = jet.pt()*(1 - uncAK5);
-			// double pt_upAK4 = jet.pt()*(1 + uncAK4);
-			// double pt_downAK4 = jet.pt()*(1 - uncAK4);
+			myjet._uncAK4 = uncAK4;
+			myjet._pt_upAK4 = pt_upAK4;
+			myjet._pt_downAK4 = pt_downAK4;
 
-			// myjet._uncAK5 = uncAK5;
-			// myjet._uncAK4 = uncAK4;
-			// myjet._pt_upAK5 = pt_upAK5;
-			// myjet._pt_upAK4 = pt_upAK4;
-			// myjet._pt_downAK5 = pt_downAK5;
-			// myjet._pt_downAK4 = pt_downAK4;
+			JME::JetParameters jetResParams;
+			jetResParams.setJetPt(jet.pt());
+			jetResParams.setJetEta(jet.eta());
+			jetResParams.setRho(_rho); // add rho
+
+			myjet._jer = resolution.getResolution(jetResParams);
+			myjet._jerSF = resolution_sf.getScaleFactor(jetResParams);
+			myjet._jerSF_up = resolution_sf.getScaleFactor(jetResParams, Variation::UP);
+			myjet._jerSF_down = resolution_sf.getScaleFactor(jetResParams, Variation::DOWN);
 
 			//	matche gen jet
 			const reco::GenJet *genJet = jet.genJet();
