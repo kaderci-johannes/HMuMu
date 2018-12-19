@@ -24,70 +24,17 @@ if "ANALYSISHOME" not in os.environ.keys():
 sys.path.append(os.path.join(
     os.environ["ANALYSISHOME"], "Configuration", "higgs"))
 import Samples as S
-#import Dataset as DS
-
-#data_datasets = S.datadatasets
-#mc_datasets = Samples.mcMoriond2017datasets
-jsonfiles = S.jsonfiles
-# print(data_datasets)
-
-jsontag = "2017_Synch"
-jsonfile = jsonfiles[jsontag]
-#dataset = None
-#dataset = data_datasets["/SingleMuon/Run2017B-17Nov2017-v1/MINIAOD"]
-# print(dataset)
-
-# if dataset == None:
-#    print("-" * 40)
-#    print("dataset is None")
-#    print("-" * 40)
-#    sys.exit(1)
-
-# ntuple = DS.Ntuple(
-#    dataset,
-json = "json/" + jsonfile.filename
-#    storage=None,
-#    rootpath=None,
-#    timestamp=None,
-#    cmssw="94X")
-
-#
-#   a few settings
-#
-#thisIsData = ntuple.isData
 thisIsData = False
-#globalTag = ntuple.globaltag
-globalTag = '94X_mc2017_realistic_v15'
-#readFiles = cms.untracked.vstring()
-#readFiles.extend(open(("sample_file_lists/%s/" % ("data" if ntuple.isData else "mc"))+ntuple.test_file).read().splitlines())
 
-# print(readFiles)
-#
-#   Differentiate between DATA and MC
-#
-if not thisIsData:
-    process.load("HMuMu.NtupleMaking.H2DiMuonMaker_MC")
-else:
-    process.load("HMuMu.NtupleMaking.H2DiMuonMaker_Data")
-    print("DATA")
+globalTag = S.mc_global_tag_2017
 
-# #
-# #   Debug/Loggin
-# #
-print("")
+process.load("HMuMu.NtupleMaking.H2DiMuonMaker_Data")
+
 print("")
 print('Loading Global Tag: ' + globalTag)
 process.GlobalTag.globaltag = globalTag
 print("")
-print("")
-if thisIsData:
-    print('Running over data sample')
-else:
-    print('Running over MC sample')
-
-#print("Sample Name:    " + ntuple.name)
-print("")
-print("")
+print('Running over MC sample')
 
 # JET ENERGY CORRECTIONS
 
@@ -129,7 +76,7 @@ setupEgammaPostRecoSeq(process,
 # #
 # #   Pool Source with proper LSs
 # #
-process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(-1))
+process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(1000))
 
 process.source = cms.Source("PoolSource", fileNames=cms.untracked.vstring(
     # 'file:DE1721FC-10D9-E711-B475-0025907B4F04.root'))
@@ -138,11 +85,6 @@ process.source = cms.Source("PoolSource", fileNames=cms.untracked.vstring(
 # readFiles)
 process.options = cms.untracked.PSet(wantSummary=cms.untracked.bool(False))
 process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange()
-if thisIsData:
-    import FWCore.PythonUtilities.LumiList as LumiList
-    process.source.lumisToProcess = LumiList.LumiList(
-        #        filename=ntuple.json).getVLuminosityBlockRange()
-        filename=json).getVLuminosityBlockRange()
 
 # #
 # #  Electron ID Setup - cut based
@@ -162,8 +104,3 @@ process.jecSequence = cms.Sequence(
     process.patJetCorrFactorsUpdatedJEC * process.updatedPatJetsUpdatedJEC)
 process.p = cms.Path(process.fullPatMetSequenceModifiedMET * process.egammaPostRecoSeq *
                      process.egmGsfElectronIDSequence * process.jecSequence * process.ntuplemaker_H2DiMuonMaker)
-
-# this outputs the original file with all info!
-# process.out = cms.OutputModule(
-#    "PoolOutputModule", fileName=cms.untracked.string("test.root"))
-#process.finalize = cms.EndPath(process.out)
