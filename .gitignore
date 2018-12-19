@@ -25,3 +25,4 @@
 crab_projects/
 *crab_auto*.py
 *dimu*for_crab.py
+.ipynb_checkpoints/
