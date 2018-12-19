@@ -15,8 +15,7 @@ storage = "EOS"
 rootpath = "/store/user/malhusse/higgs_ntuples/2017"
 data_ntuples = []
 aux = "Mu27"
-filelistdir = "/afs/cern.ch/work/m/malhusse/private/h2mu/filelists"
-filelistdir = "/uscms/home/malhusse/nobackup/build/AnalysisCode/filelists2"
+filelistdir = "/uscms/home/malhusse/nobackup/build/AnalysisCode/filelists"
 
 for d in data_datasets:
     ntuple = DS.Ntuple(data_datasets[d],
