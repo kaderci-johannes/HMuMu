@@ -32,6 +32,8 @@ jsonfile = jsonfiles[jsontag]
 #   select the datasets to be submitted for grid processing
 datasets = []
 sets_to_consider = Samples.data_2017
+sets_to_consider.update(Samples.mc_signal_2017)
+sets_to_consider.update(Samples.mc_background_2017)
 #sets_to_consider = Samples.mcdatasets
 for k in sets_to_consider:
     #if "Run2016H-03Feb2017" in sets_to_consider[k].name:
@@ -45,7 +47,7 @@ for d in datasets:
     else:
         cmssw = d.initial_cmssw        
     storage = "EOS"
-    rootpath = "/store/user/malhusse/higgs_ntuples/2017"
+    rootpath = "/store/user/malhusse/higgs_ntuples/2017v2"
     if d.isData:
         rootpath+="/data"
     else:
@@ -108,8 +110,8 @@ for s in samples:
     for line in file:
         if 'psetName' in line: 
             line = line.replace('cfgname', cfgname)
-        # if s.isData and 'FileBased' in line: 
-        #     line = line.replace('FileBased', 'Automatic')
+        if s.isData and 'FileBased' in line: 
+            line = line.replace('FileBased', 'LumiBased')
         if s.isData and 'config.Data.lumiMask' in line: 
             line = line.replace('#', '')
             line = line.replace('JSONFILE', "json/"+s.json)
@@ -122,11 +124,11 @@ for s in samples:
             line = line.replace('s.name', s.name)
         if 'ROOTPATH' in line:
             line = line.replace("ROOTPATH", s.rootpath)
-        # if "JOBUNITS" in line:
-        #     if s.isData:
-        #         line = line.replace("JOBUNITS", "200")
-        #     else:
-        #         line = line.replace("JOBUNITS", "10")
+        if "JOBUNITS" in line:
+            if s.isData:
+                line = line.replace("JOBUNITS", "10")
+            else:
+                line = line.replace("JOBUNITS", "5")
         outfile.write(line)
     
     outfile.close()
