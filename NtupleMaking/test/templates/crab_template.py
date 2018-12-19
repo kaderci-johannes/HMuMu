@@ -11,14 +11,13 @@ config.JobType.psetName = 'cfgname'
 config.JobType.allowUndistributedCMSSW=True
 config.JobType.sendExternalFolder = True
 config.JobType.maxMemoryMB = 2500
-# config.JobType.maxJobRuntimeMin = 1500
 #config.JobType.outputFiles = ['outputfile.root']
 
 config.Data.inputDataset = 's.name'
 config.Data.inputDBS = 'global'
-config.Data.splitting = 'Automatic'
+config.Data.splitting = 'FileBased'
 #config.Data.lumiMask = 'JSONFILE'
-# config.Data.unitsPerJob = JOBUNITS 
+config.Data.unitsPerJob = JOBUNITS
 config.Data.outLFNDirBase = 'ROOTPATH'
 config.Data.publication = False
 config.Data.outputDatasetTag = 'DATASETTAGNAME'
