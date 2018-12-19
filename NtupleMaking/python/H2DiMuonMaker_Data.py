@@ -18,10 +18,13 @@ ntuplemaker_H2DiMuonMaker = cms.EDAnalyzer(
     tagMetFilterResults=cms.untracked.InputTag("TriggerResults", "", "RECO"),
     tagMET=cms.untracked.InputTag("slimmedMETsModifiedMET"),
     tagJets=cms.untracked.InputTag("updatedPatJetsUpdatedJEC"),
+    tagRho = cms.untracked.InputTag("fixedGridRhoFastjetAll"),
     tagGenJets=cms.untracked.InputTag("slimmedGenJets"),
     tagConversions=cms.untracked.InputTag("reducedEgamma:reducedConversions"),
     
     rochesterFile=cms.FileInPath("RoccoR2017.txt"),
+    btagFile=cms.FileInPath("DeepCSV_94XSF_V3_B_F.csv"),
+
     # electron cut based id
     tagElectronCutBasedId_veto=cms.untracked.InputTag(
         "egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V1-veto"),

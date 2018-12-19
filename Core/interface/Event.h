@@ -53,6 +53,7 @@ class EventAuxiliary : public Object
 	}
 
 	int _nPU;
+	int _nvtx;
 	int _genWeight;
 	bool _passedMetFilters;
 	std::vector<bool> _hasHLTFired;

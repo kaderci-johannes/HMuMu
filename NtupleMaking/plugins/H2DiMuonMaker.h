@@ -63,6 +63,7 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 	edm::InputTag _trigObjToken;
 	edm::InputTag _metToken;
 	edm::InputTag _jetToken;
+	edm::InputTag _rhoToken;
 	edm::InputTag _genJetToken;
 	edm::InputTag _eleVetoToken;
 	edm::InputTag _eleLooseToken;
@@ -74,12 +75,16 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 	edm::InputTag _prunedGenParticlesToken;
 	edm::InputTag _packedGenParticlesToken;
 	edm::FileInPath roch_file;
-
+	edm::FileInPath btag_file;
 	edm::EDGetTokenT<LHEEventProduct> _lheToken;
 	edm::EDGetTokenT<GenEventInfoProduct> _genInfoToken;
+	edm::EDGetTokenT<std::vector<PileupSummaryInfo> > _puToken;
 	edm::Handle<edm::TriggerResults> _hTriggerResults;
 	edm::Handle<pat::TriggerObjectStandAloneCollection> _hTriggerObjects;
 	edm::Handle<edm::TriggerResults> _hMetFilterResults;
+	edm::ESHandle<JetCorrectorParametersCollection> m_hJetCParametersAK4;
+	JetCorrectionUncertainty *m_jecuAK4;
+
 	bool _useElectrons;
 	bool _useTaus;
 };

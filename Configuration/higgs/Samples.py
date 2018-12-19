@@ -7,6 +7,11 @@ if "ANALYSISHOME" not in os.environ.keys():
     raise NameError("Can not find ANALYSISHOME env var")
 sys.path.append(os.environ["ANALYSISHOME"])
 
+# 
+#   Global Tags
+#
+data_global_tag_2017 = "94X_dataRun2_v11"
+mc_global_tag_2017 = "94X_mc2017_realistic_v17"
 #
 #   CMSSW Datasets
 #   
@@ -21,27 +26,27 @@ data_2017 = {
         name = "/SingleMuon/Run2017B-31Mar2018-v1/MINIAOD",
         isData = True,
         year = 2017,
-        globaltag = "94X_dataRun2_ReReco_EOY17_v6"),
+        globaltag = data_global_tag_2017),
     "/SingleMuon/Run2017C-31Mar2018-v1/MINIAOD" : DS.Dataset(
         name = "/SingleMuon/Run2017C-31Mar2018-v1/MINIAOD",
         isData = True,
         year = 2017,
-        globaltag = "94X_dataRun2_ReReco_EOY17_v6"),
+        globaltag = data_global_tag_2017),
     "/SingleMuon/Run2017D-31Mar2018-v1/MINIAOD" : DS.Dataset(
         name = "/SingleMuon/Run2017D-31Mar2018-v1/MINIAOD",
         isData = True,
         year = 2017,
-        globaltag = "94X_dataRun2_ReReco_EOY17_v6"),
+        globaltag = data_global_tag_2017),
     "/SingleMuon/Run2017E-31Mar2018-v1/MINIAOD" : DS.Dataset(
         name = "/SingleMuon/Run2017E-31Mar2018-v1/MINIAOD",
         isData = True,
         year = 2017,
-        globaltag = "94X_dataRun2_ReReco_EOY17_v6"),
+        globaltag = data_global_tag_2017),
     "/SingleMuon/Run2017F-31Mar2018-v1/MINIAOD" : DS.Dataset(
         name = "/SingleMuon/Run2017F-31Mar2018-v1/MINIAOD",
         isData = True,
         year = 2017,
-        globaltag = "94X_dataRun2_ReReco_EOY17_v6"),
+        globaltag = data_global_tag_2017),
 
 }
 
@@ -62,7 +67,7 @@ mc_signal_2017 = {
         year = 2017,
         isSignal = True,
         initial_cmssw = "94X",
-        globaltag = "94X_mc2017_realistic_v15",
+        globaltag = mc_global_tag_2017,
         cross_section = 0.01057
 ),
     "/VBFHToMuMu_M125_13TeV_amcatnlo_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM" : DS.MCDataset(
@@ -71,7 +76,7 @@ mc_signal_2017 = {
         year = 2017,
         isSignal = True,
         initial_cmssw = "94X",
-        globaltag = "94X_mc2017_realistic_v15",
+        globaltag = mc_global_tag_2017,
         cross_section = .0008230
 ),
     "/WplusH_HToMuMu_WToAll_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v3/MINIAODSIM" : DS.MCDataset(
@@ -80,7 +85,7 @@ mc_signal_2017 = {
         year = 2017,
         isSignal = True,
         initial_cmssw = "94X",
-        globaltag = "94X_mc2017_realistic_v15",
+        globaltag = mc_global_tag_2017,
         cross_section = 0.0001852
 ),
     "/WminusH_HToMuMu_WToAll_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM" : DS.MCDataset(
@@ -89,7 +94,7 @@ mc_signal_2017 = {
         year = 2017,
         isSignal = True,
         initial_cmssw = "94X",
-        globaltag = "94X_mc2017_realistic_v15",
+        globaltag = mc_global_tag_2017,
         cross_section = 0.0001160
 ),
     "/ZH_HToMuMu_ZToAll_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM" : DS.MCDataset(
@@ -98,7 +103,7 @@ mc_signal_2017 = {
         year = 2017,
         isSignal = True,
         initial_cmssw = "94X",
-        globaltag = "94X_mc2017_realistic_v15",
+        globaltag = mc_global_tag_2017,
         cross_section = 0.0001923
 ),
     "/ttHToMuMu_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v3/MINIAODSIM" : DS.MCDataset(
@@ -107,7 +112,7 @@ mc_signal_2017 = {
         year = 2017,
         isSignal = True,
         initial_cmssw = "94X",
-        globaltag = "94X_mc2017_realistic_v15",
+        globaltag = mc_global_tag_2017,
         cross_section = 0.00011034
 ),
 
@@ -119,7 +124,7 @@ mc_background_2017 = {
         year = 2017,
         isSignal = False,
         initial_cmssw = "94X",
-        globaltag = "94X_mc2017_realistic_v15",
+        globaltag = mc_global_tag_2017,
         cross_section = 5765.0
 )
 ,
@@ -130,7 +135,7 @@ mc_background_2017 = {
         year = 2017,
         isSignal = False,
         initial_cmssw = "94X",
-        globaltag = "94X_mc2017_realistic_v15",
+        globaltag = mc_global_tag_2017,
         cross_section = 5765.0
 )
 ,
@@ -140,7 +145,7 @@ mc_background_2017 = {
         year = 2017,
         isSignal = False,
         initial_cmssw = "94X",
-        globaltag = "94X_mc2017_realistic_v15",
+        globaltag = mc_global_tag_2017,
         cross_section = 85.656
 )
 ,
@@ -150,7 +155,7 @@ mc_background_2017 = {
         year = 2017,
         isSignal = False,
         initial_cmssw = "94X",
-        globaltag = "94X_mc2017_realistic_v15",
+        globaltag = mc_global_tag_2017,
         cross_section = 11.61
 )
 ,
@@ -160,7 +165,7 @@ mc_background_2017 = {
         year = 2017,
         isSignal = False,
         initial_cmssw = "94X",
-        globaltag = "94X_mc2017_realistic_v15",
+        globaltag = mc_global_tag_2017,
         cross_section = 5.595
 )
 ,
@@ -170,7 +175,7 @@ mc_background_2017 = {
         year = 2017,
         isSignal = False,
         initial_cmssw = "94X",
-        globaltag = "94X_mc2017_realistic_v15",
+        globaltag = mc_global_tag_2017,
         cross_section = 4.42965
 )
 ,
@@ -180,7 +185,7 @@ mc_background_2017 = {
         year = 2017,
         isSignal = False,
         initial_cmssw = "94X",
-        globaltag = "94X_mc2017_realistic_v15",
+        globaltag = mc_global_tag_2017,
         cross_section = 45.99
 )
 ,
@@ -190,7 +195,7 @@ mc_background_2017 = {
         year = 2017,
         isSignal = False,
         initial_cmssw = "94X",
-        globaltag = "94X_mc2017_realistic_v15",
+        globaltag = mc_global_tag_2017,
         cross_section = 45.99
 )
 ,
@@ -200,7 +205,7 @@ mc_background_2017 = {
         year = 2017,
         isSignal = False,
         initial_cmssw = "94X",
-        globaltag = "94X_mc2017_realistic_v15",
+        globaltag = mc_global_tag_2017,
         cross_section = 12.46
 )
 ,
@@ -210,7 +215,7 @@ mc_background_2017 = {
         year = 2017,
         isSignal = False,
         initial_cmssw = "94X",
-        globaltag = "94X_mc2017_realistic_v15",
+        globaltag = mc_global_tag_2017,
         cross_section = 12.46
 )
 ,
@@ -220,7 +225,7 @@ mc_background_2017 = {
         year = 2017,
         isSignal = False,
         initial_cmssw = "94X",
-        globaltag = "94X_mc2017_realistic_v15",
+        globaltag = mc_global_tag_2017,
         cross_section = 0.2086
 )
 ,
@@ -230,7 +235,7 @@ mc_background_2017 = {
         year = 2017,
         isSignal = False,
         initial_cmssw = "94X",
-        globaltag = "94X_mc2017_realistic_v15",
+        globaltag = mc_global_tag_2017,
         cross_section = 0.1651
 )
 ,
@@ -240,7 +245,7 @@ mc_background_2017 = {
         year = 2017,
         isSignal = False,
         initial_cmssw = "94X",
-        globaltag = "94X_mc2017_realistic_v15",
+        globaltag = mc_global_tag_2017,
         cross_section = 687.1
 )
 ,
@@ -250,7 +255,7 @@ mc_background_2017 = {
         year = 2017,
         isSignal = False,
         initial_cmssw = "94X",
-        globaltag = "94X_mc2017_realistic_v15",
+        globaltag = mc_global_tag_2017,
         cross_section = 16.523
 )
 }

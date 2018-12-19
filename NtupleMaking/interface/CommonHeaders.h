@@ -122,4 +122,8 @@
 #include "DataFormats/EgammaCandidates/interface/ConversionFwd.h"
 #include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
 
+// BTAG SF and UNC
+#include "CondFormats/BTauObjects/interface/BTagCalibration.h"
+#include "CondTools/BTau/interface/BTagCalibrationReader.h"
+
 #endif
