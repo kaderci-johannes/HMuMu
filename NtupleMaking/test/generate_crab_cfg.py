@@ -47,7 +47,7 @@ for d in datasets:
     else:
         cmssw = d.initial_cmssw        
     storage = "EOS"
-    rootpath = "/store/user/malhusse/higgs_ntuples/2017v2"
+    rootpath = "/store/user/malhusse/higgs_ntuples/2017"
     if d.isData:
         rootpath+="/data"
     else:
@@ -128,7 +128,7 @@ for s in samples:
             if s.isData:
                 line = line.replace("JOBUNITS", "10")
             else:
-                line = line.replace("JOBUNITS", "5")
+                line = line.replace("JOBUNITS", "1")
         outfile.write(line)
     
     outfile.close()

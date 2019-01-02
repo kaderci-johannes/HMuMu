@@ -28,7 +28,7 @@ thisIsData = False
 
 globalTag = S.mc_global_tag_2017
 
-process.load("HMuMu.NtupleMaking.H2DiMuonMaker_Data")
+process.load("HMuMu.NtupleMaking.H2DiMuonMaker_MC")
 
 print("")
 print('Loading Global Tag: ' + globalTag)

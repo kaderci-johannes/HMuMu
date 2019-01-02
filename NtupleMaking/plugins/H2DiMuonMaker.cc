@@ -102,6 +102,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 	{
 		_tEvents->Branch("GenJets", (GenJets *)&_genjets);
 	}
+	m_jecuAK4 = NULL;
 }
 
 void H2DiMuonMaker::beginJob()
@@ -137,6 +138,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 	// Get Jet Energy Corrections Uncertainties
 	esetup.get<JetCorrectionsRecord>().get("AK4PF", m_hJetCParametersAK4);
 	JetCorrectorParameters const& jetParametersAK4 = (*m_hJetCParametersAK4)["Uncertainty"];
+	if (m_jecuAK4 != NULL) delete m_jecuAK4;
 	m_jecuAK4 = new JetCorrectionUncertainty(jetParametersAK4);
 	
 
