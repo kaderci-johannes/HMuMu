@@ -42,7 +42,7 @@ for ntuple in mc_ntuples:
     try:
         filelist_list = S.discoverFileList(ntuple)
         filelist = os.path.join(filelistdir, S.buildFileListName(ntuple))
-        print filelist
+   #     print filelist
     except Exception as exc:
         continue
 
