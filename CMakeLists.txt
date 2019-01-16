@@ -93,6 +93,7 @@ set (EXTRA_LIBS ${EXTRA_LIBS} AnalysisCore)
 #
 ROOT_GENERATE_DICTIONARY(G__AuxTools
     ${PROJECT_SOURCE_DIR}/AuxTools/interface/Streamer.h
+    ${PROJECT_SOURCE_DIR}/AuxTools/interface/LumiReweightingStandAlone.h
 	LINKDEF ${PROJECT_SOURCE_DIR}/config/LinkDef.h
 	OPTIONS -DSTANDALONE=1 -inlineInputHeader
 )
