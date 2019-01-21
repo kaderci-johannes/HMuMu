@@ -32,7 +32,7 @@ print data_ntuples
 for ntuple in data_ntuples:
     try:
         filelist_list = S.discoverFileList(ntuple)
-        print filelist_list
+        #print filelist_list
         filelist = os.path.join(filelistdir, S.buildFileListName(ntuple))
     except Exception as exc:
         continue

@@ -19,6 +19,7 @@
 #pragma link C++ class analysis::dimuon::MetaHiggs+;
 #pragma link C++ class analysis::processing::Streamer+;
 #pragma link C++ class analysis::dimuon::Auxiliary+;
+#pragma link C++ class reweight::LumiReWeighting+;
 
 #pragma link C++ class std::bitset<256>+;
 #pragma link C++ class std::map<int, bool>+;
