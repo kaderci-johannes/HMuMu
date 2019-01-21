@@ -33,8 +33,7 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 	bool isHLTMatched(uint32_t, edm::Event const &,
 					  pat::Muon const &);
 	bool passKinCuts(pat::Muon const &);
-	// float muonRochCorr()
-
+	
   private:
 	//	ROOT
 	TTree *_tEvents;
@@ -43,7 +42,6 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 	//	Analysis Objects
 	analysis::dimuon::MetaHiggs _meta;
 	analysis::core::Muons _muons;
-	// analysis::core::Muons _correctedMuons;
 	analysis::core::Electrons _electrons;
 	analysis::core::Taus _taus;
 	analysis::core::Jets _pfjets;
