@@ -9,51 +9,44 @@ import os,sys, shelve, pickle
 #   import the Analysis dependency
 if "ANALYSISHOME" not in os.environ.keys():
     raise NameError("Can not find ANALYSISHOME env var")
-#sys.path.append(os.environ["ANALYSISHOME"])
 
-#   we must include the directory in which the module resides to make it work!
 sys.path.append(os.path.join(os.environ["ANALYSISHOME"], "Configuration", "higgs"))
 
-#   import whatever you need
 import Samples as Samples
-#import NtupleMaking.python.Samples as Samples
 import Dataset as DS
-#import NtupleProcessing.python.Dataset as DS
 
 config_filename = "maker_h2dimuon_cfg_crabtemplate.py"
-mcEOSFolder = "/mc"
 
-#   get the json file to be used if needed
 jsonfiles = Samples.jsonfiles
-#jsontag = "2017_Synch"
-jsontag = "EOY2017ReReco"
-jsonfile = jsonfiles[jsontag]
 
 #   select the datasets to be submitted for grid processing
 datasets = []
 sets_to_consider = Samples.data_2017
 sets_to_consider.update(Samples.mc_signal_2017)
 sets_to_consider.update(Samples.mc_background_2017)
-#sets_to_consider = Samples.mcdatasets
 for k in sets_to_consider:
-    #if "Run2016H-03Feb2017" in sets_to_consider[k].name:
     datasets.append(sets_to_consider[k])
 
 #   create the Ntuple objects for all of the datasets
 samples = []
 for d in datasets:
     if d.isData:
-        cmssw = "94X"
+        if d.year == 2016 or d.year == 2017:
+            cmssw = "94X"
+        elif d.year == 2018:
+            cmssw = "102X"
     else:
         cmssw = d.initial_cmssw        
+    jsontag = str(d.year)
     storage = "EOS"
-    rootpath = "/store/user/malhusse/higgs_ntuples/2017"
+    rootpath = "/store/user/malhusse/higgs_ntuples/final/"
+    rootpath += str(d.year)
     if d.isData:
         rootpath+="/data"
     else:
-        rootpath+=mcEOSFolder
+        rootpath+="/mc"
     s = DS.Ntuple(d, 
-        json = jsonfile.filename,
+        json = jsonfiles[jsontag].filename,
         cmssw = cmssw,
         storage = storage,
         rootpath=rootpath,
@@ -71,8 +64,6 @@ for s in samples:
     print "-"*80
     print s
     
-    # hlttype = "HLT"
-    #   create a config filename
     cfgname = 'dimu_'
     cfgname += s.label.replace(".", "_")
     if s.isData:cfgname += str(jsontag)
@@ -86,8 +77,8 @@ for s in samples:
             line = line.replace('s.isData', str(s.isData))
         if 's.globaltag' in line: 
             line = line.replace('s.globaltag', '\"' + s.globaltag + '\"')
-        # if 'HLTTYPE' in line:
-            # line = line.replace('HLTTYPE', hlttype)
+        if 's.year' in line:
+            line = line.replace('s.year', '\"' +str(s.year) + '\"')
         outfile.write(line)
     
     # close the generated cmssw config file
@@ -111,7 +102,7 @@ for s in samples:
         if 'psetName' in line: 
             line = line.replace('cfgname', cfgname)
         if s.isData and 'FileBased' in line: 
-            line = line.replace('FileBased', 'LumiBased')
+            line = line.replace('FileBased', 'EventAwareLumiBased')
         if s.isData and 'config.Data.lumiMask' in line: 
             line = line.replace('#', '')
             line = line.replace('JSONFILE', "json/"+s.json)
@@ -126,7 +117,7 @@ for s in samples:
             line = line.replace("ROOTPATH", s.rootpath)
         if "JOBUNITS" in line:
             if s.isData:
-                line = line.replace("JOBUNITS", "10")
+                line = line.replace("JOBUNITS", "150000")
             else:
                 line = line.replace("JOBUNITS", "1")
         outfile.write(line)
