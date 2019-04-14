@@ -74,9 +74,9 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
     _puToken = consumes<std::vector<PileupSummaryInfo>>(edm::InputTag("slimmedAddPileupInfo"));
     tokenFSRphotons = consumes<std::vector<pat::PFParticle>>(edm::InputTag("FSRRecovery", "selectedFSRphotons"));
 
-    prefweight_token = consumes<double>(edm::InputTag("prefiringweight:NonPrefiringProb"));
-    prefweightup_token = consumes<double>(edm::InputTag("prefiringweight:NonPrefiringProbUp"));
-    prefweightdown_token = consumes<double>(edm::InputTag("prefiringweight:NonPrefiringProbDown"));
+    prefweight_token = consumes<double>(edm::InputTag("prefiringweight:nonPrefiringProb"));
+    prefweightup_token = consumes<double>(edm::InputTag("prefiringweight:nonPrefiringProbUp"));
+    prefweightdown_token = consumes<double>(edm::InputTag("prefiringweight:nonPrefiringProbDown"));
 
     mayConsume<reco::ConversionCollection>(_convToken);
 
