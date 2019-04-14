@@ -24,5 +24,7 @@
 <use name="JetMETCorrections/Objects"/>
 <use name="JetMETCorrections/Modules"/>
 <use name="DataFormats/JetReco" />
+<use name="RecoVertex/KinematicFit"/>
+<use name="MagneticField/ParametrizedEngine"/>
 
 <flags EDM_PLUGIN="1"/>

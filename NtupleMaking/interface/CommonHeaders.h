@@ -95,6 +95,7 @@
 
 // Jets and MET
 // #include "DataFormats/METReco/interface/PFMET.h"
+#include "DataFormats/PatCandidates/interface/PFParticle.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
