@@ -2,7 +2,7 @@
 #define NTUPLEMAKER
 
 #include "HMuMu/NtupleMaking/interface/CommonHeaders.h"
-
+#include "HMuMu/NtupleMaking/interface/KinematicFitMuonCorrections.h"
 //	MY Classes
 #include "HMuMu/Core/interface/GenJet.h"
 #include "HMuMu/Core/interface/Constants.h"
@@ -16,7 +16,11 @@
 #include "HMuMu/Core/interface/Vertex.h"
 #include "HMuMu/Core/interface/Electron.h"
 #include "HMuMu/Core/interface/Tau.h"
-#include "HMuMu/NtupleMaking/Roccor/RoccoR.cc"
+#include "HMuMu/NtupleMaking/data/Roccor/RoccoR.cc"
+
+// classes for json
+#include "boost/property_tree/ptree.hpp"
+#include "boost/property_tree/json_parser.hpp"
 
 class H2DiMuonMaker : public edm::EDAnalyzer
 {
@@ -33,7 +37,7 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 	bool isHLTMatched(uint32_t, edm::Event const &,
 					  pat::Muon const &);
 	bool passKinCuts(pat::Muon const &);
-	
+
   private:
 	//	ROOT
 	TTree *_tEvents;
@@ -63,10 +67,10 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 	edm::InputTag _jetToken;
 	edm::InputTag _rhoToken;
 	edm::InputTag _genJetToken;
-	edm::InputTag _eleVetoToken;
-	edm::InputTag _eleLooseToken;
-	edm::InputTag _eleMediumToken;
-	edm::InputTag _eleTightToken;
+	/* edm::InputTag _eleVetoToken; */
+	/* edm::InputTag _eleLooseToken; */
+	/* edm::InputTag _eleMediumToken; */
+	/* edm::InputTag _eleTightToken; */
 	edm::InputTag _convToken;
 	edm::InputTag _bsToken;
 	edm::InputTag _metFilterToken;
@@ -74,14 +78,35 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 	edm::InputTag _packedGenParticlesToken;
 	edm::FileInPath roch_file;
 	edm::FileInPath btag_file;
+
+	edm::FileInPath muon_isoSF_file;
+	edm::FileInPath muon_idSF_file;
+	edm::FileInPath muon_trigSF_file;
+	TFile *muon_trigSF_root;
+	TH2F *muon_trigSF_histo;
+
+	std::string _id_wp_num;  // = "MediumID";
+	std::string _id_wp_den;  // = "genTracks";
+	std::string _iso_wp_num; // = "LooseRelIso";
+	std::string _iso_wp_den; // = "MediumID";
+
+	boost::property_tree::ptree _muon_isoSF_ptree;
+	boost::property_tree::ptree _muon_idSF_ptree;
+
+	edm::EDGetTokenT<std::vector<pat::PFParticle>> tokenFSRphotons;
+
 	edm::EDGetTokenT<LHEEventProduct> _lheToken;
 	edm::EDGetTokenT<GenEventInfoProduct> _genInfoToken;
-	edm::EDGetTokenT<std::vector<PileupSummaryInfo> > _puToken;
+	edm::EDGetTokenT<std::vector<PileupSummaryInfo>> _puToken;
 	edm::Handle<edm::TriggerResults> _hTriggerResults;
 	edm::Handle<pat::TriggerObjectStandAloneCollection> _hTriggerObjects;
 	edm::Handle<edm::TriggerResults> _hMetFilterResults;
 	edm::ESHandle<JetCorrectorParametersCollection> m_hJetCParametersAK4;
 	JetCorrectionUncertainty *m_jecuAK4;
+
+	edm::EDGetTokenT<double> prefweight_token;
+	edm::EDGetTokenT<double> prefweightup_token;
+	edm::EDGetTokenT<double> prefweightdown_token;
 
 	bool _useElectrons;
 	bool _useTaus;

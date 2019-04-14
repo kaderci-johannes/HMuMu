@@ -3,6 +3,7 @@
  */
 
 #include "HMuMu/NtupleMaking/plugins/H2DiMuonMaker.h"
+// #include "HMuMu/NtupleMaking/interface/KinematicFitMuonCorrections.h"
 
 H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUntrackedParameter<edm::InputTag>("tagMuons")),
                                                             _eleToken(ps.getUntrackedParameter<edm::InputTag>("tagElectrons")),
@@ -14,21 +15,26 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
                                                             _jetToken(ps.getUntrackedParameter<edm::InputTag>("tagJets")),
                                                             _rhoToken(ps.getUntrackedParameter<edm::InputTag>("tagRho")),
                                                             _genJetToken(ps.getUntrackedParameter<edm::InputTag>("tagGenJets")),
-                                                            _eleVetoToken(ps.getUntrackedParameter<edm::InputTag>("tagElectronCutBasedId_veto")),
-                                                            _eleLooseToken(ps.getUntrackedParameter<edm::InputTag>("tagElectronCutBasedId_loose")),
-                                                            _eleMediumToken(ps.getUntrackedParameter<edm::InputTag>("tagElectronCutBasedId_medium")),
-                                                            _eleTightToken(ps.getUntrackedParameter<edm::InputTag>("tagElectronCutBasedId_tight")),
                                                             _convToken(ps.getUntrackedParameter<edm::InputTag>("tagConversions")),
                                                             _bsToken(ps.getUntrackedParameter<edm::InputTag>("tagBS")),
                                                             _metFilterToken(ps.getUntrackedParameter<edm::InputTag>("tagMetFilterResults")),
                                                             _prunedGenParticlesToken(ps.getUntrackedParameter<edm::InputTag>("tagPrunedGenParticles")),
                                                             _packedGenParticlesToken(ps.getUntrackedParameter<edm::InputTag>("tagPackedGenParticles")),
                                                             roch_file(ps.getParameter<edm::FileInPath>("rochesterFile")),
-                                                            btag_file(ps.getParameter<edm::FileInPath>("btagFile"))
+                                                            btag_file(ps.getParameter<edm::FileInPath>("btagFile")),
+                                                            muon_isoSF_file(ps.getParameter<edm::FileInPath>("muonIsoFile")),
+                                                            muon_idSF_file(ps.getParameter<edm::FileInPath>("muonIdFile")),
+                                                            muon_trigSF_file(ps.getParameter<edm::FileInPath>("muonTrigFile")),
+                                                            _id_wp_num(ps.getParameter<std::string>("muon_id_sf_wp_num")),
+                                                            _id_wp_den(ps.getParameter<std::string>("muon_id_sf_wp_den")),
+                                                            _iso_wp_num(ps.getParameter<std::string>("muon_iso_sf_wp_num")),
+                                                            _iso_wp_den(ps.getParameter<std::string>("muon_iso_sf_wp_den"))
+
 {
     //
     //	init the Trees and create branches
     //
+
     edm::Service<TFileService> fs;
     _tEvents = fs->make<TTree>("Events", "Events");
     _tMeta = fs->make<TTree>("Meta", "Meta");
@@ -54,10 +60,10 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
     consumes<pat::JetCollection>(_jetToken);
     consumes<double>(_rhoToken);
     consumes<reco::GenJetCollection>(_genJetToken);
-    consumes<edm::ValueMap<bool>>(_eleVetoToken);
-    consumes<edm::ValueMap<bool>>(_eleLooseToken);
-    consumes<edm::ValueMap<bool>>(_eleMediumToken);
-    consumes<edm::ValueMap<bool>>(_eleTightToken);
+    // consumes<edm::ValueMap<bool>>(_eleVetoToken);
+    // consumes<edm::ValueMap<bool>>(_eleLooseToken);
+    // consumes<edm::ValueMap<bool>>(_eleMediumToken);
+    // consumes<edm::ValueMap<bool>>(_eleTightToken);
     consumes<reco::BeamSpot>(_bsToken);
     consumes<edm::TriggerResults>(_metFilterToken);
     consumes<reco::GenParticleCollection>(_prunedGenParticlesToken);
@@ -66,6 +72,11 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
     _genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
     _lheToken = consumes<LHEEventProduct>(edm::InputTag("externalLHEProducer"));
     _puToken = consumes<std::vector<PileupSummaryInfo>>(edm::InputTag("slimmedAddPileupInfo"));
+    tokenFSRphotons = consumes<std::vector<pat::PFParticle>>(edm::InputTag("FSRRecovery", "selectedFSRphotons"));
+
+    prefweight_token = consumes<double>(edm::InputTag("prefiringweight:NonPrefiringProb"));
+    prefweightup_token = consumes<double>(edm::InputTag("prefiringweight:NonPrefiringProbUp"));
+    prefweightdown_token = consumes<double>(edm::InputTag("prefiringweight:NonPrefiringProbDown"));
 
     mayConsume<reco::ConversionCollection>(_convToken);
 
@@ -84,6 +95,24 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
     _meta._metFilterNames = ps.getUntrackedParameter<std::vector<std::string>>("metFilterNames");
     _useElectrons = ps.getUntrackedParameter<bool>("useElectrons");
     _useTaus = ps.getUntrackedParameter<bool>("useTaus");
+
+    if (_meta._isMC)
+    {
+        // muon scale factor files
+        muon_trigSF_root = new TFile(muon_trigSF_file.fullPath().c_str());
+        muon_trigSF_histo = (TH2F *)muon_trigSF_root->Get("IsoMu27_PtEtaBins/abseta_pt_ratio");
+
+        std::ifstream muon_isoSF_file_json(muon_isoSF_file.fullPath().c_str());
+        std::ifstream muon_idSF_file_json(muon_idSF_file.fullPath().c_str());
+        std::ifstream btagFile(btag_file.fullPath().c_str());
+
+        boost::property_tree::json_parser::read_json(muon_isoSF_file_json, _muon_isoSF_ptree);
+        boost::property_tree::json_parser::read_json(muon_idSF_file_json, _muon_idSF_ptree);
+    }
+    // calib.readCSV(btagFile);
+    // // , btag_file.fullPath().c_str());
+    // btreader.BTagCalibrationReaderImpl(BTagEntry::OP_MEDIUM, "central", {"up", "down"});
+    // btreader.load(calib, BTagEntry::FLAV_B, "comb");
 
     //  additional branching based on flags
     if (_useElectrons)
@@ -129,7 +158,6 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
     _muons.clear();
     _electrons.clear();
     _taus.clear();
-    _genjets.clear();
     m_aux.reset();
 
     //
@@ -141,15 +169,28 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
     {
         edm::Handle<GenEventInfoProduct> hGenEvtInfo;
         e.getByToken(_genInfoToken, hGenEvtInfo);
+        _eaux._bareMCWeight = hGenEvtInfo->weight();
         _eaux._genWeight = (hGenEvtInfo->weight() > 0) ? 1 : -1;
         _meta._sumEventWeights += _eaux._genWeight;
+
+        edm::Handle<double> theprefweight;
+        e.getByToken(prefweight_token, theprefweight);
+        _eaux._prefiringweight = (*theprefweight);
+
+        edm::Handle<double> theprefweightup;
+        e.getByToken(prefweightup_token, theprefweightup);
+        _eaux._prefiringweightup = (*theprefweightup);
+
+        edm::Handle<double> theprefweightdown;
+        e.getByToken(prefweightdown_token, theprefweightdown);
+        _eaux._prefiringweightdown = (*theprefweightdown);
     }
 
     //
     //	HLT
     //	Skip the event if HLT has not fired
     //
-   
+
     e.getByLabel(_trigResToken, _hTriggerResults);
     e.getByLabel(_trigObjToken, _hTriggerObjects);
     if (!_hTriggerResults.isValid())
@@ -177,14 +218,11 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
     JME::JetResolution resolution = JME::JetResolution::get(esetup, "AK4PFchs_pt");
     JME::JetResolutionScaleFactor resolution_sf = JME::JetResolutionScaleFactor::get(esetup, "AK4PFchs");
 
-    // btag sf
-
     BTagCalibration calib("DeepCSV", btag_file.fullPath().c_str());
     BTagCalibrationReader btreader(BTagEntry::OP_MEDIUM, "central", {"up", "down"});
     btreader.load(calib, BTagEntry::FLAV_B, "comb");
-
     // MetFilterResults
-    // 
+    //
     e.getByLabel(_metFilterToken, _hMetFilterResults);
     if (!_hMetFilterResults.isValid())
     {
@@ -366,10 +404,11 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
         e.getByLabel(_rhoToken, hRho);
         double _rho = *hRho;
 
+        float _btagSF = 1.0;
         for (uint32_t i = 0; i < hJets->size(); i++)
         {
-            if (i == 10)
-                break;
+            // if (i == 10)
+            //     break;
 
             const pat::Jet &jet = hJets->at(i);
             analysis::core::Jet myjet;
@@ -414,9 +453,13 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
             }
             myjet._btag.push_back(btagDisc);
 
-            myjet._btag_sf = btreader.eval_auto_bounds("central", BTagEntry::FLAV_B, jet.eta(), jet.pt());
-            myjet._btag_sf_up = btreader.eval_auto_bounds("up", BTagEntry::FLAV_B, jet.eta(), jet.pt());
-            myjet._btag_sf_down = btreader.eval_auto_bounds("down", BTagEntry::FLAV_B, jet.eta(), jet.pt());
+            if (_meta._isMC)
+            {
+                myjet._btag_sf = btreader.eval_auto_bounds("central", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt());
+                myjet._btag_sf_up = btreader.eval_auto_bounds("up", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt());
+                myjet._btag_sf_down = btreader.eval_auto_bounds("down", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt());
+                _btagSF *= myjet._btag_sf;
+            }
 
             // energy correction uncertainty
             m_jecuAK4->setJetEta(jet.eta());
@@ -430,15 +473,18 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
             myjet._pt_upAK4 = pt_upAK4;
             myjet._pt_downAK4 = pt_downAK4;
 
-            JME::JetParameters jetResParams;
-            jetResParams.setJetPt(jet.pt());
-            jetResParams.setJetEta(jet.eta());
-            jetResParams.setRho(_rho); // add rho
+            if (_meta._isMC)
+            {
+                JME::JetParameters jetResParams;
+                jetResParams.setJetPt(jet.pt());
+                jetResParams.setJetEta(jet.eta());
+                jetResParams.setRho(_rho); // add rho
 
-            myjet._jer = resolution.getResolution(jetResParams);
-            myjet._jerSF = resolution_sf.getScaleFactor(jetResParams);
-            myjet._jerSF_up = resolution_sf.getScaleFactor(jetResParams, Variation::UP);
-            myjet._jerSF_down = resolution_sf.getScaleFactor(jetResParams, Variation::DOWN);
+                myjet._jer = resolution.getResolution(jetResParams);
+                myjet._jerSF = resolution_sf.getScaleFactor(jetResParams);
+                myjet._jerSF_up = resolution_sf.getScaleFactor(jetResParams, Variation::UP);
+                myjet._jerSF_down = resolution_sf.getScaleFactor(jetResParams, Variation::DOWN);
+            }
 
             //	matche gen jet
             const reco::GenJet *genJet = jet.genJet();
@@ -462,91 +508,121 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 
             _pfjets.push_back(myjet);
         }
+        _eaux._btagSF = _btagSF;
     }
 
     //
     //  Electrons
     //
-    if (_useElectrons)
-    {
-        edm::Handle<edm::ValueMap<bool>> hId_veto, hId_loose, hId_medium, hId_tight;
-        e.getByLabel(_eleVetoToken, hId_veto);
-        e.getByLabel(_eleLooseToken, hId_loose);
-        e.getByLabel(_eleMediumToken, hId_medium);
-        e.getByLabel(_eleTightToken, hId_tight);
+    // if (_useElectrons)
+    // {
+    //     edm::Handle<edm::ValueMap<bool>> hId_veto, hId_loose, hId_medium, hId_tight;
+    //     e.getByLabel(_eleVetoToken, hId_veto);
+    //     e.getByLabel(_eleLooseToken, hId_loose);
+    //     e.getByLabel(_eleMediumToken, hId_medium);
+    //     e.getByLabel(_eleTightToken, hId_tight);
 
-        edm::Handle<edm::View<pat::Electron>> hElectrons;
-        e.getByLabel(_eleToken, hElectrons);
+    //     edm::Handle<edm::View<pat::Electron>> hElectrons;
+    //     e.getByLabel(_eleToken, hElectrons);
 
-        edm::Handle<reco::ConversionCollection> hConversions;
-        e.getByLabel(_convToken, hConversions);
+    //     edm::Handle<reco::ConversionCollection> hConversions;
+    //     e.getByLabel(_convToken, hConversions);
 
-        for (size_t i = 0; i < hElectrons->size(); ++i)
-        {
-            auto const ele = hElectrons->ptrAt(i);
-            //  >= 10GeV for electrons
-            if (ele->pt() < 10)
-                continue;
+    //     for (size_t i = 0; i < hElectrons->size(); ++i)
+    //     {
+    //         auto const ele = hElectrons->ptrAt(i);
+    //         //  >= 10GeV for electrons
+    //         if (ele->pt() < 10)
+    //             continue;
 
-            analysis::core::Electron mye;
-            mye._charge = ele->charge();
-            mye._pt = ele->pt();
-            mye._eta = ele->eta();
-            mye._phi = ele->phi();
+    //         analysis::core::Electron mye;
+    //         mye._charge = ele->charge();
+    //         mye._pt = ele->pt();
+    //         mye._eta = ele->eta();
+    //         mye._phi = ele->phi();
 
-            reco::GsfTrackRef theTrack = ele->gsfTrack();
-            mye._dz = theTrack->dz(hBS->position());
-            mye._sumChargedHadronPt = ele->pfIsolationVariables().sumChargedHadronPt;
-            mye._sumNeutralHadronEt = ele->pfIsolationVariables().sumNeutralHadronEt;
-            mye._sumPhotonEt = ele->pfIsolationVariables().sumPhotonEt;
-            mye._sumPUPt = ele->pfIsolationVariables().sumPUPt;
-            mye._sumChargedParticlePt = ele->pfIsolationVariables().sumChargedParticlePt;
-            mye._isPF = ele->isPF();
-            mye._convVeto = !ConversionTools::hasMatchedConversion(*ele,
-                                                                   hConversions, hBS->position());
+    //         reco::GsfTrackRef theTrack = ele->gsfTrack();
+    //         mye._dz = theTrack->dz(hBS->position());
+    //         mye._sumChargedHadronPt = ele->pfIsolationVariables().sumChargedHadronPt;
+    //         mye._sumNeutralHadronEt = ele->pfIsolationVariables().sumNeutralHadronEt;
+    //         mye._sumPhotonEt = ele->pfIsolationVariables().sumPhotonEt;
+    //         mye._sumPUPt = ele->pfIsolationVariables().sumPUPt;
+    //         mye._sumChargedParticlePt = ele->pfIsolationVariables().sumChargedParticlePt;
+    //         mye._isPF = ele->isPF();
+    //         mye._convVeto = !ConversionTools::hasMatchedConversion(*ele,
+    //                                                                hConversions, hBS->position());
 
-            // cut based id
+    //         // cut based id
 
-            bool id_veto = (*hId_veto)[ele];
-            mye._ids.push_back(id_veto);
-            bool id_loose = (*hId_loose)[ele];
-            mye._ids.push_back(id_loose);
-            bool id_medium = (*hId_medium)[ele];
-            mye._ids.push_back(id_medium);
-            bool id_tight = (*hId_tight)[ele];
-            mye._ids.push_back(id_tight);
+    //         bool id_veto = (*hId_veto)[ele];
+    //         mye._ids.push_back(id_veto);
+    //         bool id_loose = (*hId_loose)[ele];
+    //         mye._ids.push_back(id_loose);
+    //         bool id_medium = (*hId_medium)[ele];
+    //         mye._ids.push_back(id_medium);
+    //         bool id_tight = (*hId_tight)[ele];
+    //         mye._ids.push_back(id_tight);
 
-            _electrons.push_back(mye);
-        }
-    }
+    //         _electrons.push_back(mye);
+    //     }
+    // }
 
     //
     //  Taus
     //
 
-    if (_useTaus)
+    // if (_useTaus)
+    // {
+    //     edm::Handle<pat::TauCollection> hTaus;
+    //     e.getByLabel(_tauToken, hTaus);
+    //     for (pat::TauCollection::const_iterator it = hTaus->begin();
+    //          it != hTaus->end(); ++it)
+    //     {
+    //         //  >=20GeV for Taus only
+    //         if (it->pt() < 20)
+    //             continue;
+
+    //         analysis::core::Tau mytau;
+    //         mytau._pt = it->pt();
+    //         mytau._eta = it->eta();
+    //         mytau._phi = it->phi();
+    //         mytau._isPF = it->isPFTau();
+    //         mytau._charge = it->charge();
+
+    //         for (std::vector<std::string>::const_iterator tt = _meta._tauIDNames.begin();
+    //              tt != _meta._tauIDNames.end(); ++tt)
+    //             mytau._ids.push_back(it->tauID(*tt));
+
+    //         _taus.push_back(mytau);
+    //     }
+    // }
+
+    // FSR photons
+    edm::Handle<std::vector<pat::PFParticle>> selectedFSRphotons;
+    e.getByToken(tokenFSRphotons, selectedFSRphotons);
+
+    double fsrDrEt2Cut = 0.019;
+    double fsrIsoCut = 0.8;
+
+    for (unsigned int i = 0; i < selectedFSRphotons->size(); i++)
     {
-        edm::Handle<pat::TauCollection> hTaus;
-        e.getByLabel(_tauToken, hTaus);
-        for (pat::TauCollection::const_iterator it = hTaus->begin();
-             it != hTaus->end(); ++it)
+        pat::PFParticle photon = selectedFSRphotons->at(i);
+        pat::Muon *associatedMuon = (pat::Muon *)(photon.userCand("associatedMuon").get());
+        if (photon.userFloat("PFphotonIso03") < fsrIsoCut && photon.userFloat("ETgammadeltaR") < fsrDrEt2Cut)
         {
-            //  >=20GeV for Taus only
-            if (it->pt() < 20)
-                continue;
-
-            analysis::core::Tau mytau;
-            mytau._pt = it->pt();
-            mytau._eta = it->eta();
-            mytau._phi = it->phi();
-            mytau._isPF = it->isPFTau();
-            mytau._charge = it->charge();
-
-            for (std::vector<std::string>::const_iterator tt = _meta._tauIDNames.begin();
-                 tt != _meta._tauIDNames.end(); ++tt)
-                mytau._ids.push_back(it->tauID(*tt));
-
-            _taus.push_back(mytau);
+            reco::CandidatePtr cutBasedFsrPhoton(selectedFSRphotons, i);
+            if (associatedMuon->hasUserCand("cutBasedFsrPhoton"))
+            {
+                pat::PFParticle *tmpPhoton = (pat::PFParticle *)(associatedMuon->userCand("cutBasedFsrPhoton").get());
+                if (photon.userFloat("ETgammadeltaR") < tmpPhoton->userFloat("ETgammadeltaR"))
+                {
+                    associatedMuon->addUserCand("cutBasedFsrPhoton", cutBasedFsrPhoton, true);
+                }
+            }
+            else
+            {
+                associatedMuon->addUserCand("cutBasedFsrPhoton", cutBasedFsrPhoton);
+            }
         }
     }
 
@@ -573,6 +649,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
     for (pat::MuonCollection::const_iterator it = hMuons->begin();
          it != hMuons->end(); ++it)
     {
+
         //	global vs tracker vs standalone
         if (!it->isGlobalMuon() && _meta._isGlobalMuon)
             continue;
@@ -600,6 +677,92 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
     {
         // make sure Muons are sorted..
         sort(muonsSelected.begin(), muonsSelected.end(), [](pat::Muon it, pat::Muon jt) -> bool { return it.pt() > jt.pt(); });
+
+        float _idSF = 1.;
+        float _idSF_up = 1.;
+        float _idSF_down = 1.;
+        float _isoSF = 1.;
+        float _isoSF_up = 1.;
+        float _isoSF_down = 1.;
+        float ineff = 1.;
+        float ineff_up = 1.;
+        float ineff_down = 1.;
+        // Testing Kinematic fit : Needs to be integrated in the Ntupliser data format - PB 10.09.2018
+
+        TLorentzVector mu1_tlv;
+        TLorentzVector mu2_tlv;
+
+        Double_t mu1_ptErr_kinfit;
+        mu1_ptErr_kinfit = 0.;
+        Double_t mu2_ptErr_kinfit;
+        mu2_ptErr_kinfit = 0.;
+
+        RefCountedKinematicVertex dimu_vertex;
+
+        // TODO: Handle higher order effecrs when the events has more than 2 selected muons. For the moment the kinematic fit is run on all possible muons in the collections selectedMuons.
+        // The result is store for the first fit and for the first two muons. For ggH and VBF this should be enough, but ttH or VH might need to cover higher order effects.
+        // Ideally we should run it only for opposite signed couple of muons and store the pt_kinfit as a vector/array per each muons with an index to the pair related to it.
+        if (muonsSelected.size() > 1)
+        {
+            //Instatiate KinematicVertexFitter object
+            KinematicVertexFitter kinfit;
+            //Fit and retrieve the tree
+            RefCountedKinematicTree kinfittree = kinfit.Fit(muonsSelected);
+
+            if (kinfittree->isEmpty() == 1 || kinfittree->isConsistent() == 0)
+                std::cout << "Kinematic Fit unsuccesfull" << std::endl;
+            else
+            {
+                //accessing the tree components
+                kinfittree->movePointerToTheTop();
+                //We are now at the top of the decay tree getting the dimuon reconstructed KinematicPartlcle
+                RefCountedKinematicParticle dimu_kinfit = kinfittree->currentParticle();
+
+                //getting the dimuon decay vertex
+                //RefCountedKinematicVertex
+                dimu_vertex = kinfittree->currentDecayVertex();
+
+                //Now navigating down the tree
+                bool child = kinfittree->movePointerToTheFirstChild();
+                //TLorentzVector mu1_tlv;
+
+                if (child)
+                {
+                    RefCountedKinematicParticle mu1_kinfit = kinfittree->currentParticle();
+                    AlgebraicVector7 mu1_kinfit_par = mu1_kinfit->currentState().kinematicParameters().vector();
+                    AlgebraicSymMatrix77 mu1_kinfit_cov = mu1_kinfit->currentState().kinematicParametersError().matrix();
+                    mu1_ptErr_kinfit = sqrt(mu1_kinfit_cov(3, 3) + mu1_kinfit_cov(4, 4));
+                    mu1_tlv.SetXYZM(mu1_kinfit_par.At(3), mu1_kinfit_par.At(4), mu1_kinfit_par.At(5), mu1_kinfit_par.At(6));
+                    //        std::cout << "Mu1 chi2 = " << mu1_kinfit->chiSquared() << std::endl;
+                    //        std::cout << "Mu1 ndf = " << mu1_kinfit->degreesOfFreedom() << std::endl;
+                    //        std::cout << "Covariant matrix" << std::endl;
+                    //        std::cout << mu1_kinfit_cov(3,3) << std::endl;
+                    //        std::cout << " - " << mu1_kinfit_cov(4,4) << std::endl;
+                    //        std::cout << " -      -    " << mu1_kinfit_cov(5,5) << std::endl;
+                    //        std::cout << "Muon pt uncertainty = " << sqrt(mu1_kinfit_cov(3,3) + mu1_kinfit_cov(4,4)) << std::endl;
+                }
+
+                //Now navigating down the tree
+                bool nextchild = kinfittree->movePointerToTheNextChild();
+
+                if (nextchild)
+                {
+                    RefCountedKinematicParticle mu2_kinfit = kinfittree->currentParticle();
+                    AlgebraicVector7 mu2_kinfit_par = mu2_kinfit->currentState().kinematicParameters().vector();
+                    AlgebraicSymMatrix77 mu2_kinfit_cov = mu2_kinfit->currentState().kinematicParametersError().matrix();
+                    mu2_ptErr_kinfit = sqrt(mu2_kinfit_cov(3, 3) + mu2_kinfit_cov(4, 4));
+                    mu2_tlv.SetXYZM(mu2_kinfit_par.At(3), mu2_kinfit_par.At(4), mu2_kinfit_par.At(5), mu2_kinfit_par.At(6));
+                }
+
+            } // end else - isEmpty()
+
+            //std::cout << "Kin Fitted muons 1 :" << mu1_tlv.Pt() << "  -- Pat muons : " << muonsSelected.at(0).pt() << std::endl;
+            //std::cout << "Kin Fitted muons 2 :" << mu2_tlv.Pt() << "  -- Pat muons : " << muonsSelected.at(1).pt() << std::endl;
+            //std::cout << "Kin fit mass from kinfit: " << higgs_tlv.M()  << " - Kin fit mass from tlv: " << (mu1_tlv+mu2_tlv).M()<< std::endl;
+
+        } //if nMuons>1
+
+        int iMuon = 0;
         for (pat::MuonCollection::const_iterator it = muonsSelected.begin();
              it != muonsSelected.end(); ++it)
         {
@@ -617,10 +780,11 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
             _muon1._isPF = mu1.isPFMuon();
             if (mu1.isPFMuon())
             {
-                reco::Candidate::LorentzVector pfm = mu1.pfP4();
-                _muon1._pt = pfm.Pt();
-                _muon1._eta = pfm.Eta();
-                _muon1._phi = pfm.Phi();
+                // reco::Candidate::LorentzVector pfm = mu1.pfP4();
+                _muon1._pt_PF = mu1.pfP4().Pt();
+                _muon1._pterr_PF = mu1.muonBestTrack()->ptError();
+                _muon1._eta_PF = mu1.pfP4().eta();
+                _muon1._phi_PF = mu1.pfP4().phi();
                 _muon1._sumChargedHadronPtR03 =
                     mu1.pfIsolationR03().sumChargedHadronPt;
                 _muon1._sumChargedParticlePtR03 =
@@ -709,9 +873,50 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
                 _muon1._isHLTMatched.push_back(match);
             }
 
-            // Apply Rochester Correction Here?
+            // FSR recovery muon
+            if (mu1.hasUserCand("cutBasedFsrPhoton"))
+            {
+                pat::PFParticle *pho = (pat::PFParticle *)(mu1.userCand("cutBasedFsrPhoton").get());
+                _muon1.fsrP4.SetPtEtaPhiM(pho->pt(), pho->eta(), pho->phi(), 0.);
+            }
+            // Kinematic Fit corrections and vertex
+            if (dimu_vertex != NULL)
+            {
+                GlobalVector IPVec(dimu_vertex->position().x() - bestVtx1.position().x(), dimu_vertex->position().y() - bestVtx1.position().y(), dimu_vertex->position().z() - bestVtx1.position().z());
+                _muon1._d0PV_kinfit = sqrt(pow(dimu_vertex->position().x() - bestVtx1.position().x(), 2) + pow(dimu_vertex->position().y() - bestVtx1.position().y(), 2));
+                _muon1._dzPV_kinfit = fabs(dimu_vertex->position().z() - bestVtx1.position().z());
+                _muon1._chi2_kinfit = dimu_vertex->chiSquared();
+                _muon1._ndf_kinfit = dimu_vertex->degreesOfFreedom();
+                if (iMuon == 0)
+                { //first muon
+                    GlobalVector direction(mu1_tlv.Px(), mu1_tlv.Py(), mu1_tlv.Pz());
+                    float prod = IPVec.dot(direction);
+                    int sign = (prod >= 0) ? 1. : -1.;
+                    _muon1._d0PV_kinfit *= sign;
+                    _muon1._dzPV_kinfit *= sign;
+                    _muon1._pt_kinfit = mu1_tlv.Pt();
+                    _muon1._ptErr_kinfit = mu1_ptErr_kinfit;
+                }
+                if (iMuon == 1)
+                { //second muon
+                    GlobalVector direction(mu2_tlv.Px(), mu2_tlv.Py(), mu2_tlv.Pz());
+                    float prod = IPVec.dot(direction);
+                    int sign = (prod >= 0) ? 1. : -1.;
+                    _muon1._d0PV_kinfit *= sign;
+                    _muon1._dzPV_kinfit *= sign;
+                    _muon1._pt_kinfit = mu2_tlv.Pt();
+                    _muon1._ptErr_kinfit = mu2_ptErr_kinfit;
+                }
+            }
+            else
+            { // if the kinfit was not succesful for this muon use the muonBestTrack
+                _muon1._pt_kinfit = mu1.muonBestTrack()->pt();
+                _muon1._ptErr_kinfit = mu1.muonBestTrack()->ptError();
+            }
 
-            double muSF = 1.0;
+            // Apply Rochester Correction
+
+            double roccCor = 1.0;
             double genPT = -1.0;
             // double minDR = 1.0;
 
@@ -734,17 +939,137 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 
             float f_rand = gRandom->Rndm();
             if (!_meta._isMC)
-                muSF = rc.kScaleDT(_muon1._charge, _muon1._pt, _muon1._eta, _muon1._phi, 0, 0);
+                roccCor = rc.kScaleDT(_muon1._charge, _muon1._pt, _muon1._eta, _muon1._phi, 0, 0);
             else if (_meta._isMC && genPT > 0.0)
-                muSF = rc.kSpreadMC(_muon1._charge, _muon1._pt, _muon1._eta, _muon1._phi, genPT, 0, 0);
+                roccCor = rc.kSpreadMC(_muon1._charge, _muon1._pt, _muon1._eta, _muon1._phi, genPT, 0, 0);
             else if (_meta._isMC && genPT <= 0.0)
-                muSF = rc.kSmearMC(_muon1._charge, _muon1._pt, _muon1._eta, _muon1._phi, _muon1._nTLs, f_rand, 0, 0);
-            _muon1._SF = muSF;
-            _muon1._corrPT = muSF * _muon1._pt;
-            _muons.push_back(_muon1);
-        }
-    }
+                roccCor = rc.kSmearMC(_muon1._charge, _muon1._pt, _muon1._eta, _muon1._phi, _muon1._nTLs, f_rand, 0, 0);
+            _muon1._roccCor = roccCor;
+            _muon1._corrPT = roccCor * _muon1._pt;
 
+            // Scale Factor Calculation
+
+            if (_meta._isMC)
+            {
+                float mu_pt = std::min((Double_t)_muon1._pt,
+                                       muon_trigSF_histo->GetYaxis()->GetBinLowEdge(muon_trigSF_histo->GetNbinsY()) +
+                                           muon_trigSF_histo->GetYaxis()->GetBinWidth(muon_trigSF_histo->GetNbinsY()) - 0.01);
+                float mu_eta = std::min(fabs((Double_t)_muon1._eta),
+                                        muon_trigSF_histo->GetXaxis()->GetBinLowEdge(muon_trigSF_histo->GetNbinsX()) +
+                                            muon_trigSF_histo->GetXaxis()->GetBinWidth(muon_trigSF_histo->GetNbinsX()) - 0.01);
+                bool found_mu = false;
+
+                if (mu_pt < muon_trigSF_histo->GetYaxis()->GetBinLowEdge(1))
+                    continue;
+                // Find endcap and phi value of EMTF muons
+
+                for (int iPt = 1; iPt <= muon_trigSF_histo->GetNbinsY(); iPt++)
+                {
+                    if (found_mu)
+                        continue;
+                    if (mu_pt < muon_trigSF_histo->GetYaxis()->GetBinLowEdge(iPt))
+                        continue;
+                    if (mu_pt > muon_trigSF_histo->GetYaxis()->GetBinLowEdge(iPt) + muon_trigSF_histo->GetYaxis()->GetBinWidth(iPt))
+                        continue;
+
+                    for (int iEta = 1; iEta <= muon_trigSF_histo->GetNbinsX(); iEta++)
+                    {
+                        if (found_mu)
+                            continue;
+                        if (mu_eta < muon_trigSF_histo->GetXaxis()->GetBinLowEdge(iEta))
+                            continue;
+                        if (mu_eta > muon_trigSF_histo->GetXaxis()->GetBinLowEdge(iEta) + muon_trigSF_histo->GetXaxis()->GetBinWidth(iEta))
+                            continue;
+
+                        found_mu = true;
+
+                        ineff *= (1. - muon_trigSF_histo->GetBinContent(iEta, iPt));
+                        ineff_up *= (1. - muon_trigSF_histo->GetBinContent(iEta, iPt) - muon_trigSF_histo->GetBinError(iEta, iPt));
+                        ineff_down *= (1. - muon_trigSF_histo->GetBinContent(iEta, iPt) + muon_trigSF_histo->GetBinError(iEta, iPt));
+
+                    } // End loop: for (int iEta = 1; iEta <= muon_trigSF_histo->GetNbinsX(); iEta++)
+                }     // End loop: for (int iPt = 1; iPt <= muon_trigSF_histo->GetNbinsY(); iPt++)
+
+                typedef boost::property_tree::ptree::path_type path;
+                //eta bins for SF
+                std::vector<float> absetabins{0.00, 0.90, 1.20, 2.10, 2.40};
+                //pt bins for SF
+                std::vector<float> ptbins{20.00, 25.00, 30.00, 40.00, 50.00, 60.00, 120.00};
+                std::string _value_string, _err_string;
+                std::ostringstream _min_eta, _max_eta, _min_pt, _max_pt;
+                _min_pt.str("");
+                _min_eta.str("");
+                _max_pt.str("");
+                _max_eta.str("");
+
+                for (int _abseta = 0; _abseta < int(absetabins.size()) - 1; _abseta++)
+                {
+                    if (abs(_muon1._eta) < absetabins.at(_abseta))
+                        continue;
+                    if (abs(_muon1._eta) >= absetabins.at(_abseta + 1))
+                        continue;
+                    _min_eta << std::fixed << std::setprecision(2) << absetabins.at(_abseta);
+                    _max_eta << std::fixed << std::setprecision(2) << absetabins.at(_abseta + 1);
+                }
+                if (_min_eta.str().compare(_max_eta.str()) == 0)
+                {
+                    _min_pt.str("");
+                    _min_eta.str("");
+                    _max_pt.str("");
+                    _max_eta.str("");
+                    continue;
+                }
+                for (int _pt = 0; _pt < int(ptbins.size()) - 1; _pt++)
+                {
+                    if (_muon1._pt < ptbins.at(_pt))
+                        continue;
+                    if (_muon1._pt >= ptbins.at(_pt + 1))
+                        continue;
+                    _min_pt << std::fixed << std::setprecision(2) << ptbins.at(_pt);
+                    _max_pt << std::fixed << std::setprecision(2) << ptbins.at(_pt + 1);
+                }
+                if (_min_pt.str().compare(_max_pt.str()) == 0)
+                {
+                    _min_pt.str("");
+                    _min_eta.str("");
+                    _max_pt.str("");
+                    _max_eta.str("");
+                    continue;
+                }
+
+                // ID
+                _value_string = "NUM_" + _id_wp_num + "_DEN_" + _id_wp_den + "/abseta_pt/abseta:[" + _min_eta.str() + "," + _max_eta.str() + "]/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/value";
+                _idSF *= _muon_idSF_ptree.get<float>(path(_value_string.c_str(), '/'));
+                _err_string = "NUM_" + _id_wp_num + "_DEN_" + _id_wp_den + "/abseta_pt/abseta:[" + _min_eta.str() + "," + _max_eta.str() + "]/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/error";
+                _idSF_up *= _idSF + _muon_idSF_ptree.get<float>(path(_err_string.c_str(), '/'));
+                _idSF_down *= _idSF - _muon_idSF_ptree.get<float>(path(_err_string.c_str(), '/'));
+                // Iso
+                _value_string = "NUM_" + _iso_wp_num + "_DEN_" + _iso_wp_den + "/abseta_pt/abseta:[" + _min_eta.str() + "," + _max_eta.str() + "]/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/value";
+                _isoSF *= _muon_isoSF_ptree.get<float>(path(_value_string.c_str(), '/'));
+                _err_string = "NUM_" + _iso_wp_num + "_DEN_" + _iso_wp_den + "/abseta_pt/abseta:[" + _min_eta.str() + "," + _max_eta.str() + "]/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/error";
+                _isoSF_up *= _isoSF + _muon_isoSF_ptree.get<float>(path(_err_string.c_str(), '/'));
+                _isoSF_down *= _isoSF - _muon_isoSF_ptree.get<float>(path(_err_string.c_str(), '/'));
+
+                //cleaning the strings
+                _min_pt.str("");
+                _min_eta.str("");
+                _max_pt.str("");
+                _max_eta.str("");
+            }
+
+            _muons.push_back(_muon1);
+            ++iMuon;
+        }
+        _eaux._idSF = _idSF;
+        _eaux._idSF_up = _idSF_up;
+        _eaux._idSF_down = _idSF_down;
+        _eaux._isoSF = _isoSF;
+        _eaux._isoSF_up = _isoSF_up;
+        _eaux._isoSF_down = _isoSF_down;
+        _eaux._trigEffSF = 1. - ineff;
+        _eaux._trigEffSF_up = 1. - ineff_up;
+        _eaux._trigEffSF_down = 1. - ineff_down;
+    }
     //
     //	Dump objects to The ROOT Tree - ONLY after passing all the cuts
     //
