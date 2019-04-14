@@ -117,7 +117,7 @@ for s in samples:
             line = line.replace("ROOTPATH", s.rootpath)
         if "JOBUNITS" in line:
             if s.isData:
-                line = line.replace("JOBUNITS", "150000")
+                line = line.replace("JOBUNITS", "100000")
             else:
                 line = line.replace("JOBUNITS", "1")
         outfile.write(line)
