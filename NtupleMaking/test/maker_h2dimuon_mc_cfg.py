@@ -25,10 +25,24 @@ sys.path.append(os.path.join(
     os.environ["ANALYSISHOME"], "Configuration", "higgs"))
 import Samples as S
 thisIsData = False
+year = "2017"
 
 globalTag = S.mc_global_tag_2017
 
-process.load("HMuMu.NtupleMaking.H2DiMuonMaker_MC")
+if not thisIsData:
+    if year == "2016":
+        process.load("HMuMu.NtupleMaking.H2DiMuonMaker_94X16MC")
+    elif year == "2017":
+        process.load("HMuMu.NtupleMaking.H2DiMuonMaker_94X17MC")
+    elif year == "2018":
+        process.load("HMuMu.NtupleMaking.H2DiMuonMaker_102X18MC")
+else:
+    if year == "2016":
+        process.load("HMuMu.NtupleMaking.H2DiMuonMaker_94X16Data")
+    elif year == "2017":
+        process.load("HMuMu.NtupleMaking.H2DiMuonMaker_94X17Data")
+    elif year == "2018":
+        process.load("HMuMu.NtupleMaking.H2DiMuonMaker_102X18Data")
 
 print("")
 print('Loading Global Tag: ' + globalTag)
@@ -40,42 +54,91 @@ print('Running over MC sample')
 
 from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
 
+if thisIsData:
+    corrections = cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual'])
+else:
+    corrections = cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute'])
+
 updateJetCollection(
     process,
     jetSource=cms.InputTag('slimmedJets'),
     labelName='UpdatedJEC',
     # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual corrections (always set to 1)
-    jetCorrections=('AK4PFchs', cms.vstring(
-        ['L1FastJet', 'L2Relative', 'L3Absolute']), 'None')
+    jetCorrections=('AK4PFchs', corrections, 'None')
 )
 
 
-# EE noise mitigation fix SEE https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_9_for_2
 
-from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+if year == "2017":
 
-runMetCorAndUncFromMiniAOD(
-    process,
-    isData= thisIsData,  # false for MC
-    reclusterJets = True,
-    CHS = True,
-    fixEE2017=True,
-    fixEE2017Params={'userawPt': True, 'PtThreshold': 50.0,
-                     'MinEtaThreshold': 2.65, 'MaxEtaThreshold': 3.139},
-    postfix="ModifiedMET"
-)
+    # EE noise mitigation fix SEE https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_9_4_X_X_9_for_2
 
+    from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
 
+    runMetCorAndUncFromMiniAOD(
+        process,
+        isData=thisIsData,  # false for MC
+        fixEE2017=True,
+        fixEE2017Params={'userawPt': True, 'ptThreshold': 50.0,
+                        'minEtaThreshold': 2.65, 'maxEtaThreshold': 3.139},
+        postfix="ModifiedMET"
+    )
+
+runVid = True
+runCorrections = False
+egammaEra = '2017-Nov17ReReco'
+if year == "2016":
+    print("running on 2016")
+    egammaEra = '2016-Legacy'
+    prefire_era = '2016BtoH'
+if year == "2017":
+    print("running on 2017")
+    egammaEra = '2017-Nov17ReReco'
+    runVid = False
+    runCorrections = True
+    prefire_eta = '2017BtoF'
+if year == "2018":
+    print("running on 2018")
+    egammaEra = '2018-Prompt'
+
+    # vid = False
 # electron energy scale correction fix SEE https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaMiniAODV2
 from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
 setupEgammaPostRecoSeq(process,
-                       runVID=False,  # saves CPU time by not needlessly re-running VID
-                       era='2017-Nov17ReReco')
+                       runEnergyCorrections=runCorrections,
+                       runVID=runVid,  # saves CPU time by not needlessly re-running VID
+                       era=egammaEra)
 
 
-# #
-# #   Pool Source with proper LSs
-# #
+
+# only applied to "2016" and 2017
+
+if year == "2016" or year == "2017":
+    ## prefiring weights
+    from PhysicsTools.PatUtils.l1ECALPrefiringWeightProducer_cfi import l1ECALPrefiringWeightProducer
+
+    process.prefiringweight = cms.EDProducer("L1ECALPrefiringWeightProducer",
+                                    ThePhotons = cms.InputTag("slimmedPhotons"),
+                                    TheJets = cms.InputTag("slimmedJets"),
+                                    L1Maps = cms.string("/afs/cern.ch/work/m/malhusse/private/h2mu/CMSSW_9_4_9_cand2/src/L1Prefiring/EventWeightProducer/files/L1PrefiringMaps_new.root"), # update this line with the location of this file
+                                    DataEra = cms.string("2017BtoF"), #Use 2016BtoH for 2016
+                                    UseJetEMPt = cms.bool(False), #can be set to true to use jet prefiring maps parametrized vs pt(em) instead of pt
+                                    PrefiringRateSystematicUncty = cms.double(0.2) #Minimum relative prefiring uncty per object
+                                    )
+
+
+
+
+# FSR RECOVERY
+from FSRPhotonRecovery.FSRPhotons.FSRphotonSequence_cff import addFSRphotonSequence
+PhotonMVA="FSRPhotonRecovery/FSRPhotons/data/PhotonMVAv9_BDTG800TreesDY.weights.xml"
+addFSRphotonSequence(process, 'slimmedMuons', PhotonMVA)
+
+
+process.jecSequence = cms.Sequence(
+    process.patJetCorrFactorsUpdatedJEC * 
+    process.updatedPatJetsUpdatedJEC)
+
 process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(1000))
 
 process.source = cms.Source("PoolSource", fileNames=cms.untracked.vstring(
@@ -86,21 +149,30 @@ process.source = cms.Source("PoolSource", fileNames=cms.untracked.vstring(
 process.options = cms.untracked.PSet(wantSummary=cms.untracked.bool(False))
 process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange()
 
-# #
-# #  Electron ID Setup - cut based
-# #
-from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
-dataFormat = DataFormat.MiniAOD
-switchOnVIDElectronIdProducer(process, dataFormat)
-my_id_modules = [
-    'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V1_cff'
-]
-for idmod in my_id_modules:
-    setupAllVIDIdsInModule(process, idmod, setupVIDElectronSelection)
-
 process.TFileService = cms.Service(
     "TFileService", fileName=cms.string("ntuple_MC.root"))
+
 process.jecSequence = cms.Sequence(
     process.patJetCorrFactorsUpdatedJEC * process.updatedPatJetsUpdatedJEC)
-process.p = cms.Path(process.fullPatMetSequenceModifiedMET * process.egammaPostRecoSeq *
-                     process.egmGsfElectronIDSequence * process.jecSequence * process.ntuplemaker_H2DiMuonMaker)
+
+if year == "2016":
+    process.p = cms.Path(
+    process.prefiringweight *
+    process.egammaPostRecoSeq *
+    process.jecSequence * 
+    process.FSRphotonSequence*
+    process.ntuplemaker_H2DiMuonMaker)
+if year == "2017":
+    process.p = cms.Path(
+    process.prefiringweight *
+    process.egammaPostRecoSeq *
+    process.jecSequence * 
+    process.fullPatMetSequenceModifiedMET * 
+    process.FSRphotonSequence*
+    process.ntuplemaker_H2DiMuonMaker)
+if year == "2018":
+        process.p = cms.Path(
+    process.egammaPostRecoSeq *
+    process.jecSequence * 
+    process.FSRphotonSequence*
+    process.ntuplemaker_H2DiMuonMaker)
