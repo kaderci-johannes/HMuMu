@@ -47,7 +47,7 @@ class Jet : public Object
 		_jecu = 0;
 		_btag.clear();
 
-		_btag_sf = 0;
+		_btag_sf = 1;
 		_btag_sf_up = 0;
 		_btag_sf_down = 0;
 
