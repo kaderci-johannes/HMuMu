@@ -1,6 +1,4 @@
-#
-#   Ntuple Making Stage
-#
+year = "2017"
 
 import FWCore.ParameterSet.Config as cms
 process = cms.Process("NtupleMaking")
@@ -23,29 +21,26 @@ if "ANALYSISHOME" not in os.environ.keys():
     raise NameError("Can not find ANALYSISHOME env var")
 sys.path.append(os.path.join(
     os.environ["ANALYSISHOME"], "Configuration", "higgs"))
+os.environ["CMSSW_SEARCH_PATH"] += os.pathsep + os.getcwd()
 import Samples as S
+jsontag = year
 jsonfiles = S.jsonfiles
-jsontag = "2017"
 jsonfile = jsonfiles[jsontag]
 json = "json/" + jsonfile.filename
 thisIsData = True
-globalTag = S.data_global_tag_2017
-year = "2017"
+globaltags = {
+    "2016": S.data_global_tag_2016,
+    "2017": S.data_global_tag_2017,
+    "2018": S.data_global_tag_2018
+}
+globalTag = globaltags[year]
 
-if not thisIsData:
-    if year == "2016":
-        process.load("HMuMu.NtupleMaking.H2DiMuonMaker_94X16MC")
-    elif year == "2017":
-        process.load("HMuMu.NtupleMaking.H2DiMuonMaker_94X17MC")
-    elif year == "2018":
-        process.load("HMuMu.NtupleMaking.H2DiMuonMaker_102X18MC")
-else:
-    if year == "2016":
-        process.load("HMuMu.NtupleMaking.H2DiMuonMaker_94X16Data")
-    elif year == "2017":
-        process.load("HMuMu.NtupleMaking.H2DiMuonMaker_94X17DataLocal")
-    elif year == "2018":
-        process.load("HMuMu.NtupleMaking.H2DiMuonMaker_102X18Data")
+if year == "2016":
+    process.load("HMuMu.NtupleMaking.H2DiMuonMaker_94X16Data")
+elif year == "2017":
+    process.load("HMuMu.NtupleMaking.H2DiMuonMaker_94X17Data")
+elif year == "2018":
+    process.load("HMuMu.NtupleMaking.H2DiMuonMaker_102X18Data")
 
 print("")
 print('Loading Global Tag: ' + globalTag)
@@ -143,10 +138,14 @@ process.jecSequence = cms.Sequence(
 
 
 process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(100))
-
+files = {
+    "2016" : "/store/data/Run2016C/SingleMuon/MINIAOD/17Jul2018-v1/20000/FEC97F81-0097-E811-A7B9-90E2BACC5EEC.root",
+    "2017" : "/store/data/Run2017D/SingleMuon/MINIAOD/31Mar2018-v1/90000/FE30740D-2437-E811-8D0A-1866DAED3BE8.root",
+    "2018" : "/store/data/Run2018B/SingleMuon/MINIAOD/17Sep2018-v1/60000/FF47BB90-FC1A-CC44-A635-2B8B8C64AA39.root",
+}
 process.source = cms.Source("PoolSource", fileNames=cms.untracked.vstring(
-    # 'file:DE1721FC-10D9-E711-B475-0025907B4F04.root'))
-    'file:/eos/cms/store/user/amarini/Sync/0E555487-7241-E811-9209-002481CFC92C.root'))
+    files[year]
+))
 
 
 process.options = cms.untracked.PSet(wantSummary=cms.untracked.bool(False))
@@ -155,9 +154,10 @@ import FWCore.PythonUtilities.LumiList as LumiList
 
 process.source.lumisToProcess = LumiList.LumiList(filename=json).getVLuminosityBlockRange()
 
+outputfname = "ntuple_Data{}.root".format(year)
 
 process.TFileService = cms.Service(
-    "TFileService", fileName=cms.string("ntuple_Data.root"))
+    "TFileService", fileName=cms.string(outputfname))
 
 process.jecSequence = cms.Sequence(
     process.patJetCorrFactorsUpdatedJEC * process.updatedPatJetsUpdatedJEC)

@@ -1,6 +1,4 @@
-#
-#   Ntuple Making Stage
-#
+year = "2016"
 
 import FWCore.ParameterSet.Config as cms
 process = cms.Process("NtupleMaking")
@@ -23,26 +21,25 @@ if "ANALYSISHOME" not in os.environ.keys():
     raise NameError("Can not find ANALYSISHOME env var")
 sys.path.append(os.path.join(
     os.environ["ANALYSISHOME"], "Configuration", "higgs"))
+os.environ["CMSSW_SEARCH_PATH"] += os.pathsep + os.getcwd()
 import Samples as S
 thisIsData = False
-year = "2017"
 
-globalTag = S.mc_global_tag_2017
+globaltags = {
+    "2016": S.mc_global_tag_2016,
+    "2017": S.mc_global_tag_2017,
+    "2018": S.mc_global_tag_2018
+}
+globalTag = globaltags[year]
 
-if not thisIsData:
-    if year == "2016":
-        process.load("HMuMu.NtupleMaking.H2DiMuonMaker_94X16MC")
-    elif year == "2017":
-        process.load("HMuMu.NtupleMaking.H2DiMuonMaker_94X17MC")
-    elif year == "2018":
-        process.load("HMuMu.NtupleMaking.H2DiMuonMaker_102X18MC")
-else:
-    if year == "2016":
-        process.load("HMuMu.NtupleMaking.H2DiMuonMaker_94X16Data")
-    elif year == "2017":
-        process.load("HMuMu.NtupleMaking.H2DiMuonMaker_94X17Data")
-    elif year == "2018":
-        process.load("HMuMu.NtupleMaking.H2DiMuonMaker_102X18Data")
+
+if year == "2016":
+    process.load("HMuMu.NtupleMaking.H2DiMuonMaker_94X16MC")
+elif year == "2017":
+    process.load("HMuMu.NtupleMaking.H2DiMuonMaker_94X17MC")
+elif year == "2018":
+    process.load("HMuMu.NtupleMaking.H2DiMuonMaker_102X18MC")
+
 
 print("")
 print('Loading Global Tag: ' + globalTag)
@@ -96,7 +93,7 @@ if year == "2017":
     egammaEra = '2017-Nov17ReReco'
     runVid = False
     runCorrections = True
-    prefire_eta = '2017BtoF'
+    prefire_era = '2017BtoF'
 if year == "2018":
     print("running on 2018")
     egammaEra = '2018-Prompt'
@@ -113,18 +110,15 @@ setupEgammaPostRecoSeq(process,
 
 # only applied to "2016" and 2017
 
-if year == "2016" or year == "2017":
+# if year == "2016" or year == "2017":
+if year == "2017":
     ## prefiring weights
     from PhysicsTools.PatUtils.l1ECALPrefiringWeightProducer_cfi import l1ECALPrefiringWeightProducer
-
-    process.prefiringweight = cms.EDProducer("L1ECALPrefiringWeightProducer",
-                                    ThePhotons = cms.InputTag("slimmedPhotons"),
-                                    TheJets = cms.InputTag("slimmedJets"),
-                                    L1Maps = cms.string("/afs/cern.ch/work/m/malhusse/private/h2mu/CMSSW_9_4_9_cand2/src/L1Prefiring/EventWeightProducer/files/L1PrefiringMaps_new.root"), # update this line with the location of this file
-                                    DataEra = cms.string("2017BtoF"), #Use 2016BtoH for 2016
-                                    UseJetEMPt = cms.bool(False), #can be set to true to use jet prefiring maps parametrized vs pt(em) instead of pt
-                                    PrefiringRateSystematicUncty = cms.double(0.2) #Minimum relative prefiring uncty per object
-                                    )
+    process.prefiringweight = l1ECALPrefiringWeightProducer.clone(
+        DataEra = cms.string(prefire_era), #Use 2016BtoH for 2016
+        UseJetEMPt = cms.bool(False),
+        PrefiringRateSystematicUncty = cms.double(0.2),
+        SkipWarnings = False)
 
 
 
@@ -136,43 +130,49 @@ addFSRphotonSequence(process, 'slimmedMuons', PhotonMVA)
 
 
 process.jecSequence = cms.Sequence(
-    process.patJetCorrFactorsUpdatedJEC * 
+    process.patJetCorrFactorsUpdatedJEC *
     process.updatedPatJetsUpdatedJEC)
 
-process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(1000))
-
+process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(100))
+files = {
+    "2016" : "file:/afs/cern.ch/user/m/malhusse/files/0EFDF441-B135-E911-B24F-AC1F6B1AEFEE.root",
+    "2017" : "file:/afs/cern.ch/user/m/malhusse/files/0AEB8E40-E03D-E911-8E67-0CC47AA98A0E.root",
+    "2018" : "file:/afs/cern.ch/user/m/malhusse/files/E7FAE092-29DE-AA4B-9891-6958578145DA.root",
+}
 process.source = cms.Source("PoolSource", fileNames=cms.untracked.vstring(
-    # 'file:DE1721FC-10D9-E711-B475-0025907B4F04.root'))
-    'file:/eos/cms/store/user//amarini/Sync/5AC9148F-9842-E811-892B-3417EBE535DA.root'))
+    files[year]
+))
 
 # readFiles)
 process.options = cms.untracked.PSet(wantSummary=cms.untracked.bool(False))
 process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange()
 
+outputfname = "ntuple_MC{}.root".format(year)
+
 process.TFileService = cms.Service(
-    "TFileService", fileName=cms.string("ntuple_MC.root"))
+    "TFileService", fileName=cms.string(outputfname))
 
 process.jecSequence = cms.Sequence(
     process.patJetCorrFactorsUpdatedJEC * process.updatedPatJetsUpdatedJEC)
 
 if year == "2016":
     process.p = cms.Path(
-    process.prefiringweight *
+    # process.prefiringweight *
     process.egammaPostRecoSeq *
-    process.jecSequence * 
+    process.jecSequence *
     process.FSRphotonSequence*
     process.ntuplemaker_H2DiMuonMaker)
 if year == "2017":
     process.p = cms.Path(
     process.prefiringweight *
     process.egammaPostRecoSeq *
-    process.jecSequence * 
-    process.fullPatMetSequenceModifiedMET * 
+    process.jecSequence *
+    process.fullPatMetSequenceModifiedMET *
     process.FSRphotonSequence*
     process.ntuplemaker_H2DiMuonMaker)
 if year == "2018":
         process.p = cms.Path(
     process.egammaPostRecoSeq *
-    process.jecSequence * 
+    process.jecSequence *
     process.FSRphotonSequence*
     process.ntuplemaker_H2DiMuonMaker)
