@@ -100,7 +100,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
     {
         // muon scale factor files
         muon_trigSF_root = new TFile(muon_trigSF_file.fullPath().c_str());
-        muon_trigSF_histo = (TH2F *)muon_trigSF_root->Get("IsoMu27_PtEtaBins/abseta_pt_ratio");
+        muon_trigSF_histo = (TH2F *)muon_trigSF_root->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/pt_abseta_ratio");
 
         std::ifstream muon_isoSF_file_json(muon_isoSF_file.fullPath().c_str());
         std::ifstream muon_idSF_file_json(muon_idSF_file.fullPath().c_str());
@@ -992,7 +992,8 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 
                 typedef boost::property_tree::ptree::path_type path;
                 //eta bins for SF
-                std::vector<float> absetabins{0.00, 0.90, 1.20, 2.10, 2.40};
+                std::vector<float> etabins{-2.40, -2.30, -2.20, -2.10, -2.00, -1.70, -1.60, -1.50, -1.40, -1.20, -0.80, -0.50, -0.30, -0.20, 0.00, 0.20, 0.30, 0.50, 0.80, 1.20, 1.40, 1.50, 1.60, 1.70, 2.00, 2.10, 2.20, 2.30, 2.40};
+                // std::vector<float> etabins{0.00, 0.90, 1.20, 2.10, 2.40};
                 //pt bins for SF
                 std::vector<float> ptbins{20.00, 25.00, 30.00, 40.00, 50.00, 60.00, 120.00};
                 std::string _value_string, _err_string;
@@ -1002,23 +1003,6 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
                 _max_pt.str("");
                 _max_eta.str("");
 
-                for (int _abseta = 0; _abseta < int(absetabins.size()) - 1; _abseta++)
-                {
-                    if (abs(_muon1._eta) < absetabins.at(_abseta))
-                        continue;
-                    if (abs(_muon1._eta) >= absetabins.at(_abseta + 1))
-                        continue;
-                    _min_eta << std::fixed << std::setprecision(2) << absetabins.at(_abseta);
-                    _max_eta << std::fixed << std::setprecision(2) << absetabins.at(_abseta + 1);
-                }
-                if (_min_eta.str().compare(_max_eta.str()) == 0)
-                {
-                    _min_pt.str("");
-                    _min_eta.str("");
-                    _max_pt.str("");
-                    _max_eta.str("");
-                    continue;
-                }
                 for (int _pt = 0; _pt < int(ptbins.size()) - 1; _pt++)
                 {
                     if (_muon1._pt < ptbins.at(_pt))
@@ -1036,17 +1020,34 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
                     _max_eta.str("");
                     continue;
                 }
+                                for (int _eta = 0; _eta < int(etabins.size()) - 1; _eta++)
+                {
+                    if (_muon1._eta < etabins.at(_eta))
+                        continue;
+                    if (_muon1._eta >= etabins.at(_eta + 1))
+                        continue;
+                    _min_eta << std::fixed << std::setprecision(2) << etabins.at(_eta);
+                    _max_eta << std::fixed << std::setprecision(2) << etabins.at(_eta + 1);
+                }
+                if (_min_eta.str().compare(_max_eta.str()) == 0)
+                {
+                    _min_pt.str("");
+                    _min_eta.str("");
+                    _max_pt.str("");
+                    _max_eta.str("");
+                    continue;
+                }
 
                 // ID
-                _value_string = "NUM_" + _id_wp_num + "_DEN_" + _id_wp_den + "/abseta_pt/abseta:[" + _min_eta.str() + "," + _max_eta.str() + "]/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/value";
+                _value_string = "NUM_" + _id_wp_num + "_DEN_" + _id_wp_den + "/pt_eta/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/eta:[" + _min_eta.str() + "," + _max_eta.str() + "]/value";
                 _idSF *= _muon_idSF_ptree.get<float>(path(_value_string.c_str(), '/'));
-                _err_string = "NUM_" + _id_wp_num + "_DEN_" + _id_wp_den + "/abseta_pt/abseta:[" + _min_eta.str() + "," + _max_eta.str() + "]/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/error";
+                _err_string = "NUM_" + _id_wp_num + "_DEN_" + _id_wp_den + "/pt_eta/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/eta:[" + _min_eta.str() + "," + _max_eta.str() + "]/error";
                 _idSF_up *= _idSF + _muon_idSF_ptree.get<float>(path(_err_string.c_str(), '/'));
                 _idSF_down *= _idSF - _muon_idSF_ptree.get<float>(path(_err_string.c_str(), '/'));
                 // Iso
-                _value_string = "NUM_" + _iso_wp_num + "_DEN_" + _iso_wp_den + "/abseta_pt/abseta:[" + _min_eta.str() + "," + _max_eta.str() + "]/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/value";
+                _value_string = "NUM_" + _iso_wp_num + "_DEN_" + _iso_wp_den + "/pt_eta/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/eta:[" + _min_eta.str() + "," + _max_eta.str() + "]/value";
                 _isoSF *= _muon_isoSF_ptree.get<float>(path(_value_string.c_str(), '/'));
-                _err_string = "NUM_" + _iso_wp_num + "_DEN_" + _iso_wp_den + "/abseta_pt/abseta:[" + _min_eta.str() + "," + _max_eta.str() + "]/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/error";
+                _err_string = "NUM_" + _iso_wp_num + "_DEN_" + _iso_wp_den + "/pt_eta/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/eta:[" + _min_eta.str() + "," + _max_eta.str() + "]/error";
                 _isoSF_up *= _isoSF + _muon_isoSF_ptree.get<float>(path(_err_string.c_str(), '/'));
                 _isoSF_down *= _isoSF - _muon_isoSF_ptree.get<float>(path(_err_string.c_str(), '/'));
 
