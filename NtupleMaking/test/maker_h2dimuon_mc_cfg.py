@@ -8,7 +8,7 @@ process = cms.Process("NtupleMaking")
 #
 process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 10
 process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load('Configuration.EventContent.EventContent_cff')
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
@@ -110,8 +110,7 @@ setupEgammaPostRecoSeq(process,
 
 # only applied to "2016" and 2017
 
-# if year == "2016" or year == "2017":
-if year == "2017":
+if year == "2016" or year == "2017":
     ## prefiring weights
     from PhysicsTools.PatUtils.l1ECALPrefiringWeightProducer_cfi import l1ECALPrefiringWeightProducer
     process.prefiringweight = l1ECALPrefiringWeightProducer.clone(
@@ -157,7 +156,7 @@ process.jecSequence = cms.Sequence(
 
 if year == "2016":
     process.p = cms.Path(
-    # process.prefiringweight *
+    process.prefiringweight *
     process.egammaPostRecoSeq *
     process.jecSequence *
     process.FSRphotonSequence*
