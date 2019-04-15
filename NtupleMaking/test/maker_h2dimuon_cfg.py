@@ -1,4 +1,4 @@
-year = "2016"
+year = "2018"
 
 import FWCore.ParameterSet.Config as cms
 process = cms.Process("NtupleMaking")
