@@ -779,15 +779,6 @@ mc_background_2017 = {
         globaltag=mc_global_tag_2017,
         cross_section=12.178
     ),
-    "/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM": DS.MCDataset(
-        name="/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM",
-        isData=False,
-        year=2017,
-        isSignal=False,
-        initial_cmssw="94X",
-        globaltag=mc_global_tag_2017,
-        cross_section=12.178
-    ),
     "/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM": DS.MCDataset(
         name="/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM",
         isData=False,
