@@ -41,7 +41,9 @@ ntuplemaker_H2DiMuonMaker = cms.EDAnalyzer(
     triggerNames=cms.untracked.vstring(
         "HLT_IsoMu%d" % pt, "HLT_IsoTkMu%d" % pt),
     metFilterNames=cms.untracked.vstring(["Flag_goodVertices", "Flag_globalSuperTightHalo2016Filter", "Flag_HBHENoiseFilter", "Flag_HBHENoiseIsoFilter",
-                                          "Flag_EcalDeadCellTriggerPrimitiveFilter", "Flag_BadPFMuonFilter", "Flag_BadChargedCandidateFilter"]),
+                                          "Flag_EcalDeadCellTriggerPrimitiveFilter", "Flag_BadPFMuonFilter" 
+                                          #, "Flag_BadChargedCandidateFilter" as per https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2
+                                          ]),
     
     nMuons=cms.untracked.int32(2),
     isGlobalMuon=cms.untracked.bool(True),
