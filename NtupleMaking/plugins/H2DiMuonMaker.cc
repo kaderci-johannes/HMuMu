@@ -74,9 +74,9 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
     _puToken = consumes<std::vector<PileupSummaryInfo>>(edm::InputTag("slimmedAddPileupInfo"));
     tokenFSRphotons = consumes<std::vector<pat::PFParticle>>(edm::InputTag("FSRRecovery", "selectedFSRphotons"));
 
-    prefweight_token = consumes<double>(edm::InputTag("prefiringweight:nonPrefiringProb"));
-    prefweightup_token = consumes<double>(edm::InputTag("prefiringweight:nonPrefiringProbUp"));
-    prefweightdown_token = consumes<double>(edm::InputTag("prefiringweight:nonPrefiringProbDown"));
+    // prefweight_token = consumes<double>(edm::InputTag("prefiringweight:nonPrefiringProb"));
+    // prefweightup_token = consumes<double>(edm::InputTag("prefiringweight:nonPrefiringProbUp"));
+    // prefweightdown_token = consumes<double>(edm::InputTag("prefiringweight:nonPrefiringProbDown"));
 
     mayConsume<reco::ConversionCollection>(_convToken);
 
@@ -173,17 +173,17 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
         _eaux._genWeight = (hGenEvtInfo->weight() > 0) ? 1 : -1;
         _meta._sumEventWeights += _eaux._genWeight;
 
-        edm::Handle<double> theprefweight;
-        e.getByToken(prefweight_token, theprefweight);
-        _eaux._prefiringweight = (*theprefweight);
+        // edm::Handle<double> theprefweight;
+        // e.getByToken(prefweight_token, theprefweight);
+        // _eaux._prefiringweight = (*theprefweight);
 
-        edm::Handle<double> theprefweightup;
-        e.getByToken(prefweightup_token, theprefweightup);
-        _eaux._prefiringweightup = (*theprefweightup);
+        // edm::Handle<double> theprefweightup;
+        // e.getByToken(prefweightup_token, theprefweightup);
+        // _eaux._prefiringweightup = (*theprefweightup);
 
-        edm::Handle<double> theprefweightdown;
-        e.getByToken(prefweightdown_token, theprefweightdown);
-        _eaux._prefiringweightdown = (*theprefweightdown);
+        // edm::Handle<double> theprefweightdown;
+        // e.getByToken(prefweightdown_token, theprefweightdown);
+        // _eaux._prefiringweightdown = (*theprefweightdown);
     }
 
     //
