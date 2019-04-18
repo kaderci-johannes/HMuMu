@@ -81,34 +81,36 @@ if year == "2017":
         postfix="ModifiedMET"
     )
 
-runVid = True
-runCorrections = False
-egammaEra = '2017-Nov17ReReco'
+
+## era based on year 2016/2017/2018
+
+from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+
 if year == "2016":
     print("running on 2016")
     egammaEra = '2016-Legacy'
-    prefire_era = '2016BtoH'
+    prefire_era = "2016BtoH"
+    setupEgammaPostRecoSeq(process,
+                       runEnergyCorrections=False,
+                       era=egammaEra)
+
 if year == "2017":
     print("running on 2017")
     egammaEra = '2017-Nov17ReReco'
-    runVid = False
-    runCorrections = True
-    prefire_era = '2017BtoF'
+    prefire_era = "2017BtoF"
+    setupEgammaPostRecoSeq(process,
+                       runVID=False,  # saves CPU time by not needlessly re-running VID
+                       era=egammaEra)
+   
 if year == "2018":
     print("running on 2018")
     egammaEra = '2018-Prompt'
-
-    # vid = False
-# electron energy scale correction fix SEE https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaMiniAODV2
-from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
-setupEgammaPostRecoSeq(process,
-                       runEnergyCorrections=runCorrections,
-                       runVID=runVid,  # saves CPU time by not needlessly re-running VID
+    setupEgammaPostRecoSeq(process,
                        era=egammaEra)
 
-
-
 # only applied to "2016" and 2017
+
+
 
 if year == "2016" or year == "2017":
     ## prefiring weights
@@ -170,7 +172,7 @@ if year == "2017":
     process.FSRphotonSequence*
     process.ntuplemaker_H2DiMuonMaker)
 if year == "2018":
-        process.p = cms.Path(
+    process.p = cms.Path(
     process.egammaPostRecoSeq *
     process.jecSequence *
     process.FSRphotonSequence*
