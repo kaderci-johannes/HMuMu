@@ -100,7 +100,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
     {
         // muon scale factor files
         muon_trigSF_root = new TFile(muon_trigSF_file.fullPath().c_str());
-        muon_trigSF_histo = (TH2F *)muon_trigSF_root->Get("IsoMu27_PtEtaBins/abseta_pt_ratio");
+        muon_trigSF_histo = (TH2F *)muon_trigSF_root->Get("IsoMu24_PtEtaBins/abseta_pt_ratio");
 
         std::ifstream muon_isoSF_file_json(muon_isoSF_file.fullPath().c_str());
         std::ifstream muon_idSF_file_json(muon_idSF_file.fullPath().c_str());
@@ -109,9 +109,9 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
         boost::property_tree::json_parser::read_json(muon_isoSF_file_json, _muon_isoSF_ptree);
         boost::property_tree::json_parser::read_json(muon_idSF_file_json, _muon_idSF_ptree);
 	
-	calib = new BTagCalibration("DeepCSV", btag_file.fullPath().c_str());
-	btreader = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", {"up", "down"});
-	btreader->load(*calib, BTagEntry::FLAV_B, "comb");
+	    calib = new BTagCalibration("DeepCSV", btag_file.fullPath().c_str());
+	    btreader = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", {"up", "down"});
+	    btreader->load(*calib, BTagEntry::FLAV_B, "comb");
 
     }
     // BTagCalibration calib("DeepCSV", btag_file.fullPath().c_str());

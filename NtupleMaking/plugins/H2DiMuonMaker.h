@@ -104,9 +104,9 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 	edm::ESHandle<JetCorrectorParametersCollection> m_hJetCParametersAK4;
 	JetCorrectionUncertainty *m_jecuAK4;
 
-	edm::EDGetTokenT<double> prefweight_token;
-	edm::EDGetTokenT<double> prefweightup_token;
-	edm::EDGetTokenT<double> prefweightdown_token;
+	/* edm::EDGetTokenT<double> prefweight_token; */
+	/* edm::EDGetTokenT<double> prefweightup_token; */
+	/* edm::EDGetTokenT<double> prefweightdown_token; */
 
 	BTagCalibration *calib;
 	BTagCalibrationReader *btreader;
