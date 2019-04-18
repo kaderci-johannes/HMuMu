@@ -108,6 +108,9 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 	edm::EDGetTokenT<double> prefweightup_token;
 	edm::EDGetTokenT<double> prefweightdown_token;
 
+	BTagCalibration *calib;
+	BTagCalibrationReader *btreader;
+
 	bool _useElectrons;
 	bool _useTaus;
 };

@@ -108,10 +108,14 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 
         boost::property_tree::json_parser::read_json(muon_isoSF_file_json, _muon_isoSF_ptree);
         boost::property_tree::json_parser::read_json(muon_idSF_file_json, _muon_idSF_ptree);
+	
+	calib = new BTagCalibration("DeepCSV", btag_file.fullPath().c_str());
+	btreader = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", {"up", "down"});
+	btreader->load(*calib, BTagEntry::FLAV_B, "comb");
+
     }
-    // calib.readCSV(btagFile);
-    // // , btag_file.fullPath().c_str());
-    // btreader.BTagCalibrationReaderImpl(BTagEntry::OP_MEDIUM, "central", {"up", "down"});
+    // BTagCalibration calib("DeepCSV", btag_file.fullPath().c_str());
+    // BTagCalibrationReader btreader(BTagEntry::OP_MEDIUM, "central", {"up", "down"});
     // btreader.load(calib, BTagEntry::FLAV_B, "comb");
 
     //  additional branching based on flags
@@ -218,9 +222,9 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
     JME::JetResolution resolution = JME::JetResolution::get(esetup, "AK4PFchs_pt");
     JME::JetResolutionScaleFactor resolution_sf = JME::JetResolutionScaleFactor::get(esetup, "AK4PFchs");
 
-    BTagCalibration calib("DeepCSV", btag_file.fullPath().c_str());
-    BTagCalibrationReader btreader(BTagEntry::OP_MEDIUM, "central", {"up", "down"});
-    btreader.load(calib, BTagEntry::FLAV_B, "comb");
+    // BTagCalibration calib("DeepCSV", btag_file.fullPath().c_str());
+    // BTagCalibrationReader btreader(BTagEntry::OP_MEDIUM, "central", {"up", "down"});
+    // btreader.load(calib, BTagEntry::FLAV_B, "comb");
     // MetFilterResults
     //
     e.getByLabel(_metFilterToken, _hMetFilterResults);
@@ -455,9 +459,9 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 
             if (_meta._isMC)
             {
-                myjet._btag_sf = btreader.eval_auto_bounds("central", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt());
-                myjet._btag_sf_up = btreader.eval_auto_bounds("up", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt());
-                myjet._btag_sf_down = btreader.eval_auto_bounds("down", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt());
+                myjet._btag_sf = btreader->eval_auto_bounds("central", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt());
+                myjet._btag_sf_up = btreader->eval_auto_bounds("up", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt());
+                myjet._btag_sf_down = btreader->eval_auto_bounds("down", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt());
                 _btagSF *= myjet._btag_sf;
             }
 
