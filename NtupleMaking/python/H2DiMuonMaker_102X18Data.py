@@ -29,7 +29,7 @@ ntuplemaker_H2DiMuonMaker = cms.EDAnalyzer(
     muonTrigFile=cms.FileInPath("../data/MuonSF/EfficienciesAndSF_2018Data_AfterMuonHLTUpdate.root"),
  
     muon_id_sf_wp_num = cms.string("MediumID"),
-    muon_id_sf_wp_den = cms.string("genTracks"),
+    muon_id_sf_wp_den = cms.string("TrackerMuons"),
     muon_iso_sf_wp_num = cms.string("LooseRelIso"),
     muon_iso_sf_wp_den = cms.string("MediumID"),
 
