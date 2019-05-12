@@ -42,7 +42,16 @@ mc_global_tag_2018 = "102X_upgrade2018_realistic_v18"
 # )
 # ,
 
+
 #   Datasets from Collisions
+
+extra_2016_data = {
+    "/SingleMuon/Run2016B-17Jul2018_ver1-v1/MINIAOD": DS.Dataset(
+        name="/SingleMuon/Run2016B-17Jul2018_ver1-v1/MINIAOD",
+        isData=True,
+        year=2016,
+        globaltag=data_global_tag_2016)
+}
 data_2016 = {
     # "/SingleMuon/Run2016B-17Jul2018_ver1-v1/MINIAOD": DS.Dataset(
     #     name="/SingleMuon/Run2016B-17Jul2018_ver1-v1/MINIAOD",
@@ -672,6 +681,15 @@ mc_signal_2017 = {
 }
 
 mc_background_2017 = {
+    "/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM" : DS.MCDataset(
+        name="/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM",
+        isData=False,
+        year=2017,
+        isSignal=False,
+        initial_cmssw="94X",
+        globaltag=mc_global_tag_2017,
+        cross_section=6225.42
+    ),
     "/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM": DS.MCDataset(
         name="/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM",
         isData=False,
@@ -717,8 +735,8 @@ mc_background_2017 = {
         globaltag=mc_global_tag_2017,
         cross_section=34.91
     ),
-    "/ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFall17DRPremix-PU2017_new_pmx_94X_mc2017_realistic_v11-v1/AODSIM": DS.MCDataset(
-        name="/ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFall17DRPremix-PU2017_new_pmx_94X_mc2017_realistic_v11-v1/AODSIM",
+    "/ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM": DS.MCDataset(
+        name="/ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM",
         isData=False,
         year=2017,
         isSignal=False,
