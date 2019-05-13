@@ -45,13 +45,6 @@ mc_global_tag_2018 = "102X_upgrade2018_realistic_v18"
 
 #   Datasets from Collisions
 
-extra_2016_data = {
-    "/SingleMuon/Run2016B-17Jul2018_ver1-v1/MINIAOD": DS.Dataset(
-        name="/SingleMuon/Run2016B-17Jul2018_ver1-v1/MINIAOD",
-        isData=True,
-        year=2016,
-        globaltag=data_global_tag_2016)
-}
 data_2016 = {
     # "/SingleMuon/Run2016B-17Jul2018_ver1-v1/MINIAOD": DS.Dataset(
     #     name="/SingleMuon/Run2016B-17Jul2018_ver1-v1/MINIAOD",
