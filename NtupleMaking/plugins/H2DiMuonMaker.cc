@@ -100,7 +100,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
     {
         // muon scale factor files
         muon_trigSF_root = new TFile(muon_trigSF_file.fullPath().c_str());
-        muon_trigSF_histo = (TH2F *)muon_trigSF_root->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/pt_abseta_ratio");
+        muon_trigSF_histo = (TH2F *)muon_trigSF_root->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/abseta_pt_ratio");
 
         std::ifstream muon_isoSF_file_json(muon_isoSF_file.fullPath().c_str());
         std::ifstream muon_idSF_file_json(muon_idSF_file.fullPath().c_str());
@@ -108,11 +108,10 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 
         boost::property_tree::json_parser::read_json(muon_isoSF_file_json, _muon_isoSF_ptree);
         boost::property_tree::json_parser::read_json(muon_idSF_file_json, _muon_idSF_ptree);
-	
-	calib = new BTagCalibration("DeepCSV", btag_file.fullPath().c_str());
-	btreader = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", {"up", "down"});
-	btreader->load(*calib, BTagEntry::FLAV_B, "comb");
 
+        calib = new BTagCalibration("DeepCSV", btag_file.fullPath().c_str());
+        btreader = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", {"up", "down"});
+        btreader->load(*calib, BTagEntry::FLAV_B, "comb");
     }
     // BTagCalibration calib("DeepCSV", btag_file.fullPath().c_str());
     // BTagCalibrationReader btreader(BTagEntry::OP_MEDIUM, "central", {"up", "down"});
@@ -462,7 +461,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
                 myjet._btag_sf = btreader->eval_auto_bounds("central", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt());
                 myjet._btag_sf_up = btreader->eval_auto_bounds("up", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt());
                 myjet._btag_sf_down = btreader->eval_auto_bounds("down", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt());
-                _btagSF *= myjet._btag_sf;
+                _btagSF *= myjet._btag_sf ? myjet._btag_sf : 1.0;
             }
 
             // energy correction uncertainty
@@ -963,37 +962,37 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
                                             muon_trigSF_histo->GetXaxis()->GetBinWidth(muon_trigSF_histo->GetNbinsX()) - 0.01);
                 bool found_mu = false;
 
-                if (mu_pt < muon_trigSF_histo->GetYaxis()->GetBinLowEdge(1))
-                    continue;
-                // Find endcap and phi value of EMTF muons
-
-                for (int iPt = 1; iPt <= muon_trigSF_histo->GetNbinsY(); iPt++)
+                if (mu_pt > muon_trigSF_histo->GetYaxis()->GetBinLowEdge(1))
                 {
-                    if (found_mu)
-                        continue;
-                    if (mu_pt < muon_trigSF_histo->GetYaxis()->GetBinLowEdge(iPt))
-                        continue;
-                    if (mu_pt > muon_trigSF_histo->GetYaxis()->GetBinLowEdge(iPt) + muon_trigSF_histo->GetYaxis()->GetBinWidth(iPt))
-                        continue;
+                    // Find endcap and phi value of EMTF muons
 
-                    for (int iEta = 1; iEta <= muon_trigSF_histo->GetNbinsX(); iEta++)
+                    for (int iPt = 1; iPt <= muon_trigSF_histo->GetNbinsY(); iPt++)
                     {
                         if (found_mu)
                             continue;
-                        if (mu_eta < muon_trigSF_histo->GetXaxis()->GetBinLowEdge(iEta))
+                        if (mu_pt < muon_trigSF_histo->GetYaxis()->GetBinLowEdge(iPt))
                             continue;
-                        if (mu_eta > muon_trigSF_histo->GetXaxis()->GetBinLowEdge(iEta) + muon_trigSF_histo->GetXaxis()->GetBinWidth(iEta))
+                        if (mu_pt > muon_trigSF_histo->GetYaxis()->GetBinLowEdge(iPt) + muon_trigSF_histo->GetYaxis()->GetBinWidth(iPt))
                             continue;
 
-                        found_mu = true;
+                        for (int iEta = 1; iEta <= muon_trigSF_histo->GetNbinsX(); iEta++)
+                        {
+                            if (found_mu)
+                                continue;
+                            if (mu_eta < muon_trigSF_histo->GetXaxis()->GetBinLowEdge(iEta))
+                                continue;
+                            if (mu_eta > muon_trigSF_histo->GetXaxis()->GetBinLowEdge(iEta) + muon_trigSF_histo->GetXaxis()->GetBinWidth(iEta))
+                                continue;
 
-                        ineff *= (1. - muon_trigSF_histo->GetBinContent(iEta, iPt));
-                        ineff_up *= (1. - muon_trigSF_histo->GetBinContent(iEta, iPt) - muon_trigSF_histo->GetBinError(iEta, iPt));
-                        ineff_down *= (1. - muon_trigSF_histo->GetBinContent(iEta, iPt) + muon_trigSF_histo->GetBinError(iEta, iPt));
+                            found_mu = true;
 
-                    } // End loop: for (int iEta = 1; iEta <= muon_trigSF_histo->GetNbinsX(); iEta++)
-                }     // End loop: for (int iPt = 1; iPt <= muon_trigSF_histo->GetNbinsY(); iPt++)
+                            ineff *= (1. - muon_trigSF_histo->GetBinContent(iEta, iPt));
+                            ineff_up *= (1. - muon_trigSF_histo->GetBinContent(iEta, iPt) - muon_trigSF_histo->GetBinError(iEta, iPt));
+                            ineff_down *= (1. - muon_trigSF_histo->GetBinContent(iEta, iPt) + muon_trigSF_histo->GetBinError(iEta, iPt));
 
+                        } // End loop: for (int iEta = 1; iEta <= muon_trigSF_histo->GetNbinsX(); iEta++)
+                    }     // End loop: for (int iPt = 1; iPt <= muon_trigSF_histo->GetNbinsY(); iPt++)
+                }
                 typedef boost::property_tree::ptree::path_type path;
                 //eta bins for SF
                 std::vector<float> etabins{-2.40, -2.30, -2.20, -2.10, -2.00, -1.70, -1.60, -1.50, -1.40, -1.20, -0.80, -0.50, -0.30, -0.20, 0.00, 0.20, 0.30, 0.50, 0.80, 1.20, 1.40, 1.50, 1.60, 1.70, 2.00, 2.10, 2.20, 2.30, 2.40};
@@ -1002,6 +1001,8 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
                 std::vector<float> ptbins{20.00, 25.00, 30.00, 40.00, 50.00, 60.00, 120.00};
                 std::string _value_string, _err_string;
                 std::ostringstream _min_eta, _max_eta, _min_pt, _max_pt;
+                bool foundEta = true;
+                bool foundPt = true;
                 _min_pt.str("");
                 _min_eta.str("");
                 _max_pt.str("");
@@ -1022,9 +1023,9 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
                     _min_eta.str("");
                     _max_pt.str("");
                     _max_eta.str("");
-                    continue;
+                    foundPt = false;
                 }
-                                for (int _eta = 0; _eta < int(etabins.size()) - 1; _eta++)
+                for (int _eta = 0; _eta < int(etabins.size()) - 1; _eta++)
                 {
                     if (_muon1._eta < etabins.at(_eta))
                         continue;
@@ -1039,27 +1040,28 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
                     _min_eta.str("");
                     _max_pt.str("");
                     _max_eta.str("");
-                    continue;
+                    foundEta = false;
                 }
+                if (foundPt && foundEta)
+                { // ID
+                    _value_string = "NUM_" + _id_wp_num + "_DEN_" + _id_wp_den + "/pt_eta/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/eta:[" + _min_eta.str() + "," + _max_eta.str() + "]/value";
+                    _idSF *= _muon_idSF_ptree.get<float>(path(_value_string.c_str(), '/'));
+                    _err_string = "NUM_" + _id_wp_num + "_DEN_" + _id_wp_den + "/pt_eta/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/eta:[" + _min_eta.str() + "," + _max_eta.str() + "]/error";
+                    _idSF_up *= _idSF + _muon_idSF_ptree.get<float>(path(_err_string.c_str(), '/'));
+                    _idSF_down *= _idSF - _muon_idSF_ptree.get<float>(path(_err_string.c_str(), '/'));
+                    // Iso
+                    _value_string = "NUM_" + _iso_wp_num + "_DEN_" + _iso_wp_den + "/pt_eta/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/eta:[" + _min_eta.str() + "," + _max_eta.str() + "]/value";
+                    _isoSF *= _muon_isoSF_ptree.get<float>(path(_value_string.c_str(), '/'));
+                    _err_string = "NUM_" + _iso_wp_num + "_DEN_" + _iso_wp_den + "/pt_eta/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/eta:[" + _min_eta.str() + "," + _max_eta.str() + "]/error";
+                    _isoSF_up *= _isoSF + _muon_isoSF_ptree.get<float>(path(_err_string.c_str(), '/'));
+                    _isoSF_down *= _isoSF - _muon_isoSF_ptree.get<float>(path(_err_string.c_str(), '/'));
 
-                // ID
-                _value_string = "NUM_" + _id_wp_num + "_DEN_" + _id_wp_den + "/pt_eta/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/eta:[" + _min_eta.str() + "," + _max_eta.str() + "]/value";
-                _idSF *= _muon_idSF_ptree.get<float>(path(_value_string.c_str(), '/'));
-                _err_string = "NUM_" + _id_wp_num + "_DEN_" + _id_wp_den + "/pt_eta/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/eta:[" + _min_eta.str() + "," + _max_eta.str() + "]/error";
-                _idSF_up *= _idSF + _muon_idSF_ptree.get<float>(path(_err_string.c_str(), '/'));
-                _idSF_down *= _idSF - _muon_idSF_ptree.get<float>(path(_err_string.c_str(), '/'));
-                // Iso
-                _value_string = "NUM_" + _iso_wp_num + "_DEN_" + _iso_wp_den + "/pt_eta/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/eta:[" + _min_eta.str() + "," + _max_eta.str() + "]/value";
-                _isoSF *= _muon_isoSF_ptree.get<float>(path(_value_string.c_str(), '/'));
-                _err_string = "NUM_" + _iso_wp_num + "_DEN_" + _iso_wp_den + "/pt_eta/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/eta:[" + _min_eta.str() + "," + _max_eta.str() + "]/error";
-                _isoSF_up *= _isoSF + _muon_isoSF_ptree.get<float>(path(_err_string.c_str(), '/'));
-                _isoSF_down *= _isoSF - _muon_isoSF_ptree.get<float>(path(_err_string.c_str(), '/'));
-
-                //cleaning the strings
-                _min_pt.str("");
-                _min_eta.str("");
-                _max_pt.str("");
-                _max_eta.str("");
+                    //cleaning the strings
+                    _min_pt.str("");
+                    _min_eta.str("");
+                    _max_pt.str("");
+                    _max_eta.str("");
+                }
             }
 
             _muons.push_back(_muon1);
