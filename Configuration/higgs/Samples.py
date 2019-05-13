@@ -43,6 +43,18 @@ mc_global_tag_2018 = "102X_upgrade2018_realistic_v18"
 # ,
 
 #   Datasets from Collisions
+mc_extra_2018 = {
+    "/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM" : DS.MCDataset(
+        name="/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM",
+        isData=False,
+        year=2018,
+        isSignal=False,
+        initial_cmssw="102X",
+        globaltag=mc_global_tag_2018,
+        cross_section=6225.42
+)
+}
+
 data_2016 = {
     # "/SingleMuon/Run2016B-17Jul2018_ver1-v1/MINIAOD": DS.Dataset(
     #     name="/SingleMuon/Run2016B-17Jul2018_ver1-v1/MINIAOD",
