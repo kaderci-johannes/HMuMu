@@ -1,9 +1,9 @@
 #ifndef Analysis_Core_Muon_h
 #define Analysis_Core_Muon_h
 
+#include "TLorentzVector.h"
 #ifndef STANDALONE
 #include "HMuMu/Core/interface/Track.h"
-#include "TLorentzVector.h"
 #else
 #include "Track.h"
 #endif
