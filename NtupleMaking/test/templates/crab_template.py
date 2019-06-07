@@ -11,7 +11,7 @@ config.JobType.psetName = 'cfgname'
 config.JobType.allowUndistributedCMSSW=True
 config.JobType.sendExternalFolder = True
 #config.JobType.maxMemoryMB = 2500
-config.JobType.maxJobRuntimeMin = 1500
+#config.JobType.maxJobRuntimeMin = 1500
 #config.JobType.outputFiles = ['outputfile.root']
 config.JobType.inputFiles = ['../data']
 config.Data.inputDataset = 's.name'
@@ -25,3 +25,4 @@ config.Data.outputDatasetTag = 'DATASETTAGNAME'
 #config.Data.outputPrimaryDataset = "PRIMARYDATASETNAME"
 
 config.Site.storageSite = 'T3_US_FNALLPC'
+config.Site.blacklist = ['T3_UK_London_QMUL','T3_UK_London_RHUL']

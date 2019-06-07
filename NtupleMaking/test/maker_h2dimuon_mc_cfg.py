@@ -1,4 +1,4 @@
-year = "2016"
+year = "2017"
 
 import FWCore.ParameterSet.Config as cms
 process = cms.Process("NtupleMaking")
@@ -8,7 +8,7 @@ process = cms.Process("NtupleMaking")
 #
 process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 10
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
 process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load('Configuration.EventContent.EventContent_cff')
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
@@ -134,11 +134,11 @@ process.jecSequence = cms.Sequence(
     process.patJetCorrFactorsUpdatedJEC *
     process.updatedPatJetsUpdatedJEC)
 
-process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(100))
+process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(3))
 files = {
-    "2016" : "file:/afs/cern.ch/user/m/malhusse/files/0EFDF441-B135-E911-B24F-AC1F6B1AEFEE.root",
-    "2017" : "file:/afs/cern.ch/user/m/malhusse/files/0AEB8E40-E03D-E911-8E67-0CC47AA98A0E.root",
-    "2018" : "file:/afs/cern.ch/user/m/malhusse/files/E7FAE092-29DE-AA4B-9891-6958578145DA.root",
+"2016" : "file:/afs/cern.ch/user/m/malhusse/files/E635F219-AD35-E911-9BEB-848F69FD0C80.root",
+"2017" : "file:/afs/cern.ch/work/m/malhusse/private/5AC9148F-9842-E811-892B-3417EBE535DA.root",
+"2018" : "file:/afs/cern.ch/user/m/malhusse/files/5D553293-4E60-3F48-828E-53309175D40C.root",
 }
 process.source = cms.Source("PoolSource", fileNames=cms.untracked.vstring(
     files[year]

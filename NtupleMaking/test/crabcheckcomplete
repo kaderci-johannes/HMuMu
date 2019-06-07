@@ -1,0 +1,8 @@
+#/bin/bash
+
+for dir in ./crab_projects/*/; do
+  if crab status -d "$dir" | grep 'COMPLETED'; then
+     echo $dir
+     mv $dir oldcrabprojects     
+  fi
+done
