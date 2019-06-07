@@ -42,18 +42,8 @@ mc_global_tag_2018 = "102X_upgrade2018_realistic_v18"
 # )
 # ,
 
+
 #   Datasets from Collisions
-mc_extra_2018 = {
-    "/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM" : DS.MCDataset(
-        name="/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM",
-        isData=False,
-        year=2018,
-        isSignal=False,
-        initial_cmssw="102X",
-        globaltag=mc_global_tag_2018,
-        cross_section=6225.42
-)
-}
 
 data_2016 = {
     # "/SingleMuon/Run2016B-17Jul2018_ver1-v1/MINIAOD": DS.Dataset(
@@ -140,7 +130,7 @@ data_2018 = {
         year=2018,
         globaltag=data_global_tag_2018),
     "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD": DS.Dataset(
-        name=" /SingleMuon/Run2018C-17Sep2018-v1/MINIAOD",
+        name="/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD",
         isData=True,
         year=2018,
         globaltag=data_global_tag_2018),
@@ -1086,7 +1076,15 @@ mc_signal_2018 = {
 }
 
 mc_background_2018 = {
-
+    "/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM" : DS.MCDataset(
+        name="/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM",
+        isData=False,
+        year=2018,
+        isSignal=False,
+        initial_cmssw="102X",
+        globaltag=mc_global_tag_2018,
+        cross_section=6225.42
+    ),
     "/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM": DS.MCDataset(
         name="/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM",
         isData=False,
@@ -1378,38 +1376,28 @@ def multipleDirectories(ntuple, timestamp):
     return x
 
 
-def discoverFileList(ntuple):
-    if "ext" in ntuple.name:
-        return []
+def discoverFileList(ntuple, timestamp):
     files = []
-    for timestamp in buildTimeStamp(ntuple):
-        for directory in multipleDirectories(ntuple, timestamp):
-            fullpath = os.path.join(ntuple.rootpath,
-                                    ntuple.label.split("__")[0],
-                                    buildDatasetTagName(ntuple),
-                                    timestamp,
-                                    directory)
-            fullpattern = os.path.join(fullpath, "*.root")
-            cmd = "eosls"
-            args = fullpattern
-            x = eos_system(cmd, args).split("\n")[:-1]
-            if ntuple.storage == "EOS":
-                for f in x:
-                    fullpathname = os.path.join("root://cmsxrootd.fnal.gov//")
-                    fullpathname = fullpathname+os.path.join(fullpath, f)
-                    files.append(fullpathname)
+    for directory in multipleDirectories(ntuple, timestamp):
+        fullpath = os.path.join(ntuple.rootpath,
+                                ntuple.label.split("__")[0],
+                                buildDatasetTagName(ntuple),
+                                timestamp,
+                                directory)
+        fullpattern = os.path.join(fullpath, "*.root")
+        cmd = "eosls"
+        args = fullpattern
+        x = eos_system(cmd, args).split("\n")[:-1]
+        if ntuple.storage == "EOS":
+            for f in x:
+                fullpathname = os.path.join("root://cmsxrootd.fnal.gov/")
+                fullpathname = fullpathname+os.path.join(fullpath, f)
+                files.append(fullpathname)
     return files
 
 
 def buildFileListName(ntuple):
-    if ntuple.isData:
-        s = "filelist__%s__%s" % (ntuple.label.split("__")[1],
-                                  ntuple.json[:-4])
-    else:
-        s = "filelist__%s__%s" % (ntuple.label.split("__")[0],
-                                  ntuple.cmssw)
-    if ntuple.aux != None and ntuple.aux != "":
-        s += "__%s" % ntuple.aux
+    s = ntuple.label
     s += ".files"
     return s
 
