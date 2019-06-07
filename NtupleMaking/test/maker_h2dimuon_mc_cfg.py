@@ -134,11 +134,11 @@ process.jecSequence = cms.Sequence(
     process.patJetCorrFactorsUpdatedJEC *
     process.updatedPatJetsUpdatedJEC)
 
-process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(100))
+process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(-1))
 files = {
-    "2016" : "file:/afs/cern.ch/user/m/malhusse/files/0EFDF441-B135-E911-B24F-AC1F6B1AEFEE.root",
-    "2017" : "file:/afs/cern.ch/user/m/malhusse/files/0AEB8E40-E03D-E911-8E67-0CC47AA98A0E.root",
-    "2018" : "file:/afs/cern.ch/user/m/malhusse/files/E7FAE092-29DE-AA4B-9891-6958578145DA.root",
+"2016" : "file:/afs/cern.ch/user/m/malhusse/files/E635F219-AD35-E911-9BEB-848F69FD0C80.root",
+"2017" : "file:/afs/cern.ch/user/m/malhusse/files/D46B3BDA-1130-E911-9702-0242AC1C0503.root",
+"2018" : "file:/afs/cern.ch/user/m/malhusse/files/5D553293-4E60-3F48-828E-53309175D40C.root",
 }
 process.source = cms.Source("PoolSource", fileNames=cms.untracked.vstring(
     files[year]
