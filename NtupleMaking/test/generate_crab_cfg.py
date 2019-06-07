@@ -21,9 +21,11 @@ jsonfiles = Samples.jsonfiles
 
 #   select the datasets to be submitted for grid processing
 datasets = []
-sets_to_consider = Samples.data_2017
-sets_to_consider.update(Samples.mc_signal_2017)
-sets_to_consider.update(Samples.mc_background_2017)
+sets_to_consider = {}
+sets_to_consider.update(Samples.data_2018)
+sets_to_consider.update(Samples.mc_signal_2018)
+sets_to_consider.update(Samples.mc_background_2018)
+
 for k in sets_to_consider:
     datasets.append(sets_to_consider[k])
 
