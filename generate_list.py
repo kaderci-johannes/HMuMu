@@ -1,11 +1,11 @@
-year = "2018"
-
+import Dataset as DS
+import Samples as S
 import os
 import sys
 sys.path.append(os.path.join(
-os.environ["ANALYSISHOME"], "Configuration", "higgs"))
-import Samples as S
-import Dataset as DS
+    os.environ["ANALYSISHOME"], "Configuration", "higgs"))
+
+year = sys.argv[1]
 
 data_datasets_dic = {
     "2016": S.data_2016,
@@ -38,12 +38,12 @@ for d, v in data_datasets_dic[year].items():
     # print(v.label)
     # print(v.aux)
     ntuple = DS.Ntuple(v,
-                       json = jsonfile.filename,
-                       cmssw = cmssw,
-                       storage = storage,
-                       rootpath = os.path.join(rootpath, "data"),
-                       timestamp = None,
-                       aux = aux
+                       json=jsonfile.filename,
+                       cmssw=cmssw,
+                       storage=storage,
+                       rootpath=os.path.join(rootpath, "data"),
+                       timestamp=None,
+                       aux=aux
                        )
     data_ntuples.append(ntuple)
 # print data_ntuples
@@ -58,7 +58,8 @@ for ntuple in data_ntuples:
             else:
                 timestamps.append(timestamp)
                 filelist_list = S.discoverFileList(ntuple, timestamp)
-                filelist = os.path.join(filelistdir, S.buildFileListName(ntuple))
+                filelist = os.path.join(
+                    filelistdir, S.buildFileListName(ntuple))
     except Exception as exc:
         continue
 
