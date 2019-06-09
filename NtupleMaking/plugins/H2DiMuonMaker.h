@@ -24,7 +24,7 @@
 
 class H2DiMuonMaker : public edm::EDAnalyzer
 {
-  public:
+public:
 	explicit H2DiMuonMaker(edm::ParameterSet const &);
 	~H2DiMuonMaker() {}
 
@@ -32,13 +32,17 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 	virtual void endJob();
 	virtual void analyze(edm::Event const &, edm::EventSetup const &);
 
-  private:
+private:
 	bool passHLT(edm::Event const &);
 	bool isHLTMatched(uint32_t, edm::Event const &,
 					  pat::Muon const &);
 	bool passKinCuts(pat::Muon const &);
+	double getPFMiniIsolation(edm::Handle<pat::PackedCandidateCollection> pfcands,
+							  const reco::Candidate *ptcl,
+							  double r_iso_min, double r_iso_max, double kt_scale,
+							  bool use_pfweight, bool charged_only, double rho);
 
-  private:
+private:
 	//	ROOT
 	TTree *_tEvents;
 	TTree *_tMeta;
@@ -67,6 +71,7 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 	edm::InputTag _jetToken;
 	edm::InputTag _rhoToken;
 	edm::InputTag _genJetToken;
+
 	/* edm::InputTag _eleVetoToken; */
 	/* edm::InputTag _eleLooseToken; */
 	/* edm::InputTag _eleMediumToken; */
@@ -98,6 +103,9 @@ class H2DiMuonMaker : public edm::EDAnalyzer
 	edm::EDGetTokenT<LHEEventProduct> _lheToken;
 	edm::EDGetTokenT<GenEventInfoProduct> _genInfoToken;
 	edm::EDGetTokenT<std::vector<PileupSummaryInfo>> _puToken;
+	edm::EDGetTokenT<pat::PackedCandidateCollection> _candToken;
+ 	edm::EDGetTokenT<edm::ValueMap<float> > qg_token;
+	 
 	edm::Handle<edm::TriggerResults> _hTriggerResults;
 	edm::Handle<pat::TriggerObjectStandAloneCollection> _hTriggerObjects;
 	edm::Handle<edm::TriggerResults> _hMetFilterResults;
