@@ -123,7 +123,7 @@ process.QGPoolDBESSource = cms.ESSource("PoolDBESSource",
                                         toGet=cms.VPSet(cms.PSet(record=cms.string('QGLikelihoodRcd'),
                                         tag=cms.string('QGLikelihoodObject_v1_AK4'),
                                         label=cms.untracked.string('QGL_AK4PFchs'))),
-connect=cms.string('sqlite:../data/QGL_AK4chs_94X.db'))
+                                        connect=cms.string('sqlite:qg/QGL_AK4chs_94X.db'))
 process.es_prefer_qg = cms.ESPrefer('PoolDBESSource', 'QGPoolDBESSource')
 process.load('RecoJets.JetProducers.QGTagger_cfi')
 process.QGTagger.srcJets = cms.InputTag("updatedPatJetsUpdatedJEC")
