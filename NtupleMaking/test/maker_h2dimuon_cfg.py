@@ -1,4 +1,4 @@
-year = "2017"
+year = "2016"
 
 import FWCore.ParameterSet.Config as cms
 process = cms.Process("NtupleMaking")
@@ -154,7 +154,7 @@ process.jecSequence = cms.Sequence(
     process.updatedPatJetsUpdatedJEC)
 
 
-process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(-1))
+process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(1000))
 files = {
     "2016" : "/store/data/Run2016C/SingleMuon/MINIAOD/17Jul2018-v1/20000/FEC97F81-0097-E811-A7B9-90E2BACC5EEC.root",
     "2017" : "/store/data/Run2017D/SingleMuon/MINIAOD/31Mar2018-v1/90000/FE30740D-2437-E811-8D0A-1866DAED3BE8.root",
