@@ -1,6 +1,9 @@
 """
 CMSSW Cfg Template to be submitted with crab
 """
+from FSRPhotonRecovery.FSRPhotons.FSRphotonSequence_cff import addFSRphotonSequence
+from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
 import FWCore.ParameterSet.Config as cms
 process = cms.Process("NtupleMaking")
 
@@ -36,10 +39,10 @@ else:
 
 # JET ENERGY CORRECTIONS
 
-from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
 
 if thisIsData:
-    corrections = cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual'])
+    corrections = cms.vstring(
+        ['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual'])
 else:
     corrections = cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute'])
 
@@ -52,7 +55,7 @@ updateJetCollection(
 )
 
 
-## only for 2017? check this
+# only for 2017? check this
 
 if year == "2017":
 
@@ -65,12 +68,12 @@ if year == "2017":
         isData=thisIsData,  # false for MC
         fixEE2017=True,
         fixEE2017Params={'userawPt': True, 'ptThreshold': 50.0,
-                        'minEtaThreshold': 2.65, 'maxEtaThreshold': 3.139},
+                         'minEtaThreshold': 2.65, 'maxEtaThreshold': 3.139},
         postfix="ModifiedMET"
     )
 
 
-## era based on year 2016/2017/2018
+# era based on year 2016/2017/2018
 
 runVid = True
 runCorrections = False
@@ -91,65 +94,82 @@ if year == "2018":
 
     # vid = False
 # electron energy scale correction fix SEE https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaMiniAODV2
-from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
 setupEgammaPostRecoSeq(process,
                        runEnergyCorrections=runCorrections,
                        runVID=runVid,  # saves CPU time by not needlessly re-running VID
                        era=egammaEra)
 
 
-
 # only applied to "2016" and 2017
 
 if year == "2016" or year == "2017":
-    ## prefiring weights
+    # prefiring weights
     from PhysicsTools.PatUtils.l1ECALPrefiringWeightProducer_cfi import l1ECALPrefiringWeightProducer
     process.prefiringweight = l1ECALPrefiringWeightProducer.clone(
-        DataEra = cms.string(prefire_era), #Use 2016BtoH for 2016
-        UseJetEMPt = cms.bool(False),
-        PrefiringRateSystematicUncty = cms.double(0.2),
-        SkipWarnings = False)
-
+        DataEra=cms.string(prefire_era),  # Use 2016BtoH for 2016
+        UseJetEMPt=cms.bool(False),
+        PrefiringRateSystematicUncty=cms.double(0.2),
+        SkipWarnings=False)
 
 
 # FSR RECOVERY
-from FSRPhotonRecovery.FSRPhotons.FSRphotonSequence_cff import addFSRphotonSequence
-PhotonMVA="FSRPhotonRecovery/FSRPhotons/data/PhotonMVAv9_BDTG800TreesDY.weights.xml"
+PhotonMVA = "FSRPhotonRecovery/FSRPhotons/data/PhotonMVAv9_BDTG800TreesDY.weights.xml"
 addFSRphotonSequence(process, 'slimmedMuons', PhotonMVA)
 
+# QG Tagger
+# from CondCore.CondDB.CondDB_cfi import *
+# CondDBSetup = CondDB.clone()
+from CondCore.DBCommon.CondDBSetup_cfi import *
+
+process.QGPoolDBESSource = cms.ESSource("PoolDBESSource",
+                                        CondDBSetup,
+                                        toGet=cms.VPSet(cms.PSet(record=cms.string('QGLikelihoodRcd'),
+                                        tag=cms.string('QGLikelihoodObject_v1_AK4'),
+                                        label=cms.untracked.string('QGL_AK4PFchs'))),
+connect=cms.string('sqlite:../data/QGL_AK4chs_94X.db'))
+process.es_prefer_qg = cms.ESPrefer('PoolDBESSource', 'QGPoolDBESSource')
+process.load('RecoJets.JetProducers.QGTagger_cfi')
+process.QGTagger.srcJets = cms.InputTag("updatedPatJetsUpdatedJEC")
+process.QGTagger.srcVertexCollection = cms.InputTag("offlineSlimmedPrimaryVertices")
+process.QGTagger.useQualityCuts = cms.bool(False)
+# end QG Tagger
 
 process.GlobalTag.globaltag = globalTag
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(-1))
 
-process.source = cms.Source("PoolSource",fileNames = cms.untracked.vstring())
+process.source = cms.Source("PoolSource", fileNames=cms.untracked.vstring())
 
-process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
+process.options = cms.untracked.PSet(wantSummary=cms.untracked.bool(False))
 
-process.TFileService = cms.Service("TFileService", fileName = cms.string("ntuple.root") )
+process.TFileService = cms.Service(
+    "TFileService", fileName=cms.string("ntuple.root"))
 
 process.jecSequence = cms.Sequence(
-    process.patJetCorrFactorsUpdatedJEC * 
+    process.patJetCorrFactorsUpdatedJEC *
     process.updatedPatJetsUpdatedJEC)
 
 if year == "2016":
     process.p = cms.Path(
-    process.prefiringweight *
-    process.egammaPostRecoSeq *
-    process.jecSequence * 
-    process.FSRphotonSequence*
-    process.ntuplemaker_H2DiMuonMaker)
+        process.prefiringweight *
+        process.egammaPostRecoSeq *
+        process.jecSequence *
+        process.QGTagger *
+        process.FSRphotonSequence *
+        process.ntuplemaker_H2DiMuonMaker)
 if year == "2017":
     process.p = cms.Path(
-    process.prefiringweight *
-    process.egammaPostRecoSeq *
-    process.jecSequence * 
-    process.fullPatMetSequenceModifiedMET * 
-    process.FSRphotonSequence*
-    process.ntuplemaker_H2DiMuonMaker)
+        process.prefiringweight *
+        process.egammaPostRecoSeq *
+        process.jecSequence *
+        process.fullPatMetSequenceModifiedMET *
+        process.QGTagger *
+        process.FSRphotonSequence *
+        process.ntuplemaker_H2DiMuonMaker)
 if year == "2018":
-        process.p = cms.Path(
-    process.egammaPostRecoSeq *
-    process.jecSequence * 
-    process.FSRphotonSequence*
-    process.ntuplemaker_H2DiMuonMaker)
+    process.p = cms.Path(
+        process.egammaPostRecoSeq *
+        process.jecSequence *
+        process.QGTagger *
+        process.FSRphotonSequence *
+        process.ntuplemaker_H2DiMuonMaker)

@@ -1,54 +1,74 @@
+import Dataset as DS
+import Samples as S
 import os
 import sys
 sys.path.append(os.path.join(
-os.environ["ANALYSISHOME"], "Configuration", "higgs"))
-import Samples as S
-import Dataset as DS
+    os.environ["ANALYSISHOME"], "Configuration", "higgs"))
 
-bkg_datasets = S.mc_background_2017
-sig_datasets = S.mc_signal_2017
+year = sys.argv[1]
 
-cmssw = "94X"
+mc2016 = S.mc_background_2016
+mc2016.update(S.mc_signal_2016)
+
+mc2017 = S.mc_background_2017
+mc2017.update(S.mc_signal_2017)
+
+mc2018 = S.mc_background_2018
+mc2018.update(S.mc_signal_2018)
+
+mc_datasets_dic = {
+    "2016": mc2016,
+    "2017": mc2017,
+    "2018": mc2018
+}
+
+cmssw_dic = {
+    "2016": "94X",
+    "2017": "94X",
+    "2018": "102X"
+}
+
+cmssw = cmssw_dic[year]
+
 storage = "EOS"
-rootpath = "/store/user/malhusse/higgs_ntuples/2017v2"
+rootpath = "/store/user/malhusse/higgs_ntuples/final/" + year
+
 mc_ntuples = []
 aux = "Mu27"
-filelistdir = "/uscms/home/malhusse/nobackup/build/AnalysisCode/filelistsV2"
 
-for d in bkg_datasets:
-    ntuple = DS.Ntuple(bkg_datasets[d],
-                       json = None,
-                       cmssw = bkg_datasets[d].initial_cmssw,
-                       storage = "EOS",
-                       rootpath = os.path.join(rootpath, "mc"),
-                       timestamp = None,
-                       aux = aux
+filelistdir = "/uscms_data/d3/malhusse/analysis/AnalysisCode/filelists/" + year
+
+for d, v in mc_datasets_dic[year].items():
+    print(v.label)
+    ntuple = DS.Ntuple(v,
+                       json=None,
+                       cmssw=cmssw,
+                       storage="EOS",
+                       rootpath=os.path.join(rootpath, "mc"),
+                       timestamp=None,
+                       aux=aux
                        )
     mc_ntuples.append(ntuple)
 
-for dd in sig_datasets:
-    ntuple = DS.Ntuple(sig_datasets[dd],
-                       json = None,
-                       cmssw = sig_datasets[dd].initial_cmssw,
-                       storage = "EOS",
-                       rootpath = os.path.join(rootpath, "mc"),
-                       timestamp = None,
-                       aux = aux
-                       )
-    mc_ntuples.append(ntuple)
+timestamps = []
 
 for ntuple in mc_ntuples:
-    print ntuple
     try:
-        filelist_list = S.discoverFileList(ntuple)
-        filelist = os.path.join(filelistdir, S.buildFileListName(ntuple))
-   #     print filelist
+        filelist_full = []
+        for timestamp in S.buildTimeStamp(ntuple):
+            if timestamp in timestamps:
+                continue
+            else:
+                timestamps.append(timestamp)
+                filelist_list = S.discoverFileList(ntuple, timestamp)
+                filelist = os.path.join(
+                    filelistdir, S.buildFileListName(ntuple))
+                filelist_full += filelist_list
     except Exception as exc:
         continue
 
-    if filelist_list:
-        print "create filelist"
+    if filelist_full:
         f = open(filelist, "w")
-        for x in filelist_list:
+        for x in filelist_full:
             f.write("%s\n" % x)
         f.close()
