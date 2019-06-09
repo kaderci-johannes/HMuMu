@@ -51,7 +51,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
     _tEvents->Branch("Auxiliary", &m_aux);
 
     consumes<pat::MuonCollection>(_muonToken);
-    consumes<edm::View<pat::Electron>>(_eleToken);
+    consumes<pat::ElectronCollection>(_eleToken);
     consumes<pat::TauCollection>(_tauToken);
     consumes<reco::VertexCollection>(_pvToken);
     consumes<edm::TriggerResults>(_trigResToken);
@@ -69,14 +69,13 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
     consumes<reco::GenParticleCollection>(_prunedGenParticlesToken);
     consumes<pat::PackedGenParticleCollection>(_packedGenParticlesToken);
 
+
     _genInfoToken = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
     _lheToken = consumes<LHEEventProduct>(edm::InputTag("externalLHEProducer"));
     _puToken = consumes<std::vector<PileupSummaryInfo>>(edm::InputTag("slimmedAddPileupInfo"));
     tokenFSRphotons = consumes<std::vector<pat::PFParticle>>(edm::InputTag("FSRRecovery", "selectedFSRphotons"));
-
-    // prefweight_token = consumes<double>(edm::InputTag("prefiringweight:nonPrefiringProb"));
-    // prefweightup_token = consumes<double>(edm::InputTag("prefiringweight:nonPrefiringProbUp"));
-    // prefweightdown_token = consumes<double>(edm::InputTag("prefiringweight:nonPrefiringProbDown"));
+    _candToken = consumes<pat::PackedCandidateCollection>(ps.getParameter<edm::InputTag>("tagCands"));
+    qg_token = consumes<edm::ValueMap<float>>(edm::InputTag("QGTagger", "qgLikelihood"));
 
     mayConsume<reco::ConversionCollection>(_convToken);
 
@@ -95,6 +94,10 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
     _meta._metFilterNames = ps.getUntrackedParameter<std::vector<std::string>>("metFilterNames");
     _useElectrons = ps.getUntrackedParameter<bool>("useElectrons");
     _useTaus = ps.getUntrackedParameter<bool>("useTaus");
+
+    _meta._deepLooseWP = ps.getUntrackedParameter<double>("deepCSVL");
+    _meta._deepMediumWP = ps.getUntrackedParameter<double>("deepCSVM");
+    _meta._deepTightWP = ps.getUntrackedParameter<double>("deepCSVT");
 
     if (_meta._isMC)
     {
@@ -209,6 +212,9 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
     if (_meta._checkTrigger)
         if (!passHLT(e))
             return;
+
+    edm::Handle<double> hRho;
+    e.getByLabel(_rhoToken, hRho);
 
     // Get Jet Energy Corrections Uncertainties
     esetup.get<JetCorrectionsRecord>().get("AK4PF", m_hJetCParametersAK4);
@@ -397,21 +403,20 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
     //
     edm::Handle<std::vector<pat::Jet>> hJets;
     e.getByLabel(_jetToken, hJets);
+    edm::Handle<edm::ValueMap<float>> qg_handle;
+    e.getByToken(qg_token,qg_handle);
+
     if (!hJets.isValid())
     {
         std::cout << "Jet Product is not found" << std::endl;
     }
     else
     {
-        edm::Handle<double> hRho;
-        e.getByLabel(_rhoToken, hRho);
-        double _rho = *hRho;
-
         float _btagSF = 1.0;
+        int ijetRef = -1;
         for (uint32_t i = 0; i < hJets->size(); i++)
         {
-            // if (i == 10)
-            //     break;
+            ijetRef++;
 
             const pat::Jet &jet = hJets->at(i);
             analysis::core::Jet myjet;
@@ -446,6 +451,8 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
             myjet._jecf = jet.jecFactor("Uncorrected");
             myjet._puid = jet.userFloat("pileupJetId:fullDiscriminant");
             myjet._fullid = jet.userInt("pileupJetId:fullId");
+            edm::RefToBase<pat::Jet> jetRef(edm::Ref<pat::JetCollection>(hJets, ijetRef) );
+            myjet._qgLikelihood = (*qg_handle)[jetRef];
 
             //  b-tagging information
             float btagDisc = 0.0;
@@ -454,7 +461,11 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
             {
                 btagDisc += jet.bDiscriminator(*btt);
             }
-            myjet._btag.push_back(btagDisc);
+            myjet._btag = btagDisc;
+
+            myjet._dscvLoose = btagDisc >= _meta._deepLooseWP;
+            myjet._dcsvMedium = btagDisc >= _meta._deepMediumWP;
+            myjet._dcsvTight = btagDisc >= _meta._deepTightWP;
 
             if (_meta._isMC)
             {
@@ -481,7 +492,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
                 JME::JetParameters jetResParams;
                 jetResParams.setJetPt(jet.pt());
                 jetResParams.setJetEta(jet.eta());
-                jetResParams.setRho(_rho); // add rho
+                jetResParams.setRho(*hRho); // add rho
 
                 myjet._jer = resolution.getResolution(jetResParams);
                 myjet._jerSF = resolution_sf.getScaleFactor(jetResParams);
@@ -514,61 +525,97 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
         _eaux._btagSF = _btagSF;
     }
 
+    edm::Handle<pat::PackedCandidateCollection> hCandidates;
+    e.getByToken(_candToken, hCandidates);
+
     //
     //  Electrons
     //
-    // if (_useElectrons)
-    // {
-    //     edm::Handle<edm::ValueMap<bool>> hId_veto, hId_loose, hId_medium, hId_tight;
-    //     e.getByLabel(_eleVetoToken, hId_veto);
-    //     e.getByLabel(_eleLooseToken, hId_loose);
-    //     e.getByLabel(_eleMediumToken, hId_medium);
-    //     e.getByLabel(_eleTightToken, hId_tight);
+    if (_useElectrons)
+    {
+        // edm::Handle<edm::ValueMap<bool>> hId_veto, hId_loose, hId_medium, hId_tight;
+        // e.getByLabel(_eleVetoToken, hId_veto);
+        // e.getByLabel(_eleLooseToken, hId_loose);
+        // e.getByLabel(_eleMediumToken, hId_medium);
+        // e.getByLabel(_eleTightToken, hId_tight);
 
-    //     edm::Handle<edm::View<pat::Electron>> hElectrons;
-    //     e.getByLabel(_eleToken, hElectrons);
+        edm::Handle<pat::ElectronCollection> hElectrons;
+        e.getByLabel(_eleToken, hElectrons);
 
-    //     edm::Handle<reco::ConversionCollection> hConversions;
-    //     e.getByLabel(_convToken, hConversions);
+        edm::Handle<reco::ConversionCollection> hConversions;
+        e.getByLabel(_convToken, hConversions);
 
-    //     for (size_t i = 0; i < hElectrons->size(); ++i)
-    //     {
-    //         auto const ele = hElectrons->ptrAt(i);
-    //         //  >= 10GeV for electrons
-    //         if (ele->pt() < 10)
-    //             continue;
+        /*
+        
+        
+         for (pat::MuonCollection::const_iterator it = muonsSelected.begin();
+             it != muonsSelected.end(); ++it)
+        {
+            pat::Muon mu1 = *it;
+    for (pat::MuonCollection::const_iterator it = hMuons->begin();
+         it != hMuons->end(); ++it)
+    {
+         */
 
-    //         analysis::core::Electron mye;
-    //         mye._charge = ele->charge();
-    //         mye._pt = ele->pt();
-    //         mye._eta = ele->eta();
-    //         mye._phi = ele->phi();
+        for (pat::ElectronCollection::const_iterator ele = hElectrons->begin();
+            ele != hElectrons->end(); ++ele)
+        {
+            //  >= 10GeV for electrons
+            if (ele->pt() < 10)
+                continue;
 
-    //         reco::GsfTrackRef theTrack = ele->gsfTrack();
-    //         mye._dz = theTrack->dz(hBS->position());
-    //         mye._sumChargedHadronPt = ele->pfIsolationVariables().sumChargedHadronPt;
-    //         mye._sumNeutralHadronEt = ele->pfIsolationVariables().sumNeutralHadronEt;
-    //         mye._sumPhotonEt = ele->pfIsolationVariables().sumPhotonEt;
-    //         mye._sumPUPt = ele->pfIsolationVariables().sumPUPt;
-    //         mye._sumChargedParticlePt = ele->pfIsolationVariables().sumChargedParticlePt;
-    //         mye._isPF = ele->isPF();
-    //         mye._convVeto = !ConversionTools::hasMatchedConversion(*ele,
-    //                                                                hConversions, hBS->position());
+            analysis::core::Electron mye;
+            mye._charge = ele->charge();
+            mye._pt = ele->pt();
+            mye._eta = ele->eta();
+            mye._phi = ele->phi();
 
-    //         // cut based id
+            mye._sumChargedHadronPt = ele->pfIsolationVariables().sumChargedHadronPt;
+            mye._sumNeutralHadronEt = ele->pfIsolationVariables().sumNeutralHadronEt;
+            mye._sumPhotonEt = ele->pfIsolationVariables().sumPhotonEt;
+            mye._sumPUPt = ele->pfIsolationVariables().sumPUPt;
+            mye._sumChargedParticlePt = ele->pfIsolationVariables().sumChargedParticlePt;
+            mye._isPF = ele->isPF();
+            // mye._convVeto = !ConversionTools::hasMatchedConversion(*ele,
+            //                                                        hConversions, hBS->position());
+            mye._convVeto = ele->passConversionVeto();
+            reco::Vertex bestVtx1;
+            for (reco::VertexCollection::const_iterator vt = hVertices->begin();
+                 vt != hVertices->end(); ++vt)
+            {
+                if (!vt->isValid())
+                    continue;
+                mye._d0PV = ele->gsfTrack()->dxy(vt->position());
+                mye._dzPV = ele->gsfTrack()->dz(vt->position());
+                bestVtx1 = *vt;
+                break;
+            }
 
-    //         bool id_veto = (*hId_veto)[ele];
-    //         mye._ids.push_back(id_veto);
-    //         bool id_loose = (*hId_loose)[ele];
-    //         mye._ids.push_back(id_loose);
-    //         bool id_medium = (*hId_medium)[ele];
-    //         mye._ids.push_back(id_medium);
-    //         bool id_tight = (*hId_tight)[ele];
-    //         mye._ids.push_back(id_tight);
+            mye._ip3d = ele->dB(pat::Electron::PV3D);
+            mye._sip3d = fabs(ele->dB(pat::Electron::PV3D)) / ele->edB(pat::Electron::PV3D);
 
-    //         _electrons.push_back(mye);
-    //     }
-    // }
+            // float _relCombIso;
+            mye._miniIso = getPFMiniIsolation(hCandidates, dynamic_cast<const reco::Candidate *>(&*ele), 0.05, 0.2, 10., false, false, *hRho);
+
+            mye._isTight = ele->electronID("cutBasedElectronID-Fall17-94X-V1-tight") and mye._convVeto;
+            mye._isMedium = ele->electronID("cutBasedElectronID-Fall17-94X-V1-medium") and mye._convVeto;
+            mye._isLoose = ele->electronID("cutBasedElectronID-Fall17-94X-V1-loose") and mye._convVeto;
+            mye._isVeto = ele->electronID("cutBasedElectronID-Fall17-94X-V1-veto") and mye._convVeto;
+
+            // cut based id
+
+            // bool id_veto = (*hId_veto)[ele];
+            // mye._ids.push_back(id_veto);
+            // bool id_loose = (*hId_loose)[ele];
+            // mye._ids.push_back(id_loose);
+            // bool id_medium = (*hId_medium)[ele];
+            // mye._ids.push_back(id_medium);
+            // bool id_tight = (*hId_tight)[ele];
+            // mye._ids.push_back(id_tight);
+
+            _electrons.push_back(mye);
+        }
+    }
 
     //
     //  Taus
@@ -779,7 +826,6 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
             _muon1._relCombIso = isovar1;
             _muon1._trackIsoSumPt = mu1.isolationR03().sumPt;
             _muon1._trackIsoSumPtCorr = mu1.isolationR03().sumPt;
-
             _muon1._isPF = mu1.isPFMuon();
             if (mu1.isPFMuon())
             {
@@ -805,7 +851,6 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
                 _muon1._sumPhotonEtR04 = mu1.pfIsolationR04().sumPhotonEt;
                 _muon1._sumPUPtR04 = mu1.pfIsolationR04().sumPUPt;
             }
-
             //	fill the muon1 information
             _muon1._isGlobal = mu1.isGlobalMuon();
             _muon1._isTracker = mu1.isTrackerMuon();
@@ -833,6 +878,12 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
             _muon1._normChi2 = track1.normalizedChi2();
             _muon1._d0BS = track1.dxy(hBS->position());
             _muon1._dzBS = track1.dz(hBS->position());
+            _muon1._ip3d = mu1.dB(pat::Muon::PV3D);
+            _muon1._sip3d = fabs(mu1.dB(pat::Muon::PV3D)) / mu1.edB(pat::Muon::PV3D);
+
+            _muon1._pfIso = (_muon1._sumChargedHadronPtR04 + std::max(0., _muon1._sumNeutralHadronEtR04 + _muon1._sumPhotonEtR04 - 0.5 * _muon1._sumPUPtR04)) / _muon1._pt;
+            _muon1._miniIso = getPFMiniIsolation(hCandidates, dynamic_cast<const reco::Candidate *>(&*it), 0.05, 0.2, 10., false, false, *hRho);
+
             reco::Vertex bestVtx1;
             for (reco::VertexCollection::const_iterator vt = hVertices->begin();
                  vt != hVertices->end(); ++vt)
@@ -951,6 +1002,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
             _muon1._corrPT = roccCor * _muon1._pt;
 
             // Scale Factor Calculation
+            // for some reason this is killing muons that hmuon_trigSF_histomuon_trigSF_histomuon_trigSF_histoave pt > 120 GeV??
 
             if (_meta._isMC)
             {
@@ -963,8 +1015,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
                 bool found_mu = false;
 
                 if (mu_pt > muon_trigSF_histo->GetYaxis()->GetBinLowEdge(1))
-                { // Find endcap and phi value of EMTF muons
-
+                {
                     for (int iPt = 1; iPt <= muon_trigSF_histo->GetNbinsY(); iPt++)
                     {
                         if (found_mu)
@@ -1042,8 +1093,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
                 }
 
                 if (foundEta && foundPt)
-                {
-                    // ID
+                { // ID
                     _value_string = "NUM_" + _id_wp_num + "_DEN_" + _id_wp_den + "/abseta_pt/abseta:[" + _min_eta.str() + "," + _max_eta.str() + "]/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/value";
                     _idSF *= _muon_idSF_ptree.get<float>(path(_value_string.c_str(), '/'));
                     _err_string = "NUM_" + _id_wp_num + "_DEN_" + _id_wp_den + "/abseta_pt/abseta:[" + _min_eta.str() + "," + _max_eta.str() + "]/pt:[" + _min_pt.str() + "," + _max_pt.str() + "]/error";
@@ -1169,4 +1219,143 @@ bool H2DiMuonMaker::passKinCuts(pat::Muon const &muon)
         return false;
 
     return true;
+}
+
+
+double H2DiMuonMaker::getPFMiniIsolation(edm::Handle<pat::PackedCandidateCollection> pfcands,
+					const reco::Candidate* ptcl,  
+					double r_iso_min, double r_iso_max, double kt_scale,
+					bool use_pfweight, bool charged_only, double rho) {
+    if (ptcl->pt() < 5.)
+        return 99999.;
+
+    double deadcone_nh(0.), deadcone_ch(0.), deadcone_ph(0.), deadcone_pu(0.);
+    if (ptcl->isElectron())
+    {
+        if (fabs(dynamic_cast<const pat::Electron *>(ptcl)->superCluster()->eta()) > 1.479)
+        {
+            deadcone_ch = 0.015;
+            deadcone_pu = 0.015;
+            deadcone_ph = 0.08;
+        }
+    }
+    else if (ptcl->isMuon())
+    {
+        deadcone_ch = 0.0001;
+        deadcone_pu = 0.01;
+        deadcone_ph = 0.01;
+        deadcone_nh = 0.01;
+    }
+    else
+    {
+    }
+
+    double iso_nh(0.);
+    double iso_ch(0.);
+    double iso_ph(0.);
+    double iso_pu(0.);
+    double ptThresh(0.5);
+    if (ptcl->isElectron())
+        ptThresh = 0;
+    double r_iso = std::max(r_iso_min, std::min(r_iso_max, kt_scale / ptcl->pt()));
+    for (const pat::PackedCandidate &pfc : *pfcands)
+    {
+        if (abs(pfc.pdgId()) < 7)
+            continue;
+
+        double dr = deltaR(pfc, *ptcl);
+        if (dr > r_iso)
+            continue;
+
+        //////////////////  NEUTRALS  /////////////////////////
+        if (pfc.charge() == 0)
+        {
+            if (pfc.pt() > ptThresh)
+            {
+                double wpf(1.);
+                /////////// PHOTONS ////////////
+                if (abs(pfc.pdgId()) == 22)
+                {
+                    if (dr < deadcone_ph)
+                        continue;
+                    iso_ph += wpf * pfc.pt();
+                    /////////// NEUTRAL HADRONS ////////////
+                }
+                else if (abs(pfc.pdgId()) == 130)
+                {
+                    if (dr < deadcone_nh)
+                        continue;
+                    iso_nh += wpf * pfc.pt();
+                }
+            }
+            //////////////////  CHARGED from PV  /////////////////////////
+        }
+        else if (pfc.fromPV() > 1)
+        {
+            if (abs(pfc.pdgId()) == 211)
+            {
+                if (dr < deadcone_ch)
+                    continue;
+                iso_ch += pfc.pt();
+            }
+            //////////////////  CHARGED from PU  /////////////////////////
+        }
+        else
+        {
+            if (pfc.pt() > ptThresh)
+            {
+                if (dr < deadcone_pu)
+                    continue;
+                iso_pu += pfc.pt();
+            }
+        }
+    }
+    double iso(0.);
+    int em = 0;
+    if (ptcl->isMuon())
+        em = 1;
+
+    double Aeff_Moriond17[2][7] =
+        {
+            {0.1752, 0.1862, 0.1411, 0.1534, 0.1903, 0.2243, 0.2687}, // electrons
+            {0.0735, 0.0619, 0.0465, 0.0433, 0.0577, 0.0, 0.0}        // muons
+        };
+
+    double CorrectedTerm = 0.0;
+    double riso2 = r_iso * r_iso;
+
+    if (em)
+    { // muon
+        if (TMath::Abs(ptcl->eta()) < 0.8)
+            CorrectedTerm = rho * Aeff_Moriond17[1][0] * (riso2 / 0.09);
+        else if (TMath::Abs(ptcl->eta()) > 0.8 && TMath::Abs(ptcl->eta()) < 1.3)
+            CorrectedTerm = rho * Aeff_Moriond17[1][1] * (riso2 / 0.09);
+        else if (TMath::Abs(ptcl->eta()) > 1.3 && TMath::Abs(ptcl->eta()) < 2.0)
+            CorrectedTerm = rho * Aeff_Moriond17[1][2] * (riso2 / 0.09);
+        else if (TMath::Abs(ptcl->eta()) > 2.0 && TMath::Abs(ptcl->eta()) < 2.2)
+            CorrectedTerm = rho * Aeff_Moriond17[1][3] * (riso2 / 0.09);
+        else if (TMath::Abs(ptcl->eta()) > 2.2 && TMath::Abs(ptcl->eta()) < 2.5)
+            CorrectedTerm = rho * Aeff_Moriond17[1][4] * (riso2 / 0.09);
+    }
+    else
+    {
+        if (TMath::Abs(dynamic_cast<const pat::Electron *>(ptcl)->superCluster()->eta()) < 1.0)
+            CorrectedTerm = rho * Aeff_Moriond17[0][0] * (riso2 / 0.09);
+        else if (TMath::Abs(dynamic_cast<const pat::Electron *>(ptcl)->superCluster()->eta()) > 1.0 && TMath::Abs(dynamic_cast<const pat::Electron *>(ptcl)->superCluster()->eta()) < 1.479)
+            CorrectedTerm = rho * Aeff_Moriond17[0][1] * (riso2 / 0.09);
+        else if (TMath::Abs(dynamic_cast<const pat::Electron *>(ptcl)->superCluster()->eta()) > 1.479 && TMath::Abs(dynamic_cast<const pat::Electron *>(ptcl)->superCluster()->eta()) < 2.0)
+            CorrectedTerm = rho * Aeff_Moriond17[0][2] * (riso2 / 0.09);
+        else if (TMath::Abs(dynamic_cast<const pat::Electron *>(ptcl)->superCluster()->eta()) > 2.0 && TMath::Abs(dynamic_cast<const pat::Electron *>(ptcl)->superCluster()->eta()) < 2.2)
+            CorrectedTerm = rho * Aeff_Moriond17[0][3] * (riso2 / 0.09);
+        else if (TMath::Abs(dynamic_cast<const pat::Electron *>(ptcl)->superCluster()->eta()) > 2.2 && TMath::Abs(dynamic_cast<const pat::Electron *>(ptcl)->superCluster()->eta()) < 2.3)
+            CorrectedTerm = rho * Aeff_Moriond17[0][4] * (riso2 / 0.09);
+        else if (TMath::Abs(dynamic_cast<const pat::Electron *>(ptcl)->superCluster()->eta()) > 2.3 && TMath::Abs(dynamic_cast<const pat::Electron *>(ptcl)->superCluster()->eta()) < 2.4)
+            CorrectedTerm = rho * Aeff_Moriond17[0][5] * (riso2 / 0.09);
+        else if (TMath::Abs(dynamic_cast<const pat::Electron *>(ptcl)->superCluster()->eta()) > 2.4 && TMath::Abs(dynamic_cast<const pat::Electron *>(ptcl)->superCluster()->eta()) > 2.4 && TMath::Abs(dynamic_cast<const pat::Electron *>(ptcl)->superCluster()->eta()) < 2.5)
+            CorrectedTerm = rho * Aeff_Moriond17[0][6] * (riso2 / 0.09);
+    }
+
+    iso = iso_ch + TMath::Max(0.0, iso_ph + iso_nh - CorrectedTerm);
+    iso = iso / ptcl->pt();
+    return iso;
 }

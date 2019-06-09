@@ -1,9 +1,9 @@
 #ifndef Analysis_Core_Muon_h
 #define Analysis_Core_Muon_h
 
+#include "TLorentzVector.h"
 #ifndef STANDALONE
 #include "HMuMu/Core/interface/Track.h"
-#include "TLorentzVector.h"
 #else
 #include "Track.h"
 #endif
@@ -47,6 +47,8 @@ class Muon : public Track
 		_dzBS = 0;
 		_d0PV = 0;
 		_dzPV = 0;
+		_ip3d = 0;
+		_sip3d = 0;
 
 		_nPLs = 0;
 		_nTLs = 0;
@@ -66,6 +68,9 @@ class Muon : public Track
 		_hIso = 0;
 		_eIso = 0;
 		_relCombIso = 0;
+		_pfIso = 0;
+		_miniIso = 0;
+		
 		Track::reset();
 		_track.reset();
 		_isHLTMatched.clear();
@@ -101,8 +106,11 @@ class Muon : public Track
 	float _normChi2;
 	float _d0BS;
 	float _dzBS;
+
 	float _d0PV;
 	float _dzPV;
+	float _ip3d;
+	float _sip3d;
 
 
 	int _nPLs;
@@ -123,6 +131,8 @@ class Muon : public Track
 	float _hIso;
 	float _eIso;
 	float _relCombIso;
+	float _pfIso;
+	float _miniIso;
 
 	float _segmentCompatibility;
 	float _combinedQChi2LocalPosition;
