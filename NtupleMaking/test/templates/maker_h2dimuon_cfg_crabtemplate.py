@@ -75,8 +75,6 @@ if year == "2017":
 
 # era based on year 2016/2017/2018
 
-from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
-
 if year == "2016":
     print("running on 2016")
     egammaEra = '2016-Legacy'
@@ -92,17 +90,12 @@ if year == "2017":
     setupEgammaPostRecoSeq(process,
                        runVID=False,  # saves CPU time by not needlessly re-running VID
                        era=egammaEra)
-   
+
 if year == "2018":
     print("running on 2018")
     egammaEra = '2018-Prompt'
-    # vid = False
-# electron energy scale correction fix SEE https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaMiniAODV2
-setupEgammaPostRecoSeq(process,
-                       runEnergyCorrections=runCorrections,
-                       runVID=runVid,  # saves CPU time by not needlessly re-running VID
-                       era=egammaEra)
-
+    setupEgammaPostRecoSeq(process,
+                           era=egammaEra)
 
 # only applied to "2016" and 2017
 
