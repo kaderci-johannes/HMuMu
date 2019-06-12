@@ -134,7 +134,15 @@ class Jet : public Object
 	float _geninvf;
 	float _genauxf;
 
-
+	bool operator==(const Jet& j2)
+	{
+		return (fabs(this->_pt - j2._pt) < this->_pt * .0001 && 
+				fabs(this->_eta - j2._eta) < this->_eta * .0001 && 
+				fabs(this->_phi - j2._phi) < this->_phi * .0001 && 
+				fabs(this->_charge - j2._charge) < this->_charge * .0001 &&
+				fabs(this->_mass - j2._mass) < this->_mass * .0001);
+	}
+	
 #ifdef STANDALONE
 	ClassDef(Jet, 1)
 #endif
