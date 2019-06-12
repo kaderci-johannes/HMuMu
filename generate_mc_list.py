@@ -1,9 +1,11 @@
-import Dataset as DS
-import Samples as S
 import os
 import sys
+
 sys.path.append(os.path.join(
     os.environ["ANALYSISHOME"], "Configuration", "higgs"))
+
+import Dataset as DS
+import Samples as S
 
 year = sys.argv[1]
 
@@ -31,7 +33,7 @@ cmssw_dic = {
 cmssw = cmssw_dic[year]
 
 storage = "EOS"
-rootpath = "/store/user/malhusse/higgs_ntuples/final/" + year
+rootpath = "/store/user/malhusse/higgs_ntuples/v3/" + year
 
 mc_ntuples = []
 aux = "Mu27"

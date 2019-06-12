@@ -166,6 +166,14 @@ class Muon : public Track
 
 	TLorentzVector fsrP4;
 
+	bool operator==(const Muon& m2)
+	{
+		return (fabs(this->_pt - m2._pt) < this->_pt * .0001 && 
+				fabs(this->_eta - m2._eta) < this->_eta * .0001 && 
+				fabs(this->_phi - m2._phi) < this->_phi * .0001 && 
+				fabs(this->_charge - m2._charge) < this->_charge * .0001);
+	}
+
 #ifdef STANDALONE
 	ClassDef(Muon, 1)
 #endif
