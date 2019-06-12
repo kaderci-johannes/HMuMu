@@ -15,8 +15,6 @@ message (BUILD DIRECTORY = ${PROJECT_BINARY_DIR})
 #	Compiler flags and some definitions
 #
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
-# set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
-# set(CMAKE_CXX_FLAGS "-lboost_program_options")
 add_definitions(-DSTANDALONE=1)
 
 #
@@ -37,14 +35,6 @@ option (STANDALONE
 	"Compile and build in standalone mode without CMSSW" ON
 )
 
-#
-#	Find BOOST
-#
-# find_package(Boost COMPONENTS program_options system REQUIRED )
-# include_directories("${Boost_INCLUDE_DIRS}")
-# set (EXTRA_LIBS ${EXTRA_LIBS} ${Boost_LIBRARIES})
-# add_definitions(${})
-
 #	
 #	find and add ROOT
 #
@@ -62,8 +52,6 @@ set (EXTRA_LIBS ${EXTRA_LIBS} ${ROOT_LIBRARIES})
 #	add the includes to the search path
 #
 include_directories ("${PROJECT_SOURCE_DIR}/Core/interface")
-include_directories ("${PROJECT_SOURCE_DIR}/AuxTools/interface")
-include_directories ("${PROJECT_SOURCE_DIR}/Drivers/interface")
 
 #
 #	Generate ROOT Dictionary and Shared Lib
@@ -87,64 +75,3 @@ ROOT_GENERATE_DICTIONARY(G__Core
 add_library(AnalysisCore SHARED G__Core.cxx)
 target_link_libraries(AnalysisCore ${ROOT_LIBRARIES})
 set (EXTRA_LIBS ${EXTRA_LIBS} AnalysisCore)
-
-#
-#	Add Ntuple Processing as shared lib but compiled as a ROOT dictionary
-#
-ROOT_GENERATE_DICTIONARY(G__AuxTools
-    ${PROJECT_SOURCE_DIR}/AuxTools/interface/Streamer.h
-    ${PROJECT_SOURCE_DIR}/AuxTools/interface/LumiReweightingStandAlone.h
-	LINKDEF ${PROJECT_SOURCE_DIR}/config/LinkDef.h
-	OPTIONS -DSTANDALONE=1 -inlineInputHeader
-)
-add_library(AnalysisAuxTools SHARED 
-    ${PROJECT_SOURCE_DIR}/AuxTools/src/Streamer.cc 
-    G__AuxTools.cxx
-)
-target_link_libraries(AnalysisAuxTools ${ROOT_LIBRARIES})
-set (EXTRA_LIBS ${EXTRA_LIBS} AnalysisAuxTools)
-
-#
-#	Add the headers to compile against
-#
-file (GLOB HEADERS ${PROJECT_SOURCE_DIR}/AuxTools/interface/*.h)
-file (GLOB HEADERS1 ${PROJECT_SOURCE_DIR}/Drivers/interface/*.h)
-set (HEADERS ${HEADERS} ${HEADERS1})
-
-#
-#	add all the executables and link against ROOT
-#
-file (GLOB MAIN_FILES1 ${PROJECT_SOURCE_DIR}/Drivers/test/*.cc)
-file (GLOB MAIN_FILES2 ${PROJECT_SOURCE_DIR}/Drivers/src/*.cc)
-foreach (MAIN_FILE ${MAIN_FILES1})
-	string(REPLACE ".cc" "" EXECUTABLE_NAME ${MAIN_FILE})
-	string(REPLACE "${PROJECT_SOURCE_DIR}/Drivers/test/" "" 
-		EXECUTABLE_NAME ${EXECUTABLE_NAME}
-	)
-	message("Adding Executable: ${EXECUTABLE_NAME}")
-	#	add_executable(${EXECUTABLE_NAME} ${MAIN_FILE} ${SOURCES} ${HEADERS})
-	add_executable(${EXECUTABLE_NAME} ${MAIN_FILE} ${HEADERS})
-	target_link_libraries (${EXECUTABLE_NAME} ${EXTRA_LIBS})
-endforeach(MAIN_FILE)
-foreach (MAIN_FILE ${MAIN_FILES2})
-	string(REPLACE ".cc" "" EXECUTABLE_NAME ${MAIN_FILE})
-	string(REPLACE "${PROJECT_SOURCE_DIR}/Drivers/src/" "" 
-		EXECUTABLE_NAME ${EXECUTABLE_NAME}
-	)
-	message("Adding Executable: ${EXECUTABLE_NAME}")
-	#add_executable(${EXECUTABLE_NAME} ${MAIN_FILE} ${SOURCES} ${HEADERS})
-	add_executable(${EXECUTABLE_NAME} ${MAIN_FILE} ${HEADERS})
-	target_link_libraries (${EXECUTABLE_NAME} ${EXTRA_LIBS})
-endforeach(MAIN_FILE)
-
-#
-#	copy whatever you need
-#	For Python Processing - copy python folders as well with purely python stuff
-#
-file (GLOB ALL_SCRIPTS ${PROJECT_SOURCE_DIR}/scripts/*.*)
-file (GLOB ALL_CONFIG ${PROJECT_SOURCE_DIR}/config/*.*)
-file (GLOB ALL_RESOURCES ${PROJECT_SOURCE_DIR}/resources/*.*)
-file (COPY ${ALL_SCRIPTS} DESTINATION ${PROJECT_BINARY_DIR}/scripts)
-file (COPY ${ALL_CONFIG} DESTINATION ${PROJECT_BINARY_DIR}/config)
-file (COPY ${ALL_RESOURCES} DESTINATION ${PROJECT_BINARY_DIR}/resources)
-file (COPY ${PROJECT_SOURCE_DIR}/AuxTools/python DESTINATION ${PROJECT_BINARY_DIR}/AuxTools)
