@@ -39,7 +39,7 @@ for d in datasets:
         cmssw = d.initial_cmssw        
     jsontag = str(d.year)
     storage = "EOS"
-    rootpath = "/store/user/malhusse/higgs_ntuples/v3/"
+    rootpath = "/store/user/malhusse/higgs_ntuples/v4/"
     rootpath += str(d.year)
     if d.isData:
         rootpath+="/data"
