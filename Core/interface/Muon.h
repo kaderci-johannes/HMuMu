@@ -8,6 +8,8 @@
 #include "Track.h"
 #endif
 
+#include <math.h>       /* fabs */
+
 namespace analysis
 {
 namespace core
