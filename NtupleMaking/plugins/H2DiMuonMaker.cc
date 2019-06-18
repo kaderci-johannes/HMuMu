@@ -113,8 +113,12 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
         boost::property_tree::json_parser::read_json(muon_idSF_file_json, _muon_idSF_ptree);
 
         calib = new BTagCalibration("DeepCSV", btag_file.fullPath().c_str());
-        btreader = new BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", {"up", "down"});
-        btreader->load(*calib, BTagEntry::FLAV_B, "comb");
+        btreader = new BTagCalibrationReader(BTagEntry::OP_RESHAPING, "central");
+
+        btreader->load(*calib, BTagEntry::FLAV_B, "iterativefit");
+        btreader->load(*calib, BTagEntry::FLAV_C, "iterativefit");
+        btreader->load(*calib, BTagEntry::FLAV_UDSG, "iterativefit");
+
     }
     // BTagCalibration calib("DeepCSV", btag_file.fullPath().c_str());
     // BTagCalibrationReader btreader(BTagEntry::OP_MEDIUM, "central", {"up", "down"});
@@ -428,6 +432,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
             myjet._phi = jet.phi();
             myjet._mass = jet.mass();
             myjet._partonFlavour = jet.partonFlavour();
+            myjet._hadronFlavour = jet.hadronFlavour();
 
             myjet._chf = jet.chargedHadronEnergyFraction();
             myjet._nhf = jet.neutralHadronEnergyFraction();
@@ -451,6 +456,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
             myjet._jecf = jet.jecFactor("Uncorrected");
             myjet._puid = jet.userFloat("pileupJetId:fullDiscriminant");
             myjet._fullid = jet.userInt("pileupJetId:fullId");
+            myjet._passLoosePU = passLoosePUID(myjet._pt, myjet._eta, myjet._puid);
             edm::RefToBase<pat::Jet> jetRef(edm::Ref<pat::JetCollection>(hJets, ijetRef) );
             myjet._qgLikelihood = (*qg_handle)[jetRef];
 
@@ -467,11 +473,23 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
             myjet._dcsvMedium = btagDisc >= _meta._deepMediumWP;
             myjet._dcsvTight = btagDisc >= _meta._deepTightWP;
 
-            if (_meta._isMC)
+            if (_meta._isMC && myjet._passLoosePU)
             {
-                myjet._btag_sf = btreader->eval_auto_bounds("central", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt());
-                myjet._btag_sf_up = btreader->eval_auto_bounds("up", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt());
-                myjet._btag_sf_down = btreader->eval_auto_bounds("down", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt());
+                if (abs(myjet._hadronFlavour) == 5){
+                    myjet._btag_sf = btreader->eval_auto_bounds("central", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    // myjet._btag_sf_up = btreader->eval_auto_bounds("up", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    // myjet._btag_sf_down = btreader->eval_auto_bounds("down", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt(), myjet._btag);
+                }
+                else if ( abs(myjet._hadronFlavour) == 4){
+                    myjet._btag_sf = btreader->eval_auto_bounds("central", BTagEntry::FLAV_C, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    // myjet._btag_sf_up = btreader->eval_auto_bounds("up", BTagEntry::FLAV_C, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    // myjet._btag_sf_down = btreader->eval_auto_bounds("down", BTagEntry::FLAV_C, fabs(jet.eta()), jet.pt(), myjet._btag);
+                }
+                else {
+                    myjet._btag_sf = btreader->eval_auto_bounds("central", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag);   
+                    // myjet._btag_sf_up = btreader->eval_auto_bounds("up", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    //  myjet._btag_sf_down = btreader->eval_auto_bounds("down", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag);                 
+                }
                 _btagSF *= myjet._btag_sf ? myjet._btag_sf : 1.0;
             }
 
@@ -993,13 +1011,13 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 
             float f_rand = gRandom->Rndm();
             if (!_meta._isMC)
-                roccCor = rc.kScaleDT(_muon1._charge, _muon1._pt, _muon1._eta, _muon1._phi, 0, 0);
+                roccCor = rc.kScaleDT(_muon1._charge, _muon1._pt_kinfit, _muon1._eta, _muon1._phi, 0, 0);
             else if (_meta._isMC && genPT > 0.0)
-                roccCor = rc.kSpreadMC(_muon1._charge, _muon1._pt, _muon1._eta, _muon1._phi, genPT, 0, 0);
+                roccCor = rc.kSpreadMC(_muon1._charge, _muon1._pt_kinfit, _muon1._eta, _muon1._phi, genPT, 0, 0);
             else if (_meta._isMC && genPT <= 0.0)
-                roccCor = rc.kSmearMC(_muon1._charge, _muon1._pt, _muon1._eta, _muon1._phi, _muon1._nTLs, f_rand, 0, 0);
+                roccCor = rc.kSmearMC(_muon1._charge, _muon1._pt_kinfit, _muon1._eta, _muon1._phi, _muon1._nTLs, f_rand, 0, 0);
             _muon1._roccCor = roccCor;
-            _muon1._corrPT = roccCor * _muon1._pt;
+            _muon1._corrPT = roccCor * _muon1._pt_kinfit;
 
             // Scale Factor Calculation
             // for some reason this is killing muons that hmuon_trigSF_histomuon_trigSF_histomuon_trigSF_histoave pt > 120 GeV??
@@ -1358,4 +1376,37 @@ double H2DiMuonMaker::getPFMiniIsolation(edm::Handle<pat::PackedCandidateCollect
     iso = iso_ch + TMath::Max(0.0, iso_ph + iso_nh - CorrectedTerm);
     iso = iso / ptcl->pt();
     return iso;
+}
+
+bool H2DiMuonMaker::passLoosePUID(float jeta, float jpt, float jpuid)
+{
+   if (jeta < 2.5)
+   {
+      if (jpt >= 30 and jpt < 50 and jpuid < -0.89)
+         return false;
+      if (jpt >= 10 and jpt < 30 and jpuid < -0.97)
+         return false;
+   }
+   else if (jeta < 2.75)
+   {
+      if (jpt >= 30 and jpt < 50 and jpuid < -0.52)
+         return false;
+      if (jpt >= 10 and jpt < 30 and jpuid < -0.68)
+         return false;
+   }
+   else if (jeta < 3.0)
+   {
+      if (jpt >= 30 and jpt < 50 and jpuid < -0.38)
+         return false;
+      if (jpt >= 10 and jpt < 30 and jpuid < -0.53)
+         return false;
+   }
+   else if (jeta < 5)
+   {
+      if (jpt >= 30 and jpt < 50 and jpuid < -0.30)
+         return false;
+      if (jpt >= 10 and jpt < 30 and jpuid < -0.47)
+         return false;
+   }
+   return true;
 }
