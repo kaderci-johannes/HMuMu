@@ -7,6 +7,8 @@
 #include "GenJet.h"
 #endif
 
+#include <math.h>       /* fabs */
+
 namespace analysis
 {
 namespace core
@@ -27,6 +29,7 @@ class Jet : public Object
 		_mass = 0;
 		_charge = 0;
 		_partonFlavour = 0;
+		_hadronFlavour = 0;
 		_chf = 0;
 		_nhf = 0;
 		_cef = 0;
@@ -56,6 +59,7 @@ class Jet : public Object
 
 		_puid = 0;
 		_fullid = 0;
+		_passLoosePU = false;
 		_qgLikelihood = 0;
 		
 		_uncAK4 = 0;
@@ -85,6 +89,7 @@ class Jet : public Object
 	float _mass;
 	float _charge;
 	float _partonFlavour;
+	float _hadronFlavour;
 
 	float _chf;
 	float _nhf;
@@ -115,6 +120,7 @@ class Jet : public Object
 
 	float _puid;
 	int _fullid;
+	bool _passLoosePU;
 	float _qgLikelihood;
 
 	double _uncAK4;
