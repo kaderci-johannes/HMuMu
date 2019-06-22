@@ -286,6 +286,15 @@ mc_background_2016 = {
         globaltag=mc_global_tag_2016,
         cross_section=87.31
     ),
+    "/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM": DS.MCDataset(
+        name="/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM",
+        isData=False,
+        year=2016,
+        isSignal=False,
+        initial_cmssw="94X",
+        globaltag=mc_global_tag_2016,
+        cross_section=358.57
+    )
     "/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM": DS.MCDataset(
         name="/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM",
         isData=False,
@@ -818,7 +827,7 @@ mc_background_2017 = {
         isSignal=False,
         initial_cmssw="94X",
         globaltag=mc_global_tag_2017,
-        cross_section=687.1
+        cross_section=358.57
     ),
     "/ZZ_TuneCP5_13TeV-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM": DS.MCDataset(
         name="/ZZ_TuneCP5_13TeV-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM",
@@ -1161,6 +1170,33 @@ mc_background_2018 = {
         globaltag=mc_global_tag_2018,
         cross_section=54.23
     ),
+    "/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM": DS.MCDataset(
+        name = "/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM",
+        isData=False,
+        year=2018,
+        isSignal=False,
+        initial_cmssw="102X",
+        globaltag=mc_global_tag_2018,
+        cross_section=358.57
+    )
+    "/ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM": DS.MCDataset(
+        name="/ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM",
+        isData=False,
+        year=2018,
+        isSignal=False,
+        initial_cmssw="102X",
+        globaltag=mc_global_tag_2018,
+        cross_section=35.85
+    )
+    "/ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM": DS.MCDataset(
+        name="/ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM",
+        isData=False,
+        year=2018,
+        isSignal=False,
+        initial_cmssw="102X",
+        globaltag=mc_global_tag_2018,
+        cross_section=35.85
+    )
     "/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM": DS.MCDataset(
         name="/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM",
         isData=False,
