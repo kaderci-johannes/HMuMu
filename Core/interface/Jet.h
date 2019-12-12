@@ -75,7 +75,6 @@ class Jet : public Object
 
 		_puid = 0;
 		_fullid = 0;
-		_passLoosePU = false;
 		_qgLikelihood = 0;
 		
 		_uncAK4 = 0;
@@ -152,7 +151,6 @@ class Jet : public Object
 
 	float _puid;
 	int _fullid;
-	bool _passLoosePU;
 	float _qgLikelihood;
 
 	double _uncAK4;
