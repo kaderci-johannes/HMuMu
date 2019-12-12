@@ -116,7 +116,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
         boost::property_tree::json_parser::read_json(muon_idSF_file_json, _muon_idSF_ptree);
 
         calib = new BTagCalibration("DeepCSV", btag_file.fullPath().c_str());
-        btreader = new BTagCalibrationReader(BTagEntry::OP_RESHAPING, "central");
+        btreader = new BTagCalibrationReader(BTagEntry::OP_RESHAPING, "central", {"up_jes", "down_jes", "up_lf", "down_lf", "up_hf", "down_hf", "up_hfstats1", "down_hfstats1", "up_hfstats2", "down_hfstats2", "up_lfstats1", "down_lfstats1", "up_lfstats2", "down_lfstats2", "up_cferr1", "down_cferr1", "up_cferr2", "down_cferr2"});
 
         btreader->load(*calib, BTagEntry::FLAV_B, "iterativefit");
         btreader->load(*calib, BTagEntry::FLAV_C, "iterativefit");
@@ -419,7 +419,6 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
     }
     else
     {
-        float _btagSF = 1.0;
         int ijetRef = -1;
         for (uint32_t i = 0; i < hJets->size(); i++)
         {
@@ -476,24 +475,52 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
             myjet._dcsvMedium = btagDisc >= _meta._deepMediumWP;
             myjet._dcsvTight = btagDisc >= _meta._deepTightWP;
 
-            if (_meta._isMC && myjet._passLoosePU)
+            if (_meta._isMC)
             {
                 if (abs(myjet._hadronFlavour) == 5){
                     myjet._btag_sf = btreader->eval_auto_bounds("central", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt(), myjet._btag);
-                    // myjet._btag_sf_up = btreader->eval_auto_bounds("up", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt(), myjet._btag);
-                    // myjet._btag_sf_down = btreader->eval_auto_bounds("down", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_jes_up = btreader->eval_auto_bounds("up_jes", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_jes_down = btreader->eval_auto_bounds("down_jes", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_lf_up = btreader->eval_auto_bounds("up_lf", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_lf_down = btreader->eval_auto_bounds("down_lf", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_hf_up = btreader->eval_auto_bounds("up_hf", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_hf_down = btreader->eval_auto_bounds("down_hf", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_hfstats1_up = btreader->eval_auto_bounds("up_hfstats1", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_hfstats1_down = btreader->eval_auto_bounds("down_hfstats1", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_hfstats2_up = btreader->eval_auto_bounds("up_hfstats2", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_hfstats2_down = btreader->eval_auto_bounds("down_hfstats2", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_lfstats1_up = btreader->eval_auto_bounds("up_lfstats1", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_lfstats1_down = btreader->eval_auto_bounds("down_lfstats1", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_lfstats2_up = btreader->eval_auto_bounds("up_lfstats2", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_lfstats2_down = btreader->eval_auto_bounds("down_lfstats2", BTagEntry::FLAV_B, fabs(jet.eta()), jet.pt(), myjet._btag);
+
+                    
                 }
                 else if ( abs(myjet._hadronFlavour) == 4){
                     myjet._btag_sf = btreader->eval_auto_bounds("central", BTagEntry::FLAV_C, fabs(jet.eta()), jet.pt(), myjet._btag);
-                    // myjet._btag_sf_up = btreader->eval_auto_bounds("up", BTagEntry::FLAV_C, fabs(jet.eta()), jet.pt(), myjet._btag);
-                    // myjet._btag_sf_down = btreader->eval_auto_bounds("down", BTagEntry::FLAV_C, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_cferr1_up = btreader->eval_auto_bounds("up_cferr1", BTagEntry::FLAV_C, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_cferr1_down = btreader->eval_auto_bounds("down_cferr1", BTagEntry::FLAV_C, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_cferr2_up = btreader->eval_auto_bounds("up_cferr2", BTagEntry::FLAV_C, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_cferr2_down = btreader->eval_auto_bounds("down_cferr2", BTagEntry::FLAV_C, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    
                 }
                 else {
-                    myjet._btag_sf = btreader->eval_auto_bounds("central", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag);   
-                    // myjet._btag_sf_up = btreader->eval_auto_bounds("up", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag);
-                    //  myjet._btag_sf_down = btreader->eval_auto_bounds("down", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag);                 
+                    myjet._btag_sf = btreader->eval_auto_bounds("central", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag); 
+                    myjet._btag_sf_jes_up = btreader->eval_auto_bounds("up_jes", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_jes_down = btreader->eval_auto_bounds("down_jes", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_lf_up = btreader->eval_auto_bounds("up_lf", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_lf_down = btreader->eval_auto_bounds("down_lf", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_hf_up = btreader->eval_auto_bounds("up_hf", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_hf_down = btreader->eval_auto_bounds("down_hf", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag); 
+                    myjet._btag_sf_hfstats1_up = btreader->eval_auto_bounds("up_hfstats1", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_hfstats1_down = btreader->eval_auto_bounds("down_hfstats1", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_hfstats2_up = btreader->eval_auto_bounds("up_hfstats2", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_hfstats2_down = btreader->eval_auto_bounds("down_hfstats2", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_lfstats1_up = btreader->eval_auto_bounds("up_lfstats1", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_lfstats1_down = btreader->eval_auto_bounds("down_lfstats1", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_lfstats2_up = btreader->eval_auto_bounds("up_lfstats2", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag);
+                    myjet._btag_sf_lfstats2_down = btreader->eval_auto_bounds("down_lfstats2", BTagEntry::FLAV_UDSG, fabs(jet.eta()), jet.pt(), myjet._btag); 
                 }
-                _btagSF *= myjet._btag_sf ? myjet._btag_sf : 1.0;
             }
 
             // energy correction uncertainty
@@ -543,7 +570,6 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 
             _pfjets.push_back(myjet);
         }
-        _eaux._btagSF = _btagSF;
     }
 
     edm::Handle<pat::PackedCandidateCollection> hCandidates;
