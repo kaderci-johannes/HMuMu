@@ -458,7 +458,6 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
             myjet._jecf = jet.jecFactor("Uncorrected");
             myjet._puid = jet.userFloat("pileupJetId:fullDiscriminant");
             myjet._fullid = jet.userInt("pileupJetId:fullId");
-            myjet._passLoosePU = passLoosePUID(myjet._pt, myjet._eta, myjet._puid);
             edm::RefToBase<pat::Jet> jetRef(edm::Ref<pat::JetCollection>(hJets, ijetRef) );
             myjet._qgLikelihood = (*qg_handle)[jetRef];
 
@@ -1406,37 +1405,4 @@ double H2DiMuonMaker::getPFMiniIsolation(edm::Handle<pat::PackedCandidateCollect
     iso = iso_ch + TMath::Max(0.0, iso_ph + iso_nh - CorrectedTerm);
     iso = iso / ptcl->pt();
     return iso;
-}
-
-bool H2DiMuonMaker::passLoosePUID(float jeta, float jpt, float jpuid)
-{
-   if (jeta < 2.5)
-   {
-      if (jpt >= 30 and jpt < 50 and jpuid < -0.89)
-         return false;
-      if (jpt >= 10 and jpt < 30 and jpuid < -0.97)
-         return false;
-   }
-   else if (jeta < 2.75)
-   {
-      if (jpt >= 30 and jpt < 50 and jpuid < -0.52)
-         return false;
-      if (jpt >= 10 and jpt < 30 and jpuid < -0.68)
-         return false;
-   }
-   else if (jeta < 3.0)
-   {
-      if (jpt >= 30 and jpt < 50 and jpuid < -0.38)
-         return false;
-      if (jpt >= 10 and jpt < 30 and jpuid < -0.53)
-         return false;
-   }
-   else if (jeta < 5)
-   {
-      if (jpt >= 30 and jpt < 50 and jpuid < -0.30)
-         return false;
-      if (jpt >= 10 and jpt < 30 and jpuid < -0.47)
-         return false;
-   }
-   return true;
 }
