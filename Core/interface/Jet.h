@@ -54,8 +54,24 @@ class Jet : public Object
 		_dcsvTight = false;
 
 		_btag_sf = 1;
-		_btag_sf_up = 0;
-		_btag_sf_down = 0;
+		_btag_sf_jes_up = 0;
+		_btag_sf_jes_down = 0;
+		_btag_sf_lf_up = 0;
+		_btag_sf_lf_down = 0;
+		_btag_sf_hf_up = 0;
+		_btag_sf_hf_down = 0;
+		_btag_sf_hfstats1_up = 0;
+		_btag_sf_hfstats1_down = 0;
+		_btag_sf_hfstats2_up = 0;
+		_btag_sf_hfstats2_down = 0;
+		_btag_sf_lfstats1_up = 0;
+		_btag_sf_lfstats1_down = 0;
+		_btag_sf_lfstats2_up = 0;
+		_btag_sf_lfstats2_down = 0;
+		_btag_sf_cferr1_up = 0;
+		_btag_sf_cferr1_down = 0;
+		_btag_sf_cferr2_up = 0;
+		_btag_sf_cferr2_down = 0;
 
 		_puid = 0;
 		_fullid = 0;
@@ -115,8 +131,24 @@ class Jet : public Object
 	bool _dcsvTight;
 
 	double _btag_sf;
-	double _btag_sf_up;
-	double _btag_sf_down;
+	double _btag_sf_jes_up;
+	double _btag_sf_jes_down;
+	double _btag_sf_lf_up;
+	double _btag_sf_lf_down;
+	double _btag_sf_hf_up;
+	double _btag_sf_hf_down;
+	double _btag_sf_hfstats1_up;
+	double _btag_sf_hfstats1_down;
+	double _btag_sf_hfstats2_up;
+	double _btag_sf_hfstats2_down;
+	double _btag_sf_lfstats1_up;
+	double _btag_sf_lfstats1_down;
+	double _btag_sf_lfstats2_up;
+	double _btag_sf_lfstats2_down;
+	double _btag_sf_cferr1_up;
+	double _btag_sf_cferr1_down;
+	double _btag_sf_cferr2_up;
+	double _btag_sf_cferr2_down;
 
 	float _puid;
 	int _fullid;
