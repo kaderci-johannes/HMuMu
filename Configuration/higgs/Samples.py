@@ -19,9 +19,9 @@ mc_global_tag_2016 = "94X_mcRun2_asymptotic_v3"
 data_global_tag_2017 = "94X_dataRun2_v11"
 mc_global_tag_2017 = "94X_mc2017_realistic_v17"
 
-data_global_tag_2018_prompt = "102X_dataRun2_Prompt_v13"
-data_global_tag_2018 = "102X_dataRun2_Sep2018ABC_v2"
-mc_global_tag_2018 = "102X_upgrade2018_realistic_v18"
+data_global_tag_2018_prompt = "102X_dataRun2_Prompt_v15"
+data_global_tag_2018 = "102X_dataRun2_Sep2018ABC_v12"
+mc_global_tag_2018 = "102X_upgrade2018_realistic_v20"
 
 # FORMATING
 #
