@@ -72,6 +72,13 @@ if year == "2017":
         postfix="ModifiedMET"
     )
 
+    from RecoJets.JetProducers.PileupJetID_cfi import _chsalgos_94x
+    process.load("RecoJets.JetProducers.PileupJetID_cfi")
+    process.pileupJetId.jets = cms.InputTag("updatedPatJetsUpdatedJEC")
+    process.pileupJetId.inputIsCorrected = True
+    process.pileupJetId.applyJec = False
+    process.pileupJetId.vertexes = cms.InputTag("offlineSlimmedPrimaryVertices")
+    process.pileupJetId.algos = cms.VPSet(_chsalgos_94x)
 
 # era based on year 2016/2017/2018
 
@@ -96,6 +103,14 @@ if year == "2018":
     egammaEra = '2018-Prompt'
     setupEgammaPostRecoSeq(process,
                            era=egammaEra)
+
+    from RecoJets.JetProducers.PileupJetID_cfi import _chsalgos_102x
+    process.load("RecoJets.JetProducers.PileupJetID_cfi")
+    process.pileupJetId.jets = cms.InputTag("updatedPatJetsUpdatedJEC")
+    process.pileupJetId.inputIsCorrected = True
+    process.pileupJetId.applyJec = False
+    process.pileupJetId.vertexes = cms.InputTag("offlineSlimmedPrimaryVertices")
+    process.pileupJetId.algos = cms.VPSet(_chsalgos_102x)
 
 # only applied to "2016" and 2017
 
@@ -161,6 +176,7 @@ if year == "2017":
         process.jecSequence *
         process.fullPatMetSequenceModifiedMET *
         process.QGTagger *
+        process.pileupJetId *
         process.FSRphotonSequence *
         process.ntuplemaker_H2DiMuonMaker)
 if year == "2018":
@@ -168,5 +184,6 @@ if year == "2018":
         process.egammaPostRecoSeq *
         process.jecSequence *
         process.QGTagger *
+        process.pileupJetId *
         process.FSRphotonSequence *
         process.ntuplemaker_H2DiMuonMaker)
