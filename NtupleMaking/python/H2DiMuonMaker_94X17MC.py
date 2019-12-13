@@ -40,6 +40,7 @@ ntuplemaker_H2DiMuonMaker = cms.EDAnalyzer(
     #
     checkTrigger=cms.untracked.bool(True),
     isMC=cms.untracked.bool(True),
+    year=cms.untracked.int32(2017),
     triggerNames=cms.untracked.vstring(
         "HLT_IsoMu%d" % pt, "HLT_IsoTkMu%d" % pt),
     metFilterNames=cms.untracked.vstring(["Flag_goodVertices",

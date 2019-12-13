@@ -2,6 +2,7 @@
 #define NTUPLEMAKER
 
 #include "HMuMu/NtupleMaking/interface/CommonHeaders.h"
+#include "HMuMu/NtupleMaking/interface/GeoFitCorr.h"
 //#include "HMuMu/NtupleMaking/interface/KinematicFitMuonCorrections.h"
 //	MY Classes
 #include "HMuMu/Core/interface/GenJet.h"
