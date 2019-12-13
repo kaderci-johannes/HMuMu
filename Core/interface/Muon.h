@@ -91,6 +91,10 @@ class Muon : public Track
 		_sumNeutralHadronEtR04 = 0;
 		_sumPhotonEtR04 = 0;
 		_sumPUPtR04 = 0;
+		_roccCor = 0;
+		_corrPT = 0;
+		_geoPT = 0;
+		
 	}
 	virtual ~Muon() {}
 
@@ -153,6 +157,7 @@ class Muon : public Track
 	float _sumPUPtR04;
 	float _roccCor;
 	float _corrPT;
+	float _geoPT;
 
 	// float _d0PV_kinfit;
 	// float _dzPV_kinfit;
