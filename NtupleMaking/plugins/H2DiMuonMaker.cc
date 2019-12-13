@@ -694,14 +694,14 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
     edm::Handle<std::vector<pat::PFParticle>> selectedFSRphotons;
     e.getByToken(tokenFSRphotons, selectedFSRphotons);
 
-    double fsrDrEt2Cut = 0.019;
-    double fsrIsoCut = 0.8;
+    double fsrDrEt2Cut = 0.012;
+    double fsrIsoCut = 1.8;
 
     for (unsigned int i = 0; i < selectedFSRphotons->size(); i++)
     {
         pat::PFParticle photon = selectedFSRphotons->at(i);
         pat::Muon *associatedMuon = (pat::Muon *)(photon.userCand("associatedMuon").get());
-        if (photon.userFloat("PFphotonIso03") < fsrIsoCut && photon.userFloat("ETgammadeltaR") < fsrDrEt2Cut)
+	if (photon.userFloat("PFphotonIso03") < fsrIsoCut && photon.userFloat("ETgammadeltaR") < fsrDrEt2Cut)
         {
             reco::CandidatePtr cutBasedFsrPhoton(selectedFSRphotons, i);
             if (associatedMuon->hasUserCand("cutBasedFsrPhoton"))
