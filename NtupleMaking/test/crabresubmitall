@@ -4,7 +4,7 @@ for f in crab_projects/*; do
     echo
     echo "------------------------------------------------------"
     echo "submitting $f"
-    crab resubmit -d "$f"
+    crab resubmit --dir="$f"
     echo "------------------------------------------------------"
     echo
 done
