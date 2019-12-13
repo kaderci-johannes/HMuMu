@@ -106,13 +106,14 @@ private:
 	edm::EDGetTokenT<std::vector<PileupSummaryInfo>> _puToken;
 	edm::EDGetTokenT<pat::PackedCandidateCollection> _candToken;
  	edm::EDGetTokenT<edm::ValueMap<float> > qg_token;
-	 
+
 	edm::Handle<edm::TriggerResults> _hTriggerResults;
 	edm::Handle<pat::TriggerObjectStandAloneCollection> _hTriggerObjects;
 	edm::Handle<edm::TriggerResults> _hMetFilterResults;
 	edm::ESHandle<JetCorrectorParametersCollection> m_hJetCParametersAK4;
 	JetCorrectionUncertainty *m_jecuAK4;
 
+	
 	edm::EDGetTokenT<double> prefweight_token;
 	edm::EDGetTokenT<double> prefweightup_token;
 	edm::EDGetTokenT<double> prefweightdown_token;

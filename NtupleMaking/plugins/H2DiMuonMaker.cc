@@ -700,7 +700,6 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 
     double fsrDrEt2Cut = 0.012;
     double fsrIsoCut = 1.8;
-    double fstEtEtCut = 0.4;
 
     for (unsigned int i = 0; i < selectedFSRphotons->size(); i++)
     {

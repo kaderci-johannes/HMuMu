@@ -76,7 +76,7 @@ class Jet : public Object
 		_puid = 0;
 		_fullid = 0;
 		_qgLikelihood = 0;
-		
+
 		_uncAK4 = 0;
 		_pt_upAK4 = 0;
 		_pt_downAK4 = 0;
@@ -152,7 +152,7 @@ class Jet : public Object
 	float _puid;
 	int _fullid;
 	float _qgLikelihood;
-
+	
 	double _uncAK4;
 	double _pt_upAK4;
 	double _pt_downAK4;
