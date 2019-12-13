@@ -974,7 +974,7 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
             if (mu1.hasUserCand("cutBasedFsrPhoton"))
             {
                 pat::PFParticle *pho = (pat::PFParticle *)(mu1.userCand("cutBasedFsrPhoton").get());
-                _muon1.fsrP4.SetPtEtaPhiM(pho->pt(), pho->eta(), pho->phi(), 0.);
+                _muon1.fsrP4.SetPtEtaPhiM(pho->userFloat("correctedPt"), pho->eta(), pho->phi(), 0.);
             }
             // Kinematic Fit corrections and vertex
             if (dimu_vertex != NULL)
