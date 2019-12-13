@@ -23,9 +23,9 @@ jsonfiles = Samples.jsonfiles
 datasets = []
 sets_to_consider = {}
 sets_to_consider.update(Samples.data_2017)
-sets_to_consider.update(Samples.mc_signal_2017)
+#sets_to_consider.update(Samples.mc_signal_2017)
 #sets_to_consider.update(Samples.mc_signal_2017_extra)
-sets_to_consider.update(Samples.mc_background_2017)
+#sets_to_consider.update(Samples.mc_background_2017)
 #sets_to_consider.update(Samples.mc_background_2017_extra)
 for k in sets_to_consider:
     datasets.append(sets_to_consider[k])
@@ -42,7 +42,7 @@ for d in datasets:
         cmssw = d.initial_cmssw        
     jsontag = str(d.year)
     storage = "EOS"
-    rootpath = "/store/user/malhusse/higgs_ntuples/v4/"
+    rootpath = "/store/user/malhusse/higgs_ntuples/v5/"
     rootpath += str(d.year)
     if d.isData:
         rootpath+="/data"

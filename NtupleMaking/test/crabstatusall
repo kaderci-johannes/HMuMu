@@ -1,6 +1,6 @@
 #/bin/bash
 
 for dir in ./crab_projects/*/; do
-    crab status -d "$dir"
+    crab status --dir="$dir"
   echo "====================================================================="
 done
