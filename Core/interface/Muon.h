@@ -30,12 +30,12 @@ class Muon : public Track
 
 		_isPF = 0;
 
-		_pt_kinfit = 0; 
-		_ptErr_kinfit = 0;
-		_d0PV_kinfit = 0;
-		_dzPV_kinfit = 0;
-		_chi2_kinfit = 0;
-		_ndf_kinfit = 0;
+		// _pt_kinfit = 0; 
+		// _ptErr_kinfit = 0;
+		// _d0PV_kinfit = 0;
+		// _dzPV_kinfit = 0;
+		// _chi2_kinfit = 0;
+		// _ndf_kinfit = 0;
 
 		fsrP4.SetPxPyPzE(0,0,0,0);
 
@@ -154,12 +154,12 @@ class Muon : public Track
 	float _roccCor;
 	float _corrPT;
 
-	float _d0PV_kinfit;
-	float _dzPV_kinfit;
-	double _pt_kinfit; 
-	double _ptErr_kinfit; 
-	float _chi2_kinfit;
-	int _ndf_kinfit;
+	// float _d0PV_kinfit;
+	// float _dzPV_kinfit;
+	// double _pt_kinfit; 
+	// double _ptErr_kinfit; 
+	// float _chi2_kinfit;
+	// int _ndf_kinfit;
 
 	double _pt_PF;
 	double _pterr_PF;
