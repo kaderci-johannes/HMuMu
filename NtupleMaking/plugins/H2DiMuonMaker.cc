@@ -84,6 +84,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
 
     _meta._checkTrigger = ps.getUntrackedParameter<bool>("checkTrigger");
     _meta._isMC = ps.getUntrackedParameter<bool>("isMC");
+    _meta._year = ps.getUntrackedParameter<int>("year");
     _meta._triggerNames = ps.getUntrackedParameter<std::vector<std::string>>(
         "triggerNames");
     _meta._nMuons = ps.getUntrackedParameter<int>("nMuons");
@@ -699,11 +700,13 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 
     double fsrDrEt2Cut = 0.012;
     double fsrIsoCut = 1.8;
+    double fstEtEtCut = 0.4;
 
     for (unsigned int i = 0; i < selectedFSRphotons->size(); i++)
     {
         pat::PFParticle photon = selectedFSRphotons->at(i);
         pat::Muon *associatedMuon = (pat::Muon *)(photon.userCand("associatedMuon").get());
+	
 	if (photon.userFloat("PFphotonIso03") < fsrIsoCut && photon.userFloat("ETgammadeltaR") < fsrDrEt2Cut)
         {
             reco::CandidatePtr cutBasedFsrPhoton(selectedFSRphotons, i);
@@ -1047,6 +1050,9 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
             _muon1._roccCor = roccCor;
             _muon1._corrPT = roccCor * _muon1._pt;
 
+
+	    // GeoFit Corrected PT
+	        _muon1._geoPT = PtCorrGeoFit(_muon1._d0BS * _muon1._charge, _muon1._corrPT, _muon1._eta, _meta._year);
             // Scale Factor Calculation
             // for some reason this is killing muons that hmuon_trigSF_histomuon_trigSF_histomuon_trigSF_histoave pt > 120 GeV??
 
