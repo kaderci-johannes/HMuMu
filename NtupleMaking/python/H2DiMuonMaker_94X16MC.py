@@ -1,6 +1,5 @@
-
 import FWCore.ParameterSet.Config as cms
-pt = 27
+pt = 24
 
 name = "H2DiMuonMaker"
 
