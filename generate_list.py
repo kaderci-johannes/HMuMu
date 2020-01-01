@@ -26,7 +26,12 @@ jsonfile = jsonfiles[year]
 cmssw = cmssw_dic[year]
 
 storage = "EOS"
-rootpath = "/store/user/malhusse/higgs_ntuples/v3/" + year
+# change this to v6 once the new Trig24 ntuples are done.
+if year == "2016" or year == "2018":
+    rootpath = "/store/user/malhusse/higgs_ntuples/v6/" + year
+if year == "2017":
+    rootpath = "/store/user/malhusse/higgs_ntuples/v5/" + year
+
 print(rootpath)
 
 data_ntuples = []
