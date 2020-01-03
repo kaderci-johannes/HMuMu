@@ -485,7 +485,16 @@ mc_background_2016_extra = {
         isSignal=False,
         initial_cmssw="94X",
         globaltag=mc_global_tag_2016,
-        cross_section=46.948
+        cross_section=47.12
+    ),
+    "/EWK_LLJJ_MLL-50_MJJ-120_13TeV-madgraph-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM": DS.MCDataset(
+        name="/EWK_LLJJ_MLL-50_MJJ-120_13TeV-madgraph-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM",
+        isData=False,
+        year=2016,
+        isSignal=False,
+        initial_cmssw="94X",
+        globaltag=mc_global_tag_2016,
+        cross_section=1.611
     )
 }
 
@@ -929,8 +938,26 @@ mc_background_2017_extra = {
         isSignal=False,
         initial_cmssw="94X",
         globaltag=mc_global_tag_2017,
-        cross_section=46.9479
+        cross_section=47.12
     ),
+    "/EWKZ2Jets_ZToLL_M-50_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM": DS.MCDataset(
+        name="/EWKZ2Jets_ZToLL_M-50_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM",
+        isData=False,
+        year=2017,
+        isSignal=False,
+        initial_cmssw="94X",
+        globaltag=mc_global_tag_2017,
+        cross_section=4.321
+    ),
+    "/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM": DS.MCDataset(
+        name="/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM",
+        isData=False,
+        year=2017,
+        isSignal=False,
+        initial_cmssw="94X",
+        globaltag=mc_global_tag_2017,
+        cross_section=831.76
+    )
 }
 
 #   ___   ___  __  ___
@@ -1351,7 +1378,25 @@ mc_background_2018_extra = {
         isSignal=False,
         initial_cmssw="102X",
         globaltag=mc_global_tag_2018,
-        cross_section=46.948
+        cross_section=47.12
+    ),
+    "/EWKZ2Jets_ZToLL_M-50_TuneCP5_PSweights_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM": DS.MCDataset(
+        name="/EWKZ2Jets_ZToLL_M-50_TuneCP5_PSweights_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM",
+        isData=False,
+        year=2018,
+        isSignal=False,
+        initial_cmssw="102X",
+        globaltag=mc_global_tag_2018,
+        cross_section=4.321
+    ),
+    "/TT_DiLept_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM": DS.MCDataset(
+    name="/TT_DiLept_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM",
+    isData=False,
+    year=2018,
+    isSignal=False,
+    initial_cmssw="102X",
+    globaltag=mc_global_tag_2018,
+    cross_section=86.61
     )
 }
 #
