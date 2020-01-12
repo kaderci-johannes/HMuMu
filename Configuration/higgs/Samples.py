@@ -499,8 +499,8 @@ mc_background_2016_extra = {
 }
 
 mc_background_2016_extra_2 = {
-    "/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/_ext1-v1/MINIAODSIM" : DS.MCDataset(
-        name = "/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/_ext1-v1/MINIAODSIM",
+    "/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM" : DS.MCDataset(
+        name = "/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM",
         isData = False,
         year = 2016,
         isSignal = False,
