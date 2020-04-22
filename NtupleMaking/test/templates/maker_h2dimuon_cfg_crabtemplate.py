@@ -104,6 +104,7 @@ if year == "2018":
     setupEgammaPostRecoSeq(process,
                            era=egammaEra)
 
+
 # only applied to "2016" and 2017
 
 if year == "2016" or year == "2017":

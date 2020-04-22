@@ -30,10 +30,10 @@ ntuplemaker_H2DiMuonMaker = cms.EDAnalyzer(
     muonTrigFile=cms.FileInPath(
         "../data/MuonSF/EfficienciesAndSF_2018Data_AfterMuonHLTUpdate.root"),
 
-    muon_id_sf_wp_num = cms.string("MediumID"),
-    muon_id_sf_wp_den = cms.string("TrackerMuons"),
-    muon_iso_sf_wp_num = cms.string("LooseRelIso"),
-    muon_iso_sf_wp_den = cms.string("MediumID"),
+    muon_id_sf_wp_num=cms.string("MediumID"),
+    muon_id_sf_wp_den=cms.string("genTracks"),
+    muon_iso_sf_wp_num=cms.string("LooseRelIso"),
+    muon_iso_sf_wp_den=cms.string("MediumID"),
 
     #
     #	Meta Data
@@ -43,8 +43,7 @@ ntuplemaker_H2DiMuonMaker = cms.EDAnalyzer(
     year=cms.untracked.int32(2018),
     triggerNames=cms.untracked.vstring(
         "HLT_IsoMu%d" % pt, "HLT_IsoTkMu%d" % pt),
-    metFilterNames=cms.untracked.vstring(["Flag_goodVertices", "Flag_globalSuperTightHalo2016Filter", 
-                                          "Flag_HBHENoiseFilter", "Flag_HBHENoiseIsoFilter",
+    metFilterNames=cms.untracked.vstring(["Flag_goodVertices", "Flag_globalSuperTightHalo2016Filter", "Flag_HBHENoiseFilter", "Flag_HBHENoiseIsoFilter",
                                           # , "Flag_BadChargedCandidateFilter"
                                           "Flag_EcalDeadCellTriggerPrimitiveFilter", "Flag_BadPFMuonFilter"
                                           ]),

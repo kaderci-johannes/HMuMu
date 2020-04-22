@@ -1,4 +1,4 @@
-year = "2018"
+year = "2017"
 
 import FWCore.ParameterSet.Config as cms
 process = cms.Process("NtupleMaking")
@@ -159,7 +159,7 @@ process.jecSequence = cms.Sequence(
     process.patJetCorrFactorsUpdatedJEC *
     process.updatedPatJetsUpdatedJEC)
 
-process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(1000))
+process.maxEvents = cms.untracked.PSet(input=cms.untracked.int32(100))
 files = {
 "2016" : "file:/afs/cern.ch/user/m/malhusse/files/E635F219-AD35-E911-9BEB-848F69FD0C80.root",
 "2017" : "file:/afs/cern.ch/user/m/malhusse/files/5AC9148F-9842-E811-892B-3417EBE535DA.root",
