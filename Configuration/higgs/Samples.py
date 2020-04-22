@@ -215,7 +215,6 @@ mc_signal_2016_extra = {
         globaltag=mc_global_tag_2016,
         cross_section=0.000232
     ),
-
     "/WplusH_HToMuMu_WToAll_M130_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM": DS.MCDataset(
         name="/WplusH_HToMuMu_WToAll_M130_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM",
         isData=False,
@@ -234,7 +233,6 @@ mc_signal_2016_extra = {
         globaltag=mc_global_tag_2016,
         cross_section=0.000148
     ),
-
     "/WminusH_HToMuMu_WToAll_M130_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM": DS.MCDataset(
         name="/WminusH_HToMuMu_WToAll_M130_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM",
         isData=False,
@@ -244,7 +242,6 @@ mc_signal_2016_extra = {
         globaltag=mc_global_tag_2016,
         cross_section=0.000088
     ),
-
     "/ZH_HToMuMu_ZToAll_M120_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM": DS.MCDataset(
         name="/ZH_HToMuMu_ZToAll_M120_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM",
         isData=False,
@@ -254,7 +251,6 @@ mc_signal_2016_extra = {
         globaltag=mc_global_tag_2016,
         cross_section=0.000241
     ),
-
     "/ZH_HToMuMu_ZToAll_M130_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM": DS.MCDataset(
         name="/ZH_HToMuMu_ZToAll_M130_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM",
         isData=False,
@@ -264,7 +260,6 @@ mc_signal_2016_extra = {
         globaltag=mc_global_tag_2016,
         cross_section=0.000148
     )
-
 }
 
 mc_background_2016 = {
@@ -295,24 +290,24 @@ mc_background_2016 = {
         globaltag=mc_global_tag_2016,
         cross_section=358.57
     ),
-    "/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM": DS.MCDataset(
-        name="/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM",
-        isData=False,
-        year=2016,
-        isSignal=False,
-        initial_cmssw="94X",
-        globaltag=mc_global_tag_2016,
-        cross_section=54.23
-    ),
-    "/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM": DS.MCDataset(
-        name="/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM",
-        isData=False,
-        year=2016,
-        isSignal=False,
-        initial_cmssw="94X",
-        globaltag=mc_global_tag_2016,
-        cross_section=54.23
-    ),
+    # "/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM": DS.MCDataset(
+    #     name="/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM",
+    #     isData=False,
+    #     year=2016,
+    #     isSignal=False,
+    #     initial_cmssw="94X",
+    #     globaltag=mc_global_tag_2016,
+    #     cross_section=54.23
+    # ),
+    # "/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM": DS.MCDataset(
+    #     name="/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM",
+    #     isData=False,
+    #     year=2016,
+    #     isSignal=False,
+    #     initial_cmssw="94X",
+    #     globaltag=mc_global_tag_2016,
+    #     cross_section=54.23
+    # ),
     "/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/MINIAODSIM": DS.MCDataset(
         name="/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/MINIAODSIM",
         isData=False,
@@ -358,24 +353,24 @@ mc_background_2016 = {
         globaltag=mc_global_tag_2016,
         cross_section=0.006983
     ),
-    "/ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM": DS.MCDataset(
-        name="/ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM",
-        isData=False,
-        year=2016,
-        isSignal=False,
-        initial_cmssw="94X",
-        globaltag=mc_global_tag_2016,
-        cross_section=35.85
-    ),
-    "/ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM": DS.MCDataset(
-        name="/ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM",
-        isData=False,
-        year=2016,
-        isSignal=False,
-        initial_cmssw="94X",
-        globaltag=mc_global_tag_2016,
-        cross_section=35.85
-    ),
+    # "/ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM": DS.MCDataset(
+    #     name="/ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM",
+    #     isData=False,
+    #     year=2016,
+    #     isSignal=False,
+    #     initial_cmssw="94X",
+    #     globaltag=mc_global_tag_2016,
+    #     cross_section=35.85
+    # ),
+    # "/ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM": DS.MCDataset(
+    #     name="/ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM",
+    #     isData=False,
+    #     year=2016,
+    #     isSignal=False,
+    #     initial_cmssw="94X",
+    #     globaltag=mc_global_tag_2016,
+    #     cross_section=35.85
+    # ),
     "/WWTo2L2Nu_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM": DS.MCDataset(
         name="/WWTo2L2Nu_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM",
         isData=False,
@@ -412,15 +407,15 @@ mc_background_2016 = {
         globaltag=mc_global_tag_2016,
         cross_section=3.22
     ),
-    "/ZZTo4L_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM": DS.MCDataset(
-        name="/ZZTo4L_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM",
-        isData=False,
-        year=2016,
-        isSignal=False,
-        initial_cmssw="94X",
-        globaltag=mc_global_tag_2016,
-        cross_section=1.256
-    ),
+    # "/ZZTo4L_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM": DS.MCDataset(
+    #     name="/ZZTo4L_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM",
+    #     isData=False,
+    #     year=2016,
+    #     isSignal=False,
+    #     initial_cmssw="94X",
+    #     globaltag=mc_global_tag_2016,
+    #     cross_section=1.256
+    # ),
     "/ZZTo4L_13TeV_powheg_pythia8_ext1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM": DS.MCDataset(
         name="/ZZTo4L_13TeV_powheg_pythia8_ext1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM",
         isData=False,
@@ -430,15 +425,15 @@ mc_background_2016 = {
         globaltag=mc_global_tag_2016,
         cross_section=1.256
     ),
-    "/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM": DS.MCDataset(
-        name="/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM",
-        isData=False,
-        year=2016,
-        isSignal=False,
-        initial_cmssw="94X",
-        globaltag=mc_global_tag_2016,
-        cross_section=1.256
-    ),
+    # "/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM": DS.MCDataset(
+    #     name="/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM",
+    #     isData=False,
+    #     year=2016,
+    #     isSignal=False,
+    #     initial_cmssw="94X",
+    #     globaltag=mc_global_tag_2016,
+    #     cross_section=1.256
+    # ),
     "/WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM": DS.MCDataset(
         name="/WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM",
         isData=False,
@@ -877,42 +872,42 @@ mc_background_2017 = {
         globaltag=mc_global_tag_2017,
         cross_section=87.31
     ),
-    "/TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM": DS.MCDataset(
-        name="/TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM",
-        isData=False,
-        year=2017,
-        isSignal=False,
-        initial_cmssw="94X",
-        globaltag=mc_global_tag_2017,
-        cross_section=54.23
-    ),
-    "/ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM": DS.MCDataset(
-        name="/ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM",
-        isData=False,
-        year=2017,
-        isSignal=False,
-        initial_cmssw="94X",
-        globaltag=mc_global_tag_2017,
-        cross_section=34.91
-    ),
-    "/ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM": DS.MCDataset(
-        name="/ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM",
-        isData=False,
-        year=2017,
-        isSignal=False,
-        initial_cmssw="94X",
-        globaltag=mc_global_tag_2017,
-        cross_section=34.97
-    ),
-    "/WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM": DS.MCDataset(
-        name="/WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM",
-        isData=False,
-        year=2017,
-        isSignal=False,
-        initial_cmssw="94X",
-        globaltag=mc_global_tag_2017,
-        cross_section=11.61
-    ),
+    # "/TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM": DS.MCDataset(
+    #     name="/TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM",
+    #     isData=False,
+    #     year=2017,
+    #     isSignal=False,
+    #     initial_cmssw="94X",
+    #     globaltag=mc_global_tag_2017,
+    #     cross_section=54.23
+    # ),
+    # "/ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM": DS.MCDataset(
+    #     name="/ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM",
+    #     isData=False,
+    #     year=2017,
+    #     isSignal=False,
+    #     initial_cmssw="94X",
+    #     globaltag=mc_global_tag_2017,
+    #     cross_section=34.91
+    # ),
+    # "/ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM": DS.MCDataset(
+    #     name="/ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM",
+    #     isData=False,
+    #     year=2017,
+    #     isSignal=False,
+    #     initial_cmssw="94X",
+    #     globaltag=mc_global_tag_2017,
+    #     cross_section=34.97
+    # ),
+    # "/WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM": DS.MCDataset(
+    #     name="/WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM",
+    #     isData=False,
+    #     year=2017,
+    #     isSignal=False,
+    #     initial_cmssw="94X",
+    #     globaltag=mc_global_tag_2017,
+    #     cross_section=11.61
+    # ),
     "/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM": DS.MCDataset(
         name="/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM",
         isData=False,
@@ -940,15 +935,15 @@ mc_background_2017 = {
         globaltag=mc_global_tag_2017,
         cross_section=45.99
     ),
-    "/WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM": DS.MCDataset(
-        name="/WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM",
-        isData=False,
-        year=2017,
-        isSignal=False,
-        initial_cmssw="94X",
-        globaltag=mc_global_tag_2017,
-        cross_section=45.99
-    ),
+    # "/WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM": DS.MCDataset(
+    #     name="/WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM",
+    #     isData=False,
+    #     year=2017,
+    #     isSignal=False,
+    #     initial_cmssw="94X",
+    #     globaltag=mc_global_tag_2017,
+    #     cross_section=45.99
+    # ),
     "/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM": DS.MCDataset(
         name="/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM",
         isData=False,
@@ -985,15 +980,15 @@ mc_background_2017 = {
         globaltag=mc_global_tag_2017,
         cross_section=358.57
     ),
-    "/ZZ_TuneCP5_13TeV-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM": DS.MCDataset(
-        name="/ZZ_TuneCP5_13TeV-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM",
-        isData=False,
-        year=2017,
-        isSignal=False,
-        initial_cmssw="94X",
-        globaltag=mc_global_tag_2017,
-        cross_section=16.523
-    ),
+    # "/ZZ_TuneCP5_13TeV-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM": DS.MCDataset(
+    #     name="/ZZ_TuneCP5_13TeV-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM",
+    #     isData=False,
+    #     year=2017,
+    #     isSignal=False,
+    #     initial_cmssw="94X",
+    #     globaltag=mc_global_tag_2017,
+    #     cross_section=16.523
+    # ),
     "/TTWJetsToLNu_TuneCP5_PSweights_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM": DS.MCDataset(
         name="/TTWJetsToLNu_TuneCP5_PSweights_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM",
         isData=False,
@@ -1002,24 +997,25 @@ mc_background_2017 = {
         initial_cmssw="94X",
         globaltag=mc_global_tag_2017,
         cross_section=0.2043
-    ),    "/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM": DS.MCDataset(
-        name="/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM",
-        isData=False,
-        year=2017,
-        isSignal=False,
-        initial_cmssw="94X",
-        globaltag=mc_global_tag_2017,
-        cross_section=0.2043
-    ),
-    "/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM": DS.MCDataset(
-        name="/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM",
-        isData=False,
-        year=2017,
-        isSignal=False,
-        initial_cmssw="94X",
-        globaltag=mc_global_tag_2017,
-        cross_section=0.2529
-    ),
+    ),    
+    # "/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM": DS.MCDataset(
+    #     name="/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM",
+    #     isData=False,
+    #     year=2017,
+    #     isSignal=False,
+    #     initial_cmssw="94X",
+    #     globaltag=mc_global_tag_2017,
+    #     cross_section=0.2043
+    # ),
+    # "/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM": DS.MCDataset(
+    #     name="/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM",
+    #     isData=False,
+    #     year=2017,
+    #     isSignal=False,
+    #     initial_cmssw="94X",
+    #     globaltag=mc_global_tag_2017,
+    #     cross_section=0.2529
+    # ),
     "/TTZToLLNuNu_M-10_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM": DS.MCDataset(
         name="/TTZToLLNuNu_M-10_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM",
         isData=False,
@@ -1096,15 +1092,15 @@ mc_background_2017_extra = {
         globaltag=mc_global_tag_2017,
         cross_section=4.321
     ),
-    "/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM": DS.MCDataset(
-        name="/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM",
-        isData=False,
-        year=2017,
-        isSignal=False,
-        initial_cmssw="94X",
-        globaltag=mc_global_tag_2017,
-        cross_section=831.76
-    )
+    # "/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM": DS.MCDataset(
+    #     name="/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM",
+    #     isData=False,
+    #     year=2017,
+    #     isSignal=False,
+    #     initial_cmssw="94X",
+    #     globaltag=mc_global_tag_2017,
+    #     cross_section=831.76
+    # )
 }
 
 mc_background_2017_extra_2 = {
@@ -1463,17 +1459,7 @@ mc_signal_2018_extra = {
         cross_section=0.000148
     ),
 }
-mc_extra_2018 = {
-    "/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM" : DS.MCDataset(
-        name="/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM",
-        isData=False,
-        year=2018,
-        isSignal=False,
-        initial_cmssw="102X",
-        globaltag=mc_global_tag_2018,
-        cross_section=6225.42
-)
-}
+
 mc_background_2018 = {
     "/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM": DS.MCDataset(
         name="/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM",
@@ -1484,15 +1470,15 @@ mc_background_2018 = {
         globaltag=mc_global_tag_2018,
         cross_section=6225.42
     ),
-    "/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM": DS.MCDataset(
-        name="/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM",
-        isData=False,
-        year=2018,
-        isSignal=False,
-        initial_cmssw="102X",
-        globaltag=mc_global_tag_2018,
-        cross_section=6225.42
-    ),
+    # "/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM": DS.MCDataset(
+    #     name="/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM",
+    #     isData=False,
+    #     year=2018,
+    #     isSignal=False,
+    #     initial_cmssw="102X",
+    #     globaltag=mc_global_tag_2018,
+    #     cross_section=6225.42
+    # ),
     "/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM": DS.MCDataset(
         name="/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM",
         isData=False,
@@ -1502,15 +1488,15 @@ mc_background_2018 = {
         globaltag=mc_global_tag_2018,
         cross_section=87.31
     ),
-    "/TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM": DS.MCDataset(
-        name="/TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM",
-        isData=False,
-        year=2018,
-        isSignal=False,
-        initial_cmssw="102X",
-        globaltag=mc_global_tag_2018,
-        cross_section=54.23
-    ),
+    # "/TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM": DS.MCDataset(
+    #     name="/TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM",
+    #     isData=False,
+    #     year=2018,
+    #     isSignal=False,
+    #     initial_cmssw="102X",
+    #     globaltag=mc_global_tag_2018,
+    #     cross_section=54.23
+    # ),
     "/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM": DS.MCDataset(
         name = "/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM",
         isData=False,
@@ -1520,24 +1506,24 @@ mc_background_2018 = {
         globaltag=mc_global_tag_2018,
         cross_section=358.57
     ),
-    "/ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM": DS.MCDataset(
-        name="/ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM",
-        isData=False,
-        year=2018,
-        isSignal=False,
-        initial_cmssw="102X",
-        globaltag=mc_global_tag_2018,
-        cross_section=35.85
-    ),
-    "/ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM": DS.MCDataset(
-        name="/ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM",
-        isData=False,
-        year=2018,
-        isSignal=False,
-        initial_cmssw="102X",
-        globaltag=mc_global_tag_2018,
-        cross_section=35.85
-    ),
+    # "/ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM": DS.MCDataset(
+    #     name="/ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM",
+    #     isData=False,
+    #     year=2018,
+    #     isSignal=False,
+    #     initial_cmssw="102X",
+    #     globaltag=mc_global_tag_2018,
+    #     cross_section=35.85
+    # ),
+    # "/ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM": DS.MCDataset(
+    #     name="/ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM",
+    #     isData=False,
+    #     year=2018,
+    #     isSignal=False,
+    #     initial_cmssw="102X",
+    #     globaltag=mc_global_tag_2018,
+    #     cross_section=35.85
+    # ),
     "/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM": DS.MCDataset(
         name="/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM",
         isData=False,
@@ -1565,15 +1551,15 @@ mc_background_2018 = {
         globaltag=mc_global_tag_2018,
         cross_section=4.6660
     ),
-    "/WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM": DS.MCDataset(
-        name="/WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM",
-        isData=False,
-        year=2018,
-        isSignal=False,
-        initial_cmssw="102X",
-        globaltag=mc_global_tag_2018,
-        cross_section=4.42965
-    ),
+    # "/WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM": DS.MCDataset(
+    #     name="/WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM",
+    #     isData=False,
+    #     year=2018,
+    #     isSignal=False,
+    #     initial_cmssw="102X",
+    #     globaltag=mc_global_tag_2018,
+    #     cross_section=4.42965
+    # ),
     "/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM": DS.MCDataset(
         name="/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM",
         isData=False,
@@ -1703,15 +1689,15 @@ mc_background_2018_extra = {
         globaltag=mc_global_tag_2018,
         cross_section=4.321
     ),
-    "/TT_DiLept_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM": DS.MCDataset(
-    name="/TT_DiLept_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM",
-    isData=False,
-    year=2018,
-    isSignal=False,
-    initial_cmssw="102X",
-    globaltag=mc_global_tag_2018,
-    cross_section=86.61
-    )
+    # "/TT_DiLept_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM": DS.MCDataset(
+    #     name="/TT_DiLept_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM",
+    #     isData=False,
+    #     year=2018,
+    #     isSignal=False,
+    #     initial_cmssw="102X",
+    #     globaltag=mc_global_tag_2018,
+    #     cross_section=86.61
+    # )
 }
 
 mc_background_2018_extra_2 = {

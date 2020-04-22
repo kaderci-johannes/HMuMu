@@ -9,14 +9,26 @@ import Samples as S
 
 year = sys.argv[1]
 
-mc2016 = S.mc_background_2016
+mc2016 = {}
+mc2016.update(S.mc_background_2016)
+mc2016.update(S.mc_background_2016_extra)
+mc2016.update(S.mc_background_2016_extra_2)
 mc2016.update(S.mc_signal_2016)
+mc2016.update(S.mc_signal_2016_extra)
 
-mc2017 = S.mc_background_2017
+mc2017 = {}
+mc2017.update(S.mc_background_2017)
+mc2017.update(S.mc_background_2017_extra)
+mc2017.update(S.mc_background_2017_extra_2)
 mc2017.update(S.mc_signal_2017)
+mc2017.update(S.mc_signal_2017_extra)
 
-mc2018 = S.mc_background_2018
+mc2018 = {}
+mc2018.update(S.mc_background_2018)
+mc2018.update(S.mc_background_2018_extra)
+mc2018.update(S.mc_background_2018_extra_2)
 mc2018.update(S.mc_signal_2018)
+mc2018.update(S.mc_signal_2018_extra)
 
 mc_datasets_dic = {
     "2016": mc2016,
