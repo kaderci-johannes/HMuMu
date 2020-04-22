@@ -76,9 +76,6 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
     tokenFSRphotons = consumes<std::vector<pat::PFParticle>>(edm::InputTag("FSRRecovery", "selectedFSRphotons"));
     _candToken = consumes<pat::PackedCandidateCollection>(ps.getParameter<edm::InputTag>("tagCands"));
     qg_token = consumes<edm::ValueMap<float>>(edm::InputTag("QGTagger", "qgLikelihood"));
-    prefweight_token = consumes<double>(edm::InputTag("prefiringweight:nonPrefiringProb"));
-    prefweightup_token = consumes<double>(edm::InputTag("prefiringweight:nonPrefiringProbUp"));
-    prefweightdown_token = consumes<double>(edm::InputTag("prefiringweight:nonPrefiringProbDown"));
 
     mayConsume<reco::ConversionCollection>(_convToken);
 
@@ -107,7 +104,7 @@ H2DiMuonMaker::H2DiMuonMaker(edm::ParameterSet const &ps) : _muonToken(ps.getUnt
     {
         // muon scale factor files
         muon_trigSF_root = new TFile(muon_trigSF_file.fullPath().c_str());
-        muon_trigSF_histo = (TH2F *)muon_trigSF_root->Get("IsoMu27_PtEtaBins/abseta_pt_ratio");
+        muon_trigSF_histo = (TH2F *)muon_trigSF_root->Get("IsoMu24_PtEtaBins/abseta_pt_ratio");
 
         std::ifstream muon_isoSF_file_json(muon_isoSF_file.fullPath().c_str());
         std::ifstream muon_idSF_file_json(muon_idSF_file.fullPath().c_str());
@@ -187,17 +184,17 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
         _eaux._genWeight = (hGenEvtInfo->weight() > 0) ? 1 : -1;
         _meta._sumEventWeights += _eaux._genWeight;
 
-        edm::Handle<double> theprefweight;
-        e.getByToken(prefweight_token, theprefweight);
-        _eaux._prefiringweight = (*theprefweight);
+        // edm::Handle<double> theprefweight;
+        // e.getByToken(prefweight_token, theprefweight);
+        // _eaux._prefiringweight = (*theprefweight);
 
-        edm::Handle<double> theprefweightup;
-        e.getByToken(prefweightup_token, theprefweightup);
-        _eaux._prefiringweightup = (*theprefweightup);
+        // edm::Handle<double> theprefweightup;
+        // e.getByToken(prefweightup_token, theprefweightup);
+        // _eaux._prefiringweightup = (*theprefweightup);
 
-        edm::Handle<double> theprefweightdown;
-        e.getByToken(prefweightdown_token, theprefweightdown);
-        _eaux._prefiringweightdown = (*theprefweightdown);
+        // edm::Handle<double> theprefweightdown;
+        // e.getByToken(prefweightdown_token, theprefweightdown);
+        // _eaux._prefiringweightdown = (*theprefweightdown);
     }
 
     //
@@ -700,6 +697,10 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
 
     double fsrDrEt2Cut = 0.012;
     double fsrIsoCut = 1.8;
+<<<<<<< HEAD
+=======
+    double fstEtEtCut = 0.4;
+>>>>>>> 69a5d1e325bce7f3bf30e995c647b8e57adfbb20
 
     for (unsigned int i = 0; i < selectedFSRphotons->size(); i++)
     {
@@ -1094,7 +1095,6 @@ void H2DiMuonMaker::analyze(edm::Event const &e, edm::EventSetup const &esetup)
                         } // End loop: for (int iEta = 1; iEta <= muon_trigSF_histo->GetNbinsX(); iEta++)
                     }     // End loop: for (int iPt = 1; iPt <= muon_trigSF_histo->GetNbinsY(); iPt++)
                 }
-
                 typedef boost::property_tree::ptree::path_type path;
                 //eta bins for SF
                 std::vector<float> absetabins{0.00, 0.90, 1.20, 2.10, 2.40};
